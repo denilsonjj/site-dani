@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "check:text": "node scripts/check-text-integrity.mjs",
+    "check:cms": "node scripts/check-cms-text-integrity.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "verify": "npm run lint && npm run check:text && npm run build"
+    "verify": "npm run lint && npm run check:text && npm run check:cms && npm run build"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.2",
