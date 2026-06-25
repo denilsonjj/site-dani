@@ -32,7 +32,7 @@ function AdminLogin() {
           Painel administrativo
         </h1>
         <p className="mt-5 leading-7 text-[#52675e]">
-          Entre com a senha administrativa para editar conteÃºdo e limites de vagas.
+          Entre com a senha administrativa para editar conteúdo e limites de vagas.
         </p>
         <form action="/api/admin/login" className="mt-7 grid gap-4" method="post">
           <label className="grid gap-2 text-sm font-bold text-[#40564d]">
@@ -92,10 +92,10 @@ export default async function AdminPage() {
                 Painel administrativo
               </p>
               <h1 className="display mt-4 max-w-3xl text-5xl font-semibold leading-[0.98] sm:text-7xl">
-                GestÃ£o de conteÃºdo
+                Gestão de conteúdo
               </h1>
               <p className="mt-6 max-w-2xl text-base leading-8 text-white/72">
-                SessÃµes, cursos e blog podem ser organizados em uma base editÃ¡vel.
+                Sessões, cursos e blog podem ser organizados em uma base editável.
                 Tudo que estiver marcado como publicado aparece no site automaticamente.
               </p>
             </div>
@@ -106,12 +106,12 @@ export default async function AdminPage() {
                 <LockKeyhole className="text-[#d8bd82]" size={28} strokeWidth={1.5} />
               )}
               <p className="mt-5 text-sm font-bold uppercase tracking-[0.14em] text-[#d8bd82]">
-                ConteÃºdo
+                Conteúdo
               </p>
               <p className="mt-2 leading-7 text-white/72">
                 {overview.configured
-                  ? "Base de conteÃºdo conectada."
-                  : "Base de conteÃºdo aguardando configuraÃ§Ã£o."}
+                  ? "Base de conteúdo conectada."
+                  : "Base de conteúdo aguardando configuração."}
               </p>
             </div>
           </div>
@@ -139,10 +139,10 @@ export default async function AdminPage() {
       {!overview.configured ? (
         <section className="px-5 pb-16">
           <div className="mx-auto max-w-7xl rounded-[2rem] border border-[#123c2d]/10 bg-white p-7 shadow-[0_20px_60px_rgba(19,35,29,0.08)]">
-            <h2 className="display text-4xl font-semibold">ConteÃºdo ainda nÃ£o conectado</h2>
+            <h2 className="display text-4xl font-semibold">Conteúdo ainda não conectado</h2>
             <p className="mt-4 max-w-3xl leading-7 text-[#52675e]">
-              Quando a base de conteÃºdo estiver configurada, esta tela passa a listar
-              sessÃµes, cursos e posts cadastrados.
+              Quando a base de conteúdo estiver configurada, esta tela passa a listar
+              sessões, cursos e posts cadastrados.
             </p>
           </div>
         </section>
