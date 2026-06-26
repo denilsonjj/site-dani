@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import type { Locale } from "@/lib/content";
 
 type RequiredField = {
+  helpText?: string;
   key: string;
   label: string;
   type: "text" | "email" | "number" | "date" | "textarea" | "checkbox" | "select";
@@ -196,6 +197,9 @@ export function CheckoutButton({ children, disabled = false, locale, productId }
           {requiredFields.map((field) => (
             <label className="grid gap-2 text-sm font-bold text-[#40564d]" key={field.key}>
               {field.label}
+              {field.helpText ? (
+                <span className="-mt-1 text-xs font-medium leading-5 text-[#617268]">{field.helpText}</span>
+              ) : null}
               {field.type === "textarea" ? (
                 <textarea
                   className="min-h-28 rounded-2xl border border-[#123c2d]/15 bg-[#f8f5ec] px-4 py-3 font-normal outline-none focus:border-[#1f5742]"

@@ -486,7 +486,7 @@ function fallbackIntakeFields(locale: Locale, productId?: string): IntakeField[]
       service_goal: "O que deseja trabalhar ou resolver?",
       service_specific_information: "Informações específicas necessárias para o serviço escolhido",
       water_confirmed: "Confirmo que terei água em copo de vidro por perto.",
-      whatsapp: "WhatsApp",
+      whatsapp: "WhatsApp com código do país e DDD",
     },
     en: {
       address: "Address",
@@ -498,7 +498,7 @@ function fallbackIntakeFields(locale: Locale, productId?: string): IntakeField[]
       service_goal: "What would you like to work on or resolve?",
       service_specific_information: "Specific information needed for the selected service",
       water_confirmed: "I confirm I will keep water in a glass nearby.",
-      whatsapp: "WhatsApp",
+      whatsapp: "WhatsApp with country code and area code",
     },
     es: {
       address: "Dirección",
@@ -510,7 +510,7 @@ function fallbackIntakeFields(locale: Locale, productId?: string): IntakeField[]
       service_goal: "¿Qué desea trabajar o resolver?",
       service_specific_information: "Información específica necesaria para el servicio elegido",
       water_confirmed: "Confirmo que tendré agua en un vaso cerca.",
-      whatsapp: "WhatsApp",
+      whatsapp: "WhatsApp con código de país y prefijo regional",
     },
     nl: {
       address: "Adres",
@@ -522,7 +522,7 @@ function fallbackIntakeFields(locale: Locale, productId?: string): IntakeField[]
       service_goal: "Waar wilt u aan werken of wat wilt u oplossen?",
       service_specific_information: "Specifieke informatie die nodig is voor de gekozen dienst",
       water_confirmed: "Ik bevestig dat ik water in een glas bij me zal hebben.",
-      whatsapp: "WhatsApp",
+      whatsapp: "WhatsApp met landcode en netnummer",
     },
   };
   const source = labels[locale] || labels.pt;
@@ -544,9 +544,25 @@ function fallbackIntakeFields(locale: Locale, productId?: string): IntakeField[]
   const fields =
     productId === "guided-healing-movement" ? [...commonFields, ...guidedHealingFields] : commonFields;
 
+  const helpTexts: Record<Locale, Record<string, string>> = {
+    pt: {
+      whatsapp: "Informe o número completo. Exemplo: +31 6 16 01 84 67.",
+    },
+    en: {
+      whatsapp: "Enter the full number. Example: +31 6 16 01 84 67.",
+    },
+    es: {
+      whatsapp: "Indique el número completo. Ejemplo: +31 6 16 01 84 67.",
+    },
+    nl: {
+      whatsapp: "Vul het volledige nummer in. Voorbeeld: +31 6 16 01 84 67.",
+    },
+  };
+  const helpSource = helpTexts[locale] || helpTexts.pt;
+
   return fields.map(([key, fieldType]) => ({
     fieldType: fieldType as IntakeField["fieldType"],
-    helpText: "",
+    helpText: helpSource[key] || "",
     key,
     label: source[key] || labels.pt[key] || key,
     options: [],

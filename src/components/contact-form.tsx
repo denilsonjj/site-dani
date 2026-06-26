@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
+import { siteConfig } from "@/lib/site";
 
 type ContactFormProps = {
   labels: {
@@ -30,7 +31,7 @@ export function ContactForm({ labels }: ContactFormProps) {
     ].join("\n");
 
     window.open(
-      `https://wa.me/31616018467?text=${encodeURIComponent(text)}`,
+      `https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent(text)}`,
       "_blank",
       "noopener,noreferrer",
     );

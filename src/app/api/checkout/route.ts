@@ -7,6 +7,7 @@ import {
   saveCheckoutSubmission,
 } from "@/lib/cms";
 import { locales, type Locale } from "@/lib/content";
+import { siteConfig } from "@/lib/site";
 import { getAppUrl, getStripe } from "@/lib/stripe";
 
 type CheckoutPayload = {
@@ -19,7 +20,7 @@ type CheckoutPayload = {
   productId?: string;
 };
 
-const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "31616018467";
+const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || siteConfig.whatsapp;
 
 function normaliseLocale(locale?: string): Locale {
   if (locale && locales.includes(locale as Locale)) {
@@ -59,6 +60,7 @@ export async function POST(request: Request) {
         error: "Este serviço precisa de formulário obrigatório antes do pagamento.",
         policyRequired: product.requiresPolicyAcceptance,
         requiredFields: missingRequiredFields.map((field) => ({
+          helpText: field.helpText,
           key: field.key,
           label: field.label,
           type: field.fieldType,
@@ -74,6 +76,7 @@ export async function POST(request: Request) {
         error: "Para continuar, é necessário aceitar o Termo de Conduta e a Política de Cancelamento.",
         policyRequired: true,
         requiredFields: product.intakeFields.map((field) => ({
+          helpText: field.helpText,
           key: field.key,
           label: field.label,
           type: field.fieldType,

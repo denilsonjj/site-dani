@@ -293,7 +293,7 @@ const content = {
     metaDescription:
       "Sessões online de cuidado energético, orientação espiritual, cursos e desenvolvimento pessoal com Dani Therapies.",
     nav: {
-      about: "Sobre mim",
+      about: "Quem Somos",
       services: "Sessões",
       courses: "Cursos",
       blog: "Blog",
@@ -302,9 +302,9 @@ const content = {
     },
     hero: {
       eyebrow: "Cuidado energético e espiritual",
-      title: "Um espaço seguro para restaurar a sua energia e ouvir a sua essência.",
+      title: "Tratamentos Terapêuticos Espirituais e Energéticos e Cursos Online",
       description:
-        "Sessões online conduzidas com presença, sensibilidade e respeito pelo seu momento.",
+        "Oferecemos serviços online de tratamentos terapêuticos, energéticos e espirituais personalizados, que atuam em múltiplos níveis do Ser.",
       primary: "Agendar primeira consulta",
       secondary: "Conhecer as sessões",
       note: "Atendimento online · Zoom · Europa",
@@ -318,24 +318,24 @@ const content = {
       action: "Reservar minha consulta",
     },
     about: {
-      imageAlt: "Dani Therapies em atendimento energético",
-      imageCaption: "Cura, condução e presença para processos energéticos e espirituais.",
-      title: "Um trabalho sensível, mas com estrutura clara.",
-      body: "A página principal apresenta a essência do trabalho, a primeira consulta, alguns caminhos possíveis e o contacto. As sessões completas e os cursos ficam em páginas próprias, para o site respirar melhor e continuar fácil de navegar no telemóvel.",
+      imageAlt: "Dani Matta, curadora noética espiritual",
+      imageCaption: "Não prometo milagres. Mas ofereço qualidade de vida.",
+      title: "Oi! Eu sou a Dani",
+      body: "Sou Curadora Noética Espiritual e Educadora do Despertar da Consciência, atuando no trabalho terapêutico, espiritual e energético. A minha missão é conduzir pessoas de volta à sua essência, restaurando a sua energia vital, alinhando os corpos sutis e reconectando cada Ser à sua verdade mais profunda.",
       stats: [
-        { title: "Online", text: "Sessões por videochamada" },
-        { title: "4 idiomas", text: "Português, inglês, espanhol e holandês" },
-        { title: "Acolhimento", text: "Escuta sensível e orientação espiritual" },
+        { title: "Acolhimento", text: "Visão ampla, em alta frequência." },
+        { title: "Restauração", text: "Restauração vibracional. Quando precisas de voltar à tua base." },
+        { title: "Clareza", text: "Que mudanças sentirias em ti após uma Restauração energética?" },
       ],
     },
-    promptsTitle: "Talvez alguma destas perguntas fale consigo",
+    promptsTitle: "Sente qual delas te chama agora",
     promptsIntro:
-      "Cada processo começa com uma pergunta sincera. Descubra qual caminho se aproxima do que vive agora.",
+      "Cada processo começa com uma pergunta sincera.",
     promptTones: ["Restauração", "Clareza", "Vínculo"],
     prompts: [
-      "Restauração vibracional é tudo. O inimigo não dorme; mantenha-se alerta.",
-      "Que mudanças notaria em si após uma restauração energética?",
-      "Se o seu querido pet pudesse deixar-lhe uma mensagem, qual seria?",
+      "Restauração vibracional. Quando precisas de voltar à tua base.",
+      "Que mudanças sentirias em ti após uma Restauração energética?",
+      "Se o teu querido animal pudesse deixar-te uma mensagem, qual seria?",
       "Libertar um ente querido que já partiu é um ato de amor.",
       "E se pudesse receber uma mensagem direta do teu Guia Espiritual?",
     ],

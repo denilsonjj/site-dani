@@ -19,8 +19,9 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getPublishedBlogPosts, getPublishedCourses, getPublishedServices } from "@/lib/cms";
 import { getContent, locales, type Locale } from "@/lib/content";
+import { siteConfig } from "@/lib/site";
 
-const whatsappUrl = "https://wa.me/31616018467";
+const whatsappUrl = `https://wa.me/${siteConfig.whatsapp}`;
 
 type RevealStyle = CSSProperties & {
   "--reveal-delay"?: string;
@@ -193,7 +194,7 @@ export default async function LocalizedHome({
               fill
               priority
               sizes="(min-width: 1024px) 45vw, 100vw"
-              src="/dani-profile-healing.webp"
+              src="/dani-quem-somos.webp"
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_35%,rgba(9,39,29,0.74)_100%)]" />
             <div className="absolute bottom-0 left-0 right-0 p-7 text-white">
@@ -223,6 +224,15 @@ export default async function LocalizedHome({
                   <p className="mt-2 text-sm leading-6 text-[#52675e]">{text}</p>
                 </div>
               ))}
+            </div>
+            <div className="mt-8 w-48 overflow-hidden rounded-2xl bg-white p-3 shadow-[0_18px_50px_rgba(19,35,29,0.08)]">
+              <Image
+                alt="Assinatura Dani Matta"
+                className="h-auto w-full"
+                height={500}
+                src="/dani-matta-signature.webp"
+                width={500}
+              />
             </div>
           </div>
         </div>

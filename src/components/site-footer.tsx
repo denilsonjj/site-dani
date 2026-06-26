@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import type { Locale } from "@/lib/content";
+import { siteConfig } from "@/lib/site";
 
 type FooterCopy = {
   disclaimer: string;
@@ -21,7 +22,7 @@ type SiteFooterProps = {
   whatsappLabel: string;
 };
 
-const whatsappUrl = "https://wa.me/31616018467";
+const whatsappUrl = `https://wa.me/${siteConfig.whatsapp}`;
 
 export function SiteFooter({ copy, locale, whatsappLabel }: SiteFooterProps) {
   const legalLinks = [
