@@ -455,17 +455,22 @@ function fallbackCourse(locale: Locale): SiteService {
   const copy = getContent(locale).course;
 
   return {
-    badge: copy.eyebrow,
+    amountCents: 11499,
+    badge: "Cura guiada",
     category: "course",
     currency: "EUR",
-    description: copy.intro,
-    duration: copy.duration,
-    price: copy.price,
-    productId: "online-course",
+    description:
+      "Movimento vibracional guiado pela Equipe Seriana para libertação de amarras emocionais e energéticas, fortalecimento pessoal e reconexão interior.",
+    duration: "1 hora · online via Zoom",
+    image: "/dani-profile-healing.webp",
+    price: "114,99 €",
+    productId: "guided-healing-movement",
     requiresIntake: true,
     requiresPolicyAcceptance: true,
+    slug: "movimento-de-cura-guiada",
+    stripePriceEnv: "STRIPE_PRICE_GUIDED_HEALING_MOVEMENT",
     text: copy.intro,
-    title: copy.title,
+    title: "Movimento de Cura Guiada com Equipe Seriana",
   };
 }
 

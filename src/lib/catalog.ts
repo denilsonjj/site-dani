@@ -31,8 +31,12 @@ export const productCatalog = {
     name: "Harmonização de Ambientes",
     stripePriceEnv: "STRIPE_PRICE_ENVIRONMENT_HARMONIZATION",
   },
+  "guided-healing-movement": {
+    name: "Movimento de Cura Guiada com Equipe Seriana",
+    stripePriceEnv: "STRIPE_PRICE_GUIDED_HEALING_MOVEMENT",
+  },
   "online-course": {
-    name: "Curso Online",
+    name: "Movimento de Cura Guiada com Equipe Seriana",
     stripePriceEnv: "STRIPE_PRICE_ONLINE_COURSE",
   },
 } as const;
