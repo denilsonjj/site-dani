@@ -325,20 +325,35 @@ export default async function LocalizedHome({
             </Link>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2" data-reveal style={{ "--reveal-delay": "120ms" } as RevealStyle}>
-            <div className="rounded-[1.5rem] border border-white/12 bg-white/[0.06] p-6">
-              <CreditCard aria-hidden="true" className="text-[#d8bd82]" size={24} />
-              <p className="mt-4 text-sm font-bold text-white/55">
-                {primaryCourse?.duration || copy.course.duration}
-              </p>
-            </div>
-            <div className="rounded-[1.5rem] border border-white/12 bg-white/[0.06] p-6">
-              <p className="price-text text-2xl font-bold leading-tight text-[#d8bd82] sm:text-3xl">
-                {primaryCourse?.price || copy.course.price}
-              </p>
-              <p className="mt-4 text-sm leading-6 text-white/55">
-                {copy.coursePreview.note}
-              </p>
+          <div
+            className="rounded-[2rem] border border-white/12 bg-white/[0.06] p-6 shadow-2xl shadow-black/10 sm:p-8"
+            data-reveal
+            style={{ "--reveal-delay": "120ms" } as RevealStyle}
+          >
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#d8bd82]">
+              Curso em destaque
+            </p>
+            <h3 className="display mt-4 text-3xl font-semibold leading-tight text-white sm:text-4xl">
+              {primaryCourse?.title || copy.course.title}
+            </h3>
+            <p className="mt-5 leading-8 text-white/68">
+              {primaryCourse?.description || primaryCourse?.text || copy.course.intro}
+            </p>
+            <div className="mt-7 grid gap-4 sm:grid-cols-2">
+              <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.06] p-5">
+                <CreditCard aria-hidden="true" className="text-[#d8bd82]" size={24} />
+                <p className="mt-4 text-sm font-bold text-white/58">
+                  {primaryCourse?.duration || copy.course.duration}
+                </p>
+              </div>
+              <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.06] p-5">
+                <p className="price-text text-2xl font-bold leading-tight text-[#d8bd82] sm:text-3xl">
+                  {primaryCourse?.price || copy.course.price}
+                </p>
+                <p className="mt-4 text-sm leading-6 text-white/55">
+                  {copy.coursePreview.note}
+                </p>
+              </div>
             </div>
           </div>
         </div>
