@@ -129,7 +129,7 @@ function LocalisedInputs({
 export function AdminContentEditor({ blogPosts, courses, services }: AdminContentEditorProps) {
   return (
     <div className="mx-auto grid max-w-7xl gap-8">
-      <ServiceEditor emptyText="Nenhuma sessão cadastrada." initialItems={services} title="Sessões" />
+      <ServiceEditor emptyText="Nenhuma sessão cadastrada." initialItems={services} title="Sessões" type="session" />
       <ServiceEditor emptyText="Nenhum curso cadastrado." initialItems={courses} title="Cursos" />
       <BlogEditor emptyText="Nenhum post cadastrado." initialItems={blogPosts} title="Blog" />
     </div>
@@ -140,13 +140,47 @@ function ServiceEditor({
   emptyText,
   initialItems,
   title,
+  type = "course",
 }: {
   emptyText: string;
   initialItems: AdminServiceItem[];
   title: string;
+  type?: "session" | "course";
 }) {
   const [items, setItems] = useState(initialItems);
   const [status, setStatus] = useState<Record<string, string>>({});
+
+  function createDraft() {
+    const productId = `${type}-${Date.now()}`;
+    const titleLabel = type === "session" ? "Nova sessão" : "Novo curso";
+
+    setItems((current) => [
+      {
+        amount_cents: null,
+        badge: { pt: "Rascunho" },
+        capacity_limit: null,
+        category: type,
+        currency: "EUR",
+        description: { pt: "" },
+        duration: { pt: "" },
+        id: productId,
+        image_url: "",
+        is_published: false,
+        price_label: { pt: "" },
+        product_id: productId,
+        requires_intake: true,
+        requires_policy_acceptance: true,
+        seats_reserved: 0,
+        slug: productId,
+        sort_order: current.length + 1,
+        stripe_price_env: "",
+        summary: { pt: "" },
+        title: { pt: titleLabel },
+      },
+      ...current,
+    ]);
+    setStatus((current) => ({ ...current, [productId]: "Rascunho criado. Preencha e salve." }));
+  }
 
   function updateItem(productId: string, patch: Partial<AdminServiceItem>) {
     setItems((current) => current.map((item) => (item.product_id === productId ? { ...item, ...patch } : item)));
@@ -201,6 +235,13 @@ function ServiceEditor({
             Edite textos, imagem, preço, publicação, ordem e limite de vagas.
           </p>
         </div>
+        <button
+          className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#d8bd82] px-6 text-sm font-bold text-[#123c2d] transition hover:bg-[#e7ce93]"
+          onClick={createDraft}
+          type="button"
+        >
+          {type === "session" ? "Nova sessão" : "Novo curso"}
+        </button>
       </div>
 
       {items.length === 0 ? (
@@ -335,6 +376,27 @@ function BlogEditor({
   const [items, setItems] = useState(initialItems);
   const [status, setStatus] = useState<Record<string, string>>({});
 
+  function createDraft() {
+    const slug = `post-${Date.now()}`;
+
+    setItems((current) => [
+      {
+        author: "Dani Therapies",
+        body: { pt: "" },
+        excerpt: { pt: "" },
+        image_url: "",
+        is_published: false,
+        published_at: new Date().toISOString(),
+        reading_time: { pt: "4 min" },
+        slug,
+        sort_order: current.length + 1,
+        title: { pt: "Novo post" },
+      },
+      ...current,
+    ]);
+    setStatus((current) => ({ ...current, [slug]: "Rascunho criado. Preencha e salve." }));
+  }
+
   function updateItem(slug: string, patch: Partial<AdminBlogItem>) {
     setItems((current) => current.map((item) => (item.slug === slug ? { ...item, ...patch } : item)));
   }
@@ -373,10 +435,21 @@ function BlogEditor({
 
   return (
     <section className="rounded-[2rem] border border-[#123c2d]/10 bg-white p-5 shadow-[0_20px_60px_rgba(19,35,29,0.08)] sm:p-7">
-      <h2 className="display text-4xl font-semibold">{title}</h2>
-      <p className="mt-2 max-w-2xl leading-7 text-[#52675e]">
-        Edite posts, textos, imagem, autor, tempo de leitura e publicação.
-      </p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="display text-4xl font-semibold">{title}</h2>
+          <p className="mt-2 max-w-2xl leading-7 text-[#52675e]">
+            Edite posts, textos, imagem, autor, tempo de leitura e publicação.
+          </p>
+        </div>
+        <button
+          className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#d8bd82] px-6 text-sm font-bold text-[#123c2d] transition hover:bg-[#e7ce93]"
+          onClick={createDraft}
+          type="button"
+        >
+          Novo post
+        </button>
+      </div>
 
       {items.length === 0 ? (
         <p className="mt-8 rounded-2xl bg-[#f8f5ec] p-5 text-[#52675e]">{emptyText}</p>
