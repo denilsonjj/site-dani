@@ -147,14 +147,32 @@ export default async function LocalizedHome({
 
       <section className="relative z-10 -mt-8 px-5" id="consulta">
         <div className="mx-auto grid max-w-7xl overflow-hidden rounded-[2rem] bg-[#f8f5ec] shadow-[0_25px_80px_rgba(10,43,31,0.16)] lg:grid-cols-[0.82fr_1.18fr]" data-reveal>
-          <div className="noise flex min-h-80 flex-col justify-between bg-[#123c2d] p-8 text-white sm:p-12">
+          <div className="noise flex min-h-80 flex-col bg-[#123c2d] p-8 text-white sm:p-12">
             <div>
               <MoonStar className="text-[#d8bd82]" size={34} strokeWidth={1.5} />
               <p className="mt-14 text-xs font-bold uppercase tracking-[0.22em] text-[#d8bd82]">
                 {copy.firstVisit.eyebrow}
               </p>
             </div>
-            <div className="mt-12 grid gap-4 text-sm">
+            <div className="relative mt-6 h-64 overflow-hidden rounded-[1.5rem] border border-white/15 bg-[#dce8ec] shadow-[0_18px_45px_rgba(5,24,18,0.24)] sm:h-72 lg:h-64">
+              <Image
+                alt=""
+                aria-hidden="true"
+                className="scale-110 object-cover opacity-35 blur-xl"
+                fill
+                sizes="(min-width: 1024px) 34vw, 100vw"
+                src="/first-visit-spiritual.webp"
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(18,60,45,0.18),transparent_28%,transparent_72%,rgba(18,60,45,0.18))]" />
+              <Image
+                alt={copy.firstVisit.imageAlt}
+                className="object-contain"
+                fill
+                sizes="(min-width: 1024px) 34vw, 100vw"
+                src="/first-visit-spiritual.webp"
+              />
+            </div>
+            <div className="mt-6 grid gap-4 text-sm">
               <p className="flex items-center gap-3">
                 <Clock3 aria-hidden="true" className="text-[#d8bd82]" size={18} />
                 {copy.firstVisit.duration}
@@ -217,22 +235,22 @@ export default async function LocalizedHome({
             <p className="mt-7 max-w-3xl text-base leading-8 text-[#52675e] sm:text-lg">
               {copy.about.body}
             </p>
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+            <div className="mt-8 grid grid-cols-2 gap-4 xl:grid-cols-4">
               {copy.about.stats.map(({ title, text }) => (
                 <div className="rounded-[1.5rem] bg-white p-5 shadow-[0_18px_50px_rgba(19,35,29,0.08)]" key={title}>
                   <p className="text-lg font-bold text-[#123c2d]">{title}</p>
                   <p className="mt-2 text-sm leading-6 text-[#52675e]">{text}</p>
                 </div>
               ))}
-            </div>
-            <div className="mt-8 w-48 overflow-hidden rounded-2xl bg-white p-3 shadow-[0_18px_50px_rgba(19,35,29,0.08)]">
-              <Image
-                alt="Assinatura Dani Matta"
-                className="h-auto w-full"
-                height={500}
-                src="/dani-matta-signature.webp"
-                width={500}
-              />
+              <div className="flex min-h-36 items-center justify-center px-3">
+                <Image
+                  alt="Assinatura Dani Matta"
+                  className="h-auto w-full max-w-36"
+                  height={700}
+                  src="/dani-matta-signature.webp"
+                  width={700}
+                />
+              </div>
             </div>
           </div>
         </div>
