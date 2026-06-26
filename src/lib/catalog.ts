@@ -36,7 +36,7 @@ export const productCatalog = {
     stripePriceEnv: "STRIPE_PRICE_GUIDED_HEALING_MOVEMENT",
   },
   "online-course": {
-    name: "Movimento de Cura Guiada com Equipe Seriana",
+    name: "Ativação Sensorial (Classes em português)",
     stripePriceEnv: "STRIPE_PRICE_ONLINE_COURSE",
   },
 } as const;

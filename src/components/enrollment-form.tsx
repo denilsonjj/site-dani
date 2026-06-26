@@ -40,7 +40,7 @@ export function EnrollmentForm({ labels, locale }: EnrollmentFormProps) {
           email: String(formData.get("email") || ""),
           locale,
           name: String(formData.get("name") || ""),
-          productId: "guided-healing-movement",
+          productId: "online-course",
         }),
         headers: { "Content-Type": "application/json" },
         method: "POST",

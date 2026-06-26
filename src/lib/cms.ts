@@ -455,22 +455,22 @@ function fallbackCourse(locale: Locale): SiteService {
   const copy = getContent(locale).course;
 
   return {
-    amountCents: 11499,
-    badge: "Cura guiada",
+    amountCents: 28500,
+    badge: copy.eyebrow,
     category: "course",
     currency: "EUR",
     description:
-      "Movimento vibracional guiado pela Equipe Seriana para libertação de amarras emocionais e energéticas, fortalecimento pessoal e reconexão interior.",
-    duration: "1 hora · online via Zoom",
-    image: "/dani-profile-healing.webp",
-    price: "114,99 €",
-    productId: "guided-healing-movement",
+      copy.intro,
+    duration: copy.duration,
+    image: "/services/original-course-sensory-activation.webp",
+    price: copy.price,
+    productId: "online-course",
     requiresIntake: true,
     requiresPolicyAcceptance: true,
-    slug: "movimento-de-cura-guiada",
-    stripePriceEnv: "STRIPE_PRICE_GUIDED_HEALING_MOVEMENT",
+    slug: "ativacao-sensorial-classes-em-portugues",
+    stripePriceEnv: "STRIPE_PRICE_ONLINE_COURSE",
     text: copy.intro,
-    title: "Movimento de Cura Guiada com Equipe Seriana",
+    title: copy.title,
   };
 }
 

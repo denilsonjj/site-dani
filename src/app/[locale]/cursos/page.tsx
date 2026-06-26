@@ -86,7 +86,7 @@ export default async function CoursesPage({
           description: copy.course.intro,
           duration: copy.course.duration,
           price: copy.course.price,
-          productId: "guided-healing-movement",
+          productId: "online-course",
           text: copy.course.intro,
           title: copy.course.title,
         },
