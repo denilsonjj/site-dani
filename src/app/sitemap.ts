@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { blogPosts } from "@/lib/blog";
+import { getPublishedCourses, getPublishedServices } from "@/lib/cms";
 import { locales } from "@/lib/content";
 import { getSiteUrl } from "@/lib/site";
 
@@ -8,11 +9,24 @@ const legalRoutes = [
   "termos-e-condicoes",
   "politica-de-privacidade",
 ];
-const sectionRoutes = ["sessoes", "cursos", "blog"];
+const sectionRoutes = ["quem-somos", "sessoes", "cursos", "blog"];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = getSiteUrl();
   const now = new Date();
+  const catalogRoutes = await Promise.all(
+    locales.map(async (locale) => {
+      const [services, courses] = await Promise.all([
+        getPublishedServices(locale),
+        getPublishedCourses(locale),
+      ]);
+
+      return [
+        ...services.map((service) => `${siteUrl}/${locale}/sessoes/${service.slug || service.productId}`),
+        ...courses.map((course) => `${siteUrl}/${locale}/cursos/${course.slug || course.productId}`),
+      ];
+    }),
+  );
 
   return [
     ...locales.map((locale) => ({
@@ -29,6 +43,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
         url: `${siteUrl}/${locale}/${route}`,
       })),
     ),
+    ...catalogRoutes.flat().map((url) => ({
+      changeFrequency: "weekly" as const,
+      lastModified: now,
+      priority: 0.75,
+      url,
+    })),
     ...locales.flatMap((locale) =>
       sectionRoutes.map((route) => ({
         changeFrequency: "weekly" as const,

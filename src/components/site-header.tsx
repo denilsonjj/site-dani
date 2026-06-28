@@ -20,7 +20,7 @@ type SiteHeaderProps = {
 
 export function SiteHeader({ copy, locale }: SiteHeaderProps) {
   const items = [
-    [copy.about, `/${locale}#sobre`],
+    [copy.about, `/${locale}/quem-somos`],
     [copy.services, `/${locale}/sessoes`],
     [copy.courses, `/${locale}/cursos`],
     [copy.blog, `/${locale}/blog`],

@@ -87,6 +87,7 @@ export default async function CoursesPage({
           duration: copy.course.duration,
           price: copy.course.price,
           productId: "online-course",
+          slug: "ativacao-sensorial-classes-em-portugues",
           text: copy.course.intro,
           title: copy.course.title,
         },
@@ -155,6 +156,12 @@ export default async function CoursesPage({
                   <p className="mt-5 max-w-3xl text-base leading-8 text-[#52675e]">
                     {course.description || course.text}
                   </p>
+                  <Link
+                    className="mt-7 inline-flex min-h-12 items-center justify-center rounded-full border border-[#123c2d]/18 px-5 font-bold text-[#123c2d] transition hover:border-[#123c2d]/35 hover:bg-[#e4eee6]"
+                    href={`/${locale}/cursos/${course.slug || course.productId}`}
+                  >
+                    {copy.coursePreview.detailsLabel}
+                  </Link>
                 </div>
 
                 <div className="flex flex-col justify-between gap-6 bg-[#123c2d] p-7 text-white sm:p-9">

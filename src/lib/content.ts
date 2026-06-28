@@ -323,6 +323,7 @@ const content = {
       imageCaption: "Não prometo milagres. Mas ofereço qualidade de vida.",
       title: "Oi! Eu sou a Dani",
       body: "Sou Curadora Noética Espiritual e Educadora do Despertar da Consciência, atuando no trabalho terapêutico, espiritual e energético. A minha missão é conduzir pessoas de volta à sua essência, restaurando a sua energia vital, alinhando os corpos sutis e reconectando cada Ser à sua verdade mais profunda.",
+      detailsLabel: "Conhecer a minha trajetória",
       stats: [
         { title: "Acolhimento", text: "Visão ampla, em alta frequência." },
         { title: "Restauração", text: "Restauração vibracional. Quando precisas de voltar à tua base." },
@@ -346,6 +347,7 @@ const content = {
       intro:
         "Valores baseados nas sessões disponíveis no site atual. A confirmação final acontece antes do pagamento, com Stripe preparado para euro.",
       action: "Reservar / pagar",
+      detailsLabel: "Ver detalhes",
       items: ptServices,
     },
     servicesPreview: {
@@ -374,6 +376,7 @@ const content = {
     },
     coursePreview: {
       allLabel: "Ver cursos",
+      detailsLabel: "Conhecer o curso",
       note: "Inscrição separada para manter a página principal mais leve.",
     },
     process: {
@@ -444,6 +447,7 @@ const content = {
       imageCaption: "Healing, guidance and presence for energetic and spiritual processes.",
       title: "Sensitive work with a clear structure.",
       body: "The main page introduces the essence of the work, the first consultation, selected pathways and contact. Full sessions and courses have their own pages, so the website stays lighter, calmer and easy to navigate on mobile.",
+      detailsLabel: "Read my full story",
       stats: [
         { title: "Online", text: "Sessions by video call" },
         { title: "4 languages", text: "Portuguese, English, Spanish and Dutch" },
@@ -465,6 +469,7 @@ const content = {
       title: "Choose the care that fits your moment",
       intro: "Prices are based on the current available sessions. Final confirmation happens before payment, with Stripe prepared for euros.",
       action: "Book / pay",
+      detailsLabel: "View details",
       items: enServices,
     },
     servicesPreview: {
@@ -489,6 +494,7 @@ const content = {
     },
     coursePreview: {
       allLabel: "View courses",
+      detailsLabel: "Explore the course",
       note: "Separate enrolment keeps the main page lighter.",
     },
     process: {
@@ -556,6 +562,7 @@ const content = {
       imageCaption: "Cura, guía y presencia para procesos energéticos y espirituales.",
       title: "Un trabajo sensible, con una estructura clara.",
       body: "La página principal presenta la esencia del trabajo, la primera consulta, algunos caminos posibles y el contacto. Las sesiones completas y los cursos tienen páginas propias, para que el sitio respire mejor y siga siendo fácil de navegar en móvil.",
+      detailsLabel: "Conocer mi trayectoria",
       stats: [
         { title: "Online", text: "Sesiones por videollamada" },
         { title: "4 idiomas", text: "Portugués, inglés, español y neerlandés" },
@@ -577,6 +584,7 @@ const content = {
       title: "Elige el cuidado que encaja con tu momento",
       intro: "Valores basados en las sesiones actuales. La confirmación final ocurre antes del pago, con Stripe preparado para euros.",
       action: "Reservar / pagar",
+      detailsLabel: "Ver detalles",
       items: esServices,
     },
     servicesPreview: {
@@ -601,6 +609,7 @@ const content = {
     },
     coursePreview: {
       allLabel: "Ver cursos",
+      detailsLabel: "Conocer el curso",
       note: "La inscripción separada mantiene la página principal más ligera.",
     },
     process: {
@@ -668,6 +677,7 @@ const content = {
       imageCaption: "Heling, begeleiding en aanwezigheid voor energetische en spirituele processen.",
       title: "Gevoelig werk met een duidelijke structuur.",
       body: "De hoofdpagina introduceert de essentie van het werk, het eerste consult, enkele mogelijke paden en contact. De volledige sessies en cursussen hebben eigen pagina's, zodat de site rustiger blijft en makkelijk te gebruiken is op mobiel.",
+      detailsLabel: "Lees mijn volledige verhaal",
       stats: [
         { title: "Online", text: "Sessies via videogesprek" },
         { title: "4 talen", text: "Portugees, Engels, Spaans en Nederlands" },
@@ -689,6 +699,7 @@ const content = {
       title: "Kies de zorg die nu bij je past",
       intro: "Prijzen zijn gebaseerd op de huidige beschikbare sessies. Definitieve bevestiging gebeurt vóór betaling, met Stripe voorbereid op euro's.",
       action: "Boeken / betalen",
+      detailsLabel: "Bekijk details",
       items: nlServices,
     },
     servicesPreview: {
@@ -713,6 +724,7 @@ const content = {
     },
     coursePreview: {
       allLabel: "Bekijk cursussen",
+      detailsLabel: "Ontdek de cursus",
       note: "Een aparte inschrijving houdt de hoofdpagina lichter.",
     },
     process: {

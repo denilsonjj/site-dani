@@ -88,6 +88,7 @@ export default async function SessionsPage({
             {services.map((service, index) => (
               <ServiceCard
                 actionLabel={copy.services.action}
+                detailsLabel={copy.services.detailsLabel}
                 index={index}
                 key={service.productId}
                 locale={locale}

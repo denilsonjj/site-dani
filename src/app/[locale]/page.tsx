@@ -252,6 +252,13 @@ export default async function LocalizedHome({
                 />
               </div>
             </div>
+            <Link
+              className="mt-8 inline-flex min-h-13 items-center justify-center gap-2 rounded-full bg-[#123c2d] px-6 font-bold text-white transition hover:bg-[#1f5742]"
+              href={`/${locale}/quem-somos`}
+            >
+              {copy.about.detailsLabel}
+              <ArrowRight aria-hidden="true" size={17} />
+            </Link>
           </div>
         </div>
       </section>
@@ -322,6 +329,7 @@ export default async function LocalizedHome({
             {servicePreview.map((service, index) => (
               <ServiceCard
                 actionLabel={copy.services.action}
+                detailsLabel={copy.services.detailsLabel}
                 index={index}
                 key={service.productId}
                 locale={locale}
@@ -346,9 +354,9 @@ export default async function LocalizedHome({
             </p>
             <Link
               className="mt-8 inline-flex min-h-13 items-center justify-center gap-2 rounded-full bg-[#d8bd82] px-6 font-bold text-[#10251d] transition hover:bg-[#ead7aa]"
-              href={`/${locale}/cursos`}
+              href={`/${locale}/cursos/${primaryCourse?.slug || "ativacao-sensorial-classes-em-portugues"}`}
             >
-              {copy.coursePreview.allLabel}
+              {copy.coursePreview.detailsLabel}
               <ArrowRight aria-hidden="true" size={17} />
             </Link>
           </div>

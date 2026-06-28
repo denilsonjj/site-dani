@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { HeartHandshake, MoonStar, ShieldCheck, Sparkles } from "lucide-react";
 import { CheckoutButton } from "@/components/checkout-button";
 import type { SiteService } from "@/lib/cms";
@@ -8,6 +9,7 @@ import { getServiceImage } from "@/lib/service-visuals";
 
 type ServiceCardProps = {
   actionLabel: string;
+  detailsLabel: string;
   index: number;
   locale: Locale;
   service: SiteService;
@@ -36,7 +38,7 @@ const availabilityCopy = {
   },
 };
 
-export function ServiceCard({ actionLabel, index, locale, service }: ServiceCardProps) {
+export function ServiceCard({ actionLabel, detailsLabel, index, locale, service }: ServiceCardProps) {
   const icons = [Sparkles, HeartHandshake, MoonStar, ShieldCheck];
   const Icon = icons[index % icons.length];
   const remainingSeats = service.remainingSeats;
@@ -85,9 +87,17 @@ export function ServiceCard({ actionLabel, index, locale, service }: ServiceCard
               {service.price}
             </p>
           </div>
-          <CheckoutButton disabled={isSoldOut} locale={locale} productId={service.productId}>
-            {actionLabel}
-          </CheckoutButton>
+          <div className="grid gap-3">
+            <Link
+              className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#123c2d]/18 px-5 text-center font-bold text-[#123c2d] transition hover:border-[#123c2d]/35 hover:bg-[#e4eee6]"
+              href={`/${locale}/sessoes/${service.slug || service.productId}`}
+            >
+              {detailsLabel}
+            </Link>
+            <CheckoutButton disabled={isSoldOut} locale={locale} productId={service.productId}>
+              {actionLabel}
+            </CheckoutButton>
+          </div>
         </div>
       </div>
     </article>
