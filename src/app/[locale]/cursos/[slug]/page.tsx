@@ -69,7 +69,7 @@ export default async function CourseDetailPage({
       locale={locale}
       paragraphs={getDetailParagraphs(course, locale)}
       practicalTitle={labels.practicalTitle}
-      service={course}
+      service={{ ...course, text: "" }}
     />
   );
 }

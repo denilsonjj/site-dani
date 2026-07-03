@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { requireAdminRequest } from "@/lib/admin-auth";
+import { findMissingTranslations } from "@/lib/admin-content-validation";
 
 type BlogPayload = {
   author?: string;
@@ -42,6 +44,21 @@ export async function POST(request: Request) {
     );
   }
 
+  if (payload.isPublished) {
+    const missing = findMissingTranslations({
+      body: payload.body,
+      excerpt: payload.excerpt,
+      readingTime: payload.readingTime,
+      title: payload.title,
+    });
+    if (missing.length) {
+      return NextResponse.json(
+        { error: `Complete as traduções antes de publicar: ${missing.join(", ")}.` },
+        { status: 400 },
+      );
+    }
+  }
+
   const { data, error: mutationError } = await supabase
     .from("blog_posts")
     .upsert(
@@ -64,6 +81,12 @@ export async function POST(request: Request) {
 
   if (mutationError) {
     return NextResponse.json({ error: mutationError.message }, { status: 500 });
+  }
+
+  for (const locale of ["pt", "en", "es", "nl"]) {
+    revalidatePath(`/${locale}`);
+    revalidatePath(`/${locale}/blog`);
+    revalidatePath(`/${locale}/blog/${payload.slug}`);
   }
 
   return NextResponse.json({ item: data });

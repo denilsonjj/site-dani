@@ -19,7 +19,7 @@ export default async function PaymentCancelPage({
   return (
     <main className="grid min-h-screen place-items-center bg-[#f8f5ec] px-5 py-16 text-[#123c2d]">
       <section className="max-w-xl rounded-[2rem] bg-white p-8 text-center shadow-[0_25px_80px_rgba(10,43,31,0.12)] sm:p-12">
-        <ArrowLeft className="mx-auto text-[#d8bd82]" size={46} strokeWidth={1.5} />
+        <ArrowLeft className="mx-auto text-[#c6a15b]" size={46} strokeWidth={1.5} />
         <h1 className="display mt-8 text-4xl font-semibold">Pagamento não concluído</h1>
         <p className="mt-5 leading-7 text-[#52675e]">
           A compra não foi finalizada. Pode voltar ao site e tentar novamente

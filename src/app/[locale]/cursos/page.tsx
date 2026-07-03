@@ -6,8 +6,9 @@ import { CheckoutButton } from "@/components/checkout-button";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { getPublishedCourses } from "@/lib/cms";
+import { getPublishedCourses, getPublishedSiteSections } from "@/lib/cms";
 import { getContent, locales, type Locale } from "@/lib/content";
+import { getListingSectionFallbacks } from "@/lib/site-sections";
 
 const pageCopy = {
   pt: {
@@ -77,7 +78,11 @@ export default async function CoursesPage({
   const locale = rawLocale as Locale;
   const copy = getContent(locale);
   const labels = pageCopy[locale];
-  const courses = await getPublishedCourses(locale);
+  const [courses, sections] = await Promise.all([
+    getPublishedCourses(locale),
+    getPublishedSiteSections("courses", locale, getListingSectionFallbacks("courses", locale)),
+  ]);
+  const hero = sections.hero;
   const primaryCourse = courses[0];
   const courseList = courses.length
     ? courses
@@ -100,24 +105,24 @@ export default async function CoursesPage({
 
       <section className="bg-[#0d3024] px-5 py-16 text-white sm:py-24">
         <div className="mx-auto max-w-7xl">
-          <Link className="text-sm font-bold text-[#d8bd82]" href={`/${locale}`}>
+          <Link className="text-sm font-bold text-[#c6a15b]" href={`/${locale}`}>
             {labels.back}
           </Link>
           <div className="mt-14 grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#d8bd82]">
-                {copy.course.eyebrow}
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#c6a15b]">
+                {hero.eyebrow}
               </p>
               <h1 className="display mt-4 text-5xl font-semibold leading-tight sm:text-7xl">
-                {copy.course.title}
+                {hero.title}
               </h1>
               <p className="mt-7 max-w-xl leading-8 text-white/68">
-                {primaryCourse?.description || primaryCourse?.text || copy.course.intro}
+                {hero.body || primaryCourse?.description || primaryCourse?.text || copy.course.intro}
               </p>
             </div>
             <div className="rounded-[2rem] border border-white/12 bg-white/[0.06] p-6 shadow-2xl shadow-black/10">
-              <Sparkles className="text-[#d8bd82]" size={30} strokeWidth={1.5} />
-              <p className="mt-5 text-sm font-bold uppercase tracking-[0.16em] text-[#d8bd82]">
+              <Sparkles className="text-[#c6a15b]" size={30} strokeWidth={1.5} />
+              <p className="mt-5 text-sm font-bold uppercase tracking-[0.16em] text-[#c6a15b]">
                 {labels.beforeTitle}
               </p>
               <p className="mt-3 leading-7 text-white/68">
@@ -166,11 +171,11 @@ export default async function CoursesPage({
 
                 <div className="flex flex-col justify-between gap-6 bg-[#123c2d] p-7 text-white sm:p-9">
                   <div>
-                    <CreditCard aria-hidden="true" className="text-[#d8bd82]" size={28} />
+                    <CreditCard aria-hidden="true" className="text-[#c6a15b]" size={28} />
                     <p className="mt-6 text-sm font-bold text-white/58">
                       {course.duration}
                     </p>
-                    <p className="price-text mt-5 text-3xl font-bold leading-tight text-[#d8bd82]">
+                    <p className="price-text mt-5 text-3xl font-bold leading-tight text-[#c6a15b]">
                       {course.price}
                     </p>
                   </div>

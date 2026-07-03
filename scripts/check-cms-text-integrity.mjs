@@ -5,17 +5,20 @@ import { createClient } from "@supabase/supabase-js";
 const mojibakePattern = /(?:\u00c3|\u00c2|\u00e2\u20ac|\u00e2\u201a|\u00e2\u2020|\ufffd)/u;
 const brokenPortuguesePattern =
   /\b(?:endere\?o|informa\?\?es|espec\?ficas|necess\?rias|servi\?o|conte\?do|configura\?\?o|sess\?es?|inscri\?\?o|energ\?tica|formul\?rio|dist\?ncia|orienta\?\?o|avalia\?\?o|restaura\?\?o|harmoniza\?\?o|liberta\?\?es|padr\?es|eletr\?nico|direcci\?n)\b/iu;
+const requiredLocales = ["pt", "en", "es", "nl"];
 
 const tables = [
   {
     columns: ["title", "summary", "description", "duration", "price_label", "badge"],
     identifiers: ["id", "slug", "product_id"],
     name: "content_services",
+    requireTranslations: true,
   },
   {
     columns: ["title", "excerpt", "body", "reading_time"],
     identifiers: ["id", "slug"],
     name: "blog_posts",
+    requireTranslations: true,
   },
   {
     columns: ["alt"],
@@ -31,6 +34,13 @@ const tables = [
     columns: ["label", "help_text"],
     identifiers: ["id", "key"],
     name: "service_intake_fields",
+  },
+  {
+    columns: ["eyebrow", "title", "description", "body", "image_alt", "primary_cta_label", "secondary_cta_label"],
+    identifiers: ["id", "page_key", "section_key"],
+    name: "site_sections",
+    optionalUntilMigrated: true,
+    requireTranslations: true,
   },
 ];
 
@@ -104,6 +114,7 @@ for (const table of tables) {
     .select([...table.identifiers, ...table.columns].join(","));
 
   if (error) {
+    if (table.optionalUntilMigrated && ["42P01", "PGRST205"].includes(error.code)) continue;
     findings.push({
       path: `${table.name}.query`,
       value: error.message,
@@ -115,6 +126,20 @@ for (const table of tables) {
     const rowId = row.key || row.slot || row.slug || row.product_id || row.id;
     for (const column of table.columns) {
       inspectValue(row[column], [table.name, String(rowId), column], findings);
+      const value = row[column];
+      if (table.requireTranslations && value && typeof value === "object" && !Array.isArray(value)) {
+        const isLocalised = requiredLocales.some((locale) => typeof value[locale] === "string" && value[locale].trim());
+        if (isLocalised) {
+          for (const locale of requiredLocales) {
+            if (typeof value[locale] !== "string" || !value[locale].trim()) {
+              findings.push({
+                path: `${table.name}.${String(rowId)}.${column}.${locale}`,
+                value: "tradução ausente",
+              });
+            }
+          }
+        }
+      }
     }
   }
 }

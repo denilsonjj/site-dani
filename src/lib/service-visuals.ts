@@ -21,5 +21,5 @@ export const serviceVisuals: Record<string, string> = {
 };
 
 export function getServiceImage(productId: string, image?: string) {
-  return image || serviceVisuals[productId] || "/services/original-first-consultation.webp";
+  return serviceVisuals[productId] || image || "/services/original-first-consultation.webp";
 }

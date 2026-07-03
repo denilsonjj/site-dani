@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, type ReactNode } from "react";
 
 type LocaleKey = "pt" | "en" | "es" | "nl";
@@ -41,9 +42,28 @@ type AdminBlogItem = {
   title: LocalisedValue;
 };
 
+type AdminSectionItem = {
+  body: LocalisedValue;
+  description: LocalisedValue;
+  eyebrow: LocalisedValue;
+  id: string;
+  image_alt: LocalisedValue;
+  image_url: string | null;
+  is_published: boolean;
+  page_key: string;
+  primary_cta_href: string | null;
+  primary_cta_label: LocalisedValue;
+  section_key: string;
+  secondary_cta_href: string | null;
+  secondary_cta_label: LocalisedValue;
+  sort_order: number;
+  title: LocalisedValue;
+};
+
 type AdminContentEditorProps = {
   blogPosts: AdminBlogItem[];
   courses: AdminServiceItem[];
+  sections: AdminSectionItem[];
   services: AdminServiceItem[];
 };
 
@@ -53,6 +73,33 @@ const localeLabels: Record<LocaleKey, string> = {
   es: "Espanhol",
   nl: "Holandês",
   pt: "Português",
+};
+
+const pageLabels: Record<string, string> = {
+  about: "Quem Somos",
+  blog: "Blog",
+  courses: "Cursos",
+  home: "Página inicial",
+  sessions: "Sessões",
+};
+
+const sectionLabels: Record<string, string> = {
+  about: "Apresentação da Dani",
+  "about-stat-1": "Destaque 1",
+  "about-stat-2": "Destaque 2",
+  "about-stat-3": "Destaque 3",
+  blog: "Prévia do blog",
+  contact: "Contato",
+  course: "Prévia do curso",
+  "first-visit": "Primeira consulta",
+  hero: "Abertura com aurora",
+  introduction: "Quem Somos - introdução",
+  "prompt-1": "Pergunta 1",
+  "prompt-2": "Pergunta 2",
+  "prompt-3": "Pergunta 3",
+  prompts: "Título das perguntas",
+  sessions: "Prévia das sessões",
+  work: "Quem Somos - continuação",
 };
 
 function localisedValue(value: LocalisedValue, locale: LocaleKey) {
@@ -139,6 +186,62 @@ function LocalisedField({
   );
 }
 
+function ImageUploadField({
+  label = "Foto ou vídeo",
+  onChange,
+  section,
+  value,
+}: {
+  label?: string;
+  onChange: (value: string) => void;
+  section: string;
+  value: string | null;
+}) {
+  const [status, setStatus] = useState("");
+
+  async function upload(file?: File) {
+    if (!file) return;
+    setStatus("Enviando arquivo...");
+    const formData = new FormData();
+    formData.set("file", file);
+    formData.set("section", section);
+
+    const response = await fetch("/api/admin/media", { body: formData, method: "POST" });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      setStatus(result.error || "Não foi possível enviar o arquivo.");
+      return;
+    }
+
+    onChange(result.url);
+    setStatus("Arquivo enviado. Salve para aplicar.");
+  }
+
+  return (
+    <div className="grid gap-2">
+      <p className="text-sm font-bold text-[#40564d]">{label}</p>
+      {value && !/\.(?:mp4|webm)(?:\?|$)/i.test(value) ? (
+        <div className="overflow-hidden rounded-2xl border border-[#123c2d]/10 bg-white p-2">
+          <Image alt="Prévia do arquivo" className="h-36 w-full rounded-xl object-cover" height={288} src={value} width={720} />
+        </div>
+      ) : null}
+      <input
+        accept="image/avif,image/jpeg,image/png,image/webp,video/mp4,video/webm"
+        className={inputClass()}
+        onChange={(event) => upload(event.target.files?.[0])}
+        type="file"
+      />
+      <input
+        className={inputClass()}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder="Ou cole o link do arquivo"
+        value={value || ""}
+      />
+      {status ? <p className="text-xs font-bold text-[#547461]">{status}</p> : null}
+    </div>
+  );
+}
+
 function makeDraftId(prefix: "session" | "course" | "post") {
   return `${prefix}-${Date.now()}`;
 }
@@ -167,7 +270,7 @@ function SectionHeader({
       <div className="grid gap-3 sm:min-w-64">
         <LanguageSelector locale={activeLocale} onChange={onLocaleChange} />
         <button
-          className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#d8bd82] px-6 text-sm font-bold text-[#123c2d] transition hover:bg-[#e7ce93]"
+          className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#c6a15b] px-6 text-sm font-bold text-[#123c2d] transition hover:bg-[#e7ce93]"
           onClick={onCreate}
           type="button"
         >
@@ -178,13 +281,135 @@ function SectionHeader({
   );
 }
 
-export function AdminContentEditor({ blogPosts, courses, services }: AdminContentEditorProps) {
+export function AdminContentEditor({ blogPosts, courses, sections, services }: AdminContentEditorProps) {
   return (
     <div className="mx-auto grid max-w-7xl gap-8">
+      <SiteSectionsEditor initialItems={sections} />
       <ServiceEditor emptyText="Nenhuma sessão cadastrada." initialItems={services} title="Sessões" type="session" />
       <ServiceEditor emptyText="Nenhum curso cadastrado." initialItems={courses} title="Cursos" type="course" />
       <BlogEditor emptyText="Nenhum post cadastrado." initialItems={blogPosts} title="Blog" />
     </div>
+  );
+}
+
+function SiteSectionsEditor({ initialItems }: { initialItems: AdminSectionItem[] }) {
+  const [items, setItems] = useState(initialItems);
+  const [status, setStatus] = useState<Record<string, string>>({});
+  const [activeLocale, setActiveLocale] = useState<LocaleKey>("pt");
+
+  function updateItem(id: string, patch: Partial<AdminSectionItem>) {
+    setItems((current) => current.map((item) => (item.id === id ? { ...item, ...patch } : item)));
+  }
+
+  async function save(item: AdminSectionItem) {
+    setStatus((current) => ({ ...current, [item.id]: "Salvando..." }));
+    const response = await fetch("/api/admin/sections", {
+      body: JSON.stringify({
+        body: item.body || {},
+        description: item.description || {},
+        eyebrow: item.eyebrow || {},
+        imageAlt: item.image_alt || {},
+        imageUrl: item.image_url || "",
+        isPublished: item.is_published,
+        pageKey: item.page_key,
+        primaryCtaHref: item.primary_cta_href || "",
+        primaryCtaLabel: item.primary_cta_label || {},
+        secondaryCtaHref: item.secondary_cta_href || "",
+        secondaryCtaLabel: item.secondary_cta_label || {},
+        sectionKey: item.section_key,
+        sortOrder: item.sort_order || 0,
+        title: item.title || {},
+      }),
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
+    });
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      setStatus((current) => ({ ...current, [item.id]: result.error || "Erro ao salvar." }));
+      return;
+    }
+
+    if (result.item) updateItem(item.id, result.item);
+    setStatus((current) => ({ ...current, [item.id]: "Salvo e sincronizado com o site." }));
+  }
+
+  const grouped = items.reduce<Record<string, AdminSectionItem[]>>((pages, item) => {
+    pages[item.page_key] ||= [];
+    pages[item.page_key].push(item);
+    return pages;
+  }, {});
+
+  return (
+    <section className="rounded-[2rem] border border-[#123c2d]/10 bg-white p-5 shadow-[0_20px_60px_rgba(19,35,29,0.08)] sm:p-7">
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#799a81]">Site completo</p>
+          <h2 className="display mt-3 text-4xl font-semibold">Páginas e seções</h2>
+          <p className="mt-2 max-w-2xl leading-7 text-[#52675e]">
+            Escolha uma seção, selecione o idioma e altere somente o conteúdo que deseja. Fotos são enviadas diretamente daqui.
+          </p>
+        </div>
+        <div className="sm:min-w-64">
+          <LanguageSelector locale={activeLocale} onChange={setActiveLocale} />
+        </div>
+      </div>
+
+      <div className="mt-7 grid gap-6">
+        {Object.entries(grouped).map(([pageKey, pageItems]) => (
+          <div className="rounded-[1.75rem] bg-[#e4eee6]/60 p-4 sm:p-5" key={pageKey}>
+            <h3 className="text-xl font-bold text-[#123c2d]">{pageLabels[pageKey] || pageKey}</h3>
+            <div className="mt-4 grid gap-3">
+              {pageItems?.map((item) => (
+                <details className="rounded-[1.5rem] border border-[#123c2d]/10 bg-white p-5" key={item.id}>
+                  <summary className="cursor-pointer font-bold text-[#123c2d]">
+                    {sectionLabels[item.section_key] || item.section_key}
+                  </summary>
+                  <div className="mt-5 grid gap-4">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Field label="Situação no site">
+                        <select
+                          className={inputClass()}
+                          onChange={(event) => updateItem(item.id, { is_published: event.target.value === "true" })}
+                          value={String(item.is_published)}
+                        >
+                          <option value="false">Rascunho</option>
+                          <option value="true">Publicado</option>
+                        </select>
+                      </Field>
+                      <ImageUploadField
+                        onChange={(value) => updateItem(item.id, { image_url: value })}
+                        section={`${item.page_key}-${item.section_key}`}
+                        value={item.image_url}
+                      />
+                    </div>
+                    <LocalisedField locale={activeLocale} label="Linha pequena" onChange={(value) => updateItem(item.id, { eyebrow: value })} value={item.eyebrow} />
+                    <LocalisedField locale={activeLocale} label="Título" onChange={(value) => updateItem(item.id, { title: value })} value={item.title} />
+                    <LocalisedField locale={activeLocale} label="Descrição" onChange={(value) => updateItem(item.id, { description: value })} textarea value={item.description} />
+                    <LocalisedField locale={activeLocale} label="Texto principal" onChange={(value) => updateItem(item.id, { body: value })} textarea value={item.body} />
+                    {item.image_url ? (
+                      <LocalisedField locale={activeLocale} label="Descrição acessível da imagem" onChange={(value) => updateItem(item.id, { image_alt: value })} value={item.image_alt} />
+                    ) : null}
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <LocalisedField locale={activeLocale} label="Texto do botão principal" onChange={(value) => updateItem(item.id, { primary_cta_label: value })} value={item.primary_cta_label} />
+                      <Field label="Destino do botão principal">
+                        <input className={inputClass()} onChange={(event) => updateItem(item.id, { primary_cta_href: event.target.value })} value={item.primary_cta_href || ""} />
+                      </Field>
+                    </div>
+                    <div className="flex flex-col gap-3 border-t border-[#123c2d]/10 pt-4 sm:flex-row sm:items-center">
+                      <button className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#123c2d] px-6 text-sm font-bold text-white transition hover:bg-[#1f5742]" onClick={() => save(item)} type="button">
+                        Salvar seção
+                      </button>
+                      {status[item.id] ? <p className="text-sm font-bold text-[#547461]">{status[item.id]}</p> : null}
+                    </div>
+                  </div>
+                </details>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -336,14 +561,12 @@ function ServiceEditor({
                 </div>
 
                 <div className="grid gap-3 md:grid-cols-2">
-                  <Field label="Foto">
-                    <input
-                      className={inputClass()}
-                      onChange={(event) => updateItem(item.product_id, { image_url: event.target.value })}
-                      placeholder="Cole o link ou caminho da foto"
-                      value={item.image_url || ""}
-                    />
-                  </Field>
+                  <ImageUploadField
+                    label="Foto do card"
+                    onChange={(value) => updateItem(item.product_id, { image_url: value })}
+                    section={`${item.category}-${item.product_id}`}
+                    value={item.image_url}
+                  />
                   <LocalisedField
                     locale={activeLocale}
                     label="Preço mostrado no site"
@@ -521,14 +744,12 @@ function BlogEditor({
                       value={item.sort_order || 0}
                     />
                   </Field>
-                  <Field label="Foto">
-                    <input
-                      className={inputClass()}
-                      onChange={(event) => updateItem(item.slug, { image_url: event.target.value })}
-                      placeholder="Cole o link ou caminho da foto"
-                      value={item.image_url || ""}
-                    />
-                  </Field>
+                  <ImageUploadField
+                    label="Foto do post"
+                    onChange={(value) => updateItem(item.slug, { image_url: value })}
+                    section={`blog-${item.slug}`}
+                    value={item.image_url}
+                  />
                 </div>
 
                 <LocalisedField

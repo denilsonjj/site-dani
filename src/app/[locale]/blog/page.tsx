@@ -3,8 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
-import { getPublishedBlogPosts } from "@/lib/cms";
-import { getContent, locales, type Locale } from "@/lib/content";
+import { getPublishedBlogPosts, getPublishedSiteSections } from "@/lib/cms";
+import { locales, type Locale } from "@/lib/content";
+import { getListingSectionFallbacks } from "@/lib/site-sections";
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -34,8 +35,11 @@ export default async function BlogPage({
   if (!locales.includes(rawLocale as Locale)) notFound();
 
   const locale = rawLocale as Locale;
-  const copy = getContent(locale);
-  const blogPosts = await getPublishedBlogPosts(locale);
+  const [blogPosts, sections] = await Promise.all([
+    getPublishedBlogPosts(locale),
+    getPublishedSiteSections("blog", locale, getListingSectionFallbacks("blog", locale)),
+  ]);
+  const hero = sections.hero;
 
   return (
     <main className="min-h-screen bg-[#f8f5ec] text-[#123c2d]">
@@ -47,16 +51,14 @@ export default async function BlogPage({
           <div className="mt-14 grid gap-8 lg:grid-cols-[0.7fr_1fr] lg:items-end">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#547461]">
-                {copy.nav.blog}
+                {hero.eyebrow}
               </p>
               <h1 className="display mt-4 text-5xl font-semibold leading-tight sm:text-7xl">
-                Blog da Dani Therapies
+                {hero.title}
               </h1>
             </div>
             <p className="max-w-2xl text-lg leading-8 text-[#52675e]">
-              Esta área organiza conteúdos editoriais sobre cuidado energético,
-              espiritualidade e preparação para as sessões. Por enquanto, usamos
-              conteúdos modelo para validar layout, SEO e estrutura.
+              {hero.body}
             </p>
           </div>
 

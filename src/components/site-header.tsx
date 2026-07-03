@@ -47,11 +47,11 @@ export function SiteHeader({ copy, locale }: SiteHeaderProps) {
 
         <nav
           aria-label="Navegação principal"
-          className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] p-1 text-sm font-semibold text-white/88 lg:flex"
+          className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] p-1 text-xs font-semibold text-white/88 lg:flex"
         >
           {items.map(([label, href]) => (
             <Link
-              className="rounded-full px-4 py-3 transition hover:bg-white/10 hover:text-[#e5cc96]"
+              className="rounded-full px-4 py-3 transition hover:bg-white/10 hover:text-[#d8b96a]"
               href={href}
               key={href}
             >
@@ -63,7 +63,7 @@ export function SiteHeader({ copy, locale }: SiteHeaderProps) {
         <div className="flex items-center gap-3">
           <LanguageSwitcher locale={locale} />
           <Link
-            className="hidden min-h-11 items-center justify-center rounded-full bg-[#e3c77f] px-5 text-sm font-bold text-[#10251d] shadow-[0_12px_30px_rgba(0,0,0,0.14)] transition hover:bg-[#eed9a4] md:inline-flex"
+            className="hidden min-h-11 items-center justify-center rounded-full bg-[#c6a15b] px-5 text-xs font-bold text-[#10251d] shadow-[0_12px_30px_rgba(0,0,0,0.14)] transition hover:bg-[#dfc27a] md:inline-flex"
             href={`/${locale}/sessoes#primeira-consulta-online`}
           >
             {copy.book}

@@ -3,6 +3,12 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 let publicClient: SupabaseClient | null = null;
 let adminClient: SupabaseClient | null = null;
 
+function publicFetch(input: RequestInfo | URL, init?: RequestInit) {
+  const timeout = AbortSignal.timeout(5000);
+  const signal = init?.signal ? AbortSignal.any([init.signal, timeout]) : timeout;
+  return fetch(input, { ...init, signal });
+}
+
 export function hasSupabasePublicConfig() {
   return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 }
@@ -21,6 +27,9 @@ export function getSupabasePublicClient() {
       {
         auth: {
           persistSession: false,
+        },
+        global: {
+          fetch: publicFetch,
         },
       },
     );

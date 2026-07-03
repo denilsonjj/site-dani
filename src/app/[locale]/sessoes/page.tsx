@@ -6,8 +6,16 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { ServiceCard } from "@/components/service-card";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { getPublishedServices } from "@/lib/cms";
+import { getPublishedServices, getPublishedSiteSections } from "@/lib/cms";
 import { getContent, locales, type Locale } from "@/lib/content";
+import { getListingSectionFallbacks } from "@/lib/site-sections";
+
+const pageCopy = {
+  pt: { catalog: "Catálogo", count: (value: number) => `${value} sessões carregadas`, question: "Tirar dúvida" },
+  en: { catalog: "Catalogue", count: (value: number) => `${value} sessions available`, question: "Ask a question" },
+  es: { catalog: "Catálogo", count: (value: number) => `${value} sesiones disponibles`, question: "Hacer una consulta" },
+  nl: { catalog: "Overzicht", count: (value: number) => `${value} sessies beschikbaar`, question: "Stel een vraag" },
+} as const;
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -37,7 +45,12 @@ export default async function SessionsPage({
 
   const locale = rawLocale as Locale;
   const copy = getContent(locale);
-  const services = await getPublishedServices(locale);
+  const [services, sections] = await Promise.all([
+    getPublishedServices(locale),
+    getPublishedSiteSections("sessions", locale, getListingSectionFallbacks("sessions", locale)),
+  ]);
+  const hero = sections.hero;
+  const labels = pageCopy[locale];
 
   return (
     <main className="min-h-screen bg-[#f8f5ec] text-[#123c2d]">
@@ -46,22 +59,18 @@ export default async function SessionsPage({
 
       <section className="bg-[#0d3024] px-5 py-16 text-white sm:py-24">
         <div className="mx-auto max-w-7xl">
-          <Link className="text-sm font-bold text-[#d8bd82]" href={`/${locale}`}>
+          <Link className="text-sm font-bold text-[#c6a15b]" href={`/${locale}`}>
             ← Dani Therapies
           </Link>
-          <div className="mt-14 grid gap-8 lg:grid-cols-[0.72fr_1fr] lg:items-end">
+          <div className="mt-14 max-w-4xl">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#d8bd82]">
-                {copy.services.eyebrow}
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#c6a15b]">
+                {hero.eyebrow}
               </p>
               <h1 className="display mt-4 text-5xl font-semibold leading-tight sm:text-7xl">
-                Sessões disponíveis
+                {hero.title}
               </h1>
             </div>
-            <p className="max-w-2xl text-lg leading-8 text-white/68">
-              Esta página concentra as sessões completas, os valores e os caminhos de pagamento.
-              A lista principal fica disponível no próprio site para manter a navegação clara.
-            </p>
           </div>
         </div>
       </section>
@@ -71,29 +80,24 @@ export default async function SessionsPage({
           <div className="mb-10 flex flex-col gap-4 rounded-[2rem] border border-[#123c2d]/10 bg-white p-6 shadow-[0_18px_55px_rgba(19,35,29,0.08)] md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#547461]">
-                Catálogo
+                {labels.catalog}
               </p>
-              <p className="mt-2 text-2xl font-bold">{services.length} sessões carregadas</p>
+              <p className="mt-2 text-2xl font-bold">{labels.count(services.length)}</p>
             </div>
             <Link
               className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#123c2d] px-5 font-bold text-white transition hover:bg-[#1f5742]"
               href={`/${locale}#contato`}
             >
-              Tirar dúvida
+              {labels.question}
               <ArrowRight aria-hidden="true" size={16} />
             </Link>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="service-carousel flex snap-x snap-mandatory gap-4 overflow-x-auto pb-6">
             {services.map((service, index) => (
-              <ServiceCard
-                actionLabel={copy.services.action}
-                detailsLabel={copy.services.detailsLabel}
-                index={index}
-                key={service.productId}
-                locale={locale}
-                service={service}
-              />
+              <div className="w-[86%] shrink-0 snap-start sm:w-[48%] xl:w-[calc(25%-0.75rem)]" key={service.productId}>
+                <ServiceCard actionLabel={copy.services.action} detailsLabel={copy.services.detailsLabel} index={index} locale={locale} service={service} />
+              </div>
             ))}
           </div>
         </div>

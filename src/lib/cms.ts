@@ -1,14 +1,48 @@
 ﻿import { blogPosts as fallbackBlogPosts } from "./blog";
 import { getProduct } from "./catalog";
-import { getContent, type Locale } from "./content";
+import { getContent, getServiceTranslation, type Locale } from "./content";
 import {
   getSupabaseAdminClient,
   getSupabasePublicClient,
   hasSupabaseAdminConfig,
   hasSupabasePublicConfig,
 } from "./supabase/server";
+import { getAdminSectionFallbackRows } from "./site-sections";
 
 type LocalisedValue = Record<string, string> | null;
+
+export type SiteSectionRow = {
+  body: LocalisedValue;
+  description: LocalisedValue;
+  eyebrow: LocalisedValue;
+  id: string;
+  image_alt: LocalisedValue;
+  image_url: string | null;
+  is_published: boolean;
+  page_key: string;
+  primary_cta_href: string | null;
+  primary_cta_label: LocalisedValue;
+  section_key: string;
+  secondary_cta_href: string | null;
+  secondary_cta_label: LocalisedValue;
+  sort_order: number;
+  title: LocalisedValue;
+};
+
+export type SiteSection = {
+  body: string;
+  description: string;
+  eyebrow: string;
+  imageAlt: string;
+  imageUrl: string;
+  pageKey: string;
+  primaryCtaHref: string;
+  primaryCtaLabel: string;
+  sectionKey: string;
+  secondaryCtaHref: string;
+  secondaryCtaLabel: string;
+  title: string;
+};
 
 export type ServiceRow = {
   amount_cents: number | null;
@@ -131,12 +165,13 @@ export type AdminOverview = {
   blogPosts: BlogRow[];
   configured: boolean;
   courses: ServiceRow[];
+  sections: SiteSectionRow[];
   services: ServiceRow[];
 };
 
 function localise(value: LocalisedValue | undefined, locale: Locale, fallback = "") {
   if (!value) return fallback;
-  return value[locale] || value.pt || value.en || value.es || value.nl || fallback;
+  return value[locale] || fallback || value.pt || value.en || value.es || value.nl || "";
 }
 
 function asLocaleRecord(value: LocalisedValue | undefined, fallback: Record<Locale, string>): Record<Locale, string> {
@@ -149,17 +184,18 @@ function asLocaleRecord(value: LocalisedValue | undefined, fallback: Record<Loca
 }
 
 function mapService(row: ServiceRow, locale: Locale): SiteService {
+  const translated = getServiceTranslation(locale, row.product_id);
   return {
     amountCents: row.amount_cents ?? undefined,
-    badge: localise(row.badge, locale),
+    badge: localise(row.badge, locale, translated?.badge),
     capacityLimit: row.capacity_limit ?? null,
     category: row.category,
     currency: row.currency,
-    description: localise(row.description, locale),
-    duration: localise(row.duration, locale),
+    description: localise(row.description, locale, translated?.text),
+    duration: localise(row.duration, locale, translated?.duration),
     id: row.id,
     image: row.image_url || undefined,
-    price: localise(row.price_label, locale),
+    price: localise(row.price_label, locale, translated?.price),
     productId: row.product_id,
     requiresIntake: row.requires_intake,
     requiresPolicyAcceptance: row.requires_policy_acceptance,
@@ -171,8 +207,8 @@ function mapService(row: ServiceRow, locale: Locale): SiteService {
     seatsReserved: row.seats_reserved || 0,
     slug: row.slug,
     stripePriceEnv: row.stripe_price_env || undefined,
-    text: localise(row.summary, locale),
-    title: localise(row.title, locale),
+    text: localise(row.summary, locale, translated?.text),
+    title: localise(row.title, locale, translated?.title),
   };
 }
 
@@ -474,12 +510,64 @@ function fallbackCourse(locale: Locale): SiteService {
   };
 }
 
+function mapSiteSection(row: SiteSectionRow, locale: Locale): SiteSection {
+  return {
+    body: localise(row.body, locale),
+    description: localise(row.description, locale),
+    eyebrow: localise(row.eyebrow, locale),
+    imageAlt: localise(row.image_alt, locale),
+    imageUrl: row.image_url || "",
+    pageKey: row.page_key,
+    primaryCtaHref: row.primary_cta_href || "",
+    primaryCtaLabel: localise(row.primary_cta_label, locale),
+    sectionKey: row.section_key,
+    secondaryCtaHref: row.secondary_cta_href || "",
+    secondaryCtaLabel: localise(row.secondary_cta_label, locale),
+    title: localise(row.title, locale),
+  };
+}
+
+export async function getPublishedSiteSections(
+  pageKey: string,
+  locale: Locale,
+  fallbacks: SiteSection[],
+): Promise<Record<string, SiteSection>> {
+  const fallbackMap = Object.fromEntries(fallbacks.map((section) => [section.sectionKey, section]));
+  const supabase = getSupabasePublicClient();
+  if (!supabase) return fallbackMap;
+
+  const { data, error } = await supabase
+    .from("site_sections")
+    .select("*")
+    .eq("page_key", pageKey)
+    .eq("is_published", true)
+    .order("sort_order", { ascending: true });
+
+  if (error || !data?.length) return fallbackMap;
+
+  for (const row of data as SiteSectionRow[]) {
+    const mapped = mapSiteSection(row, locale);
+    const fallback = fallbackMap[row.section_key];
+    fallbackMap[row.section_key] = fallback
+      ? {
+          ...fallback,
+          ...Object.fromEntries(
+            Object.entries(mapped).filter(([, value]) => typeof value !== "string" || value.trim() !== ""),
+          ),
+        } as SiteSection
+      : mapped;
+  }
+
+  return fallbackMap;
+}
+
 function fallbackIntakeFields(locale: Locale, productId?: string): IntakeField[] {
   const labels: Record<Locale, Record<string, string>> = {
     pt: {
       address: "Endereço",
       birth_date: "Data de nascimento",
       email: "E-mail",
+      field_reading_preview: "Faça uma breve prévia da questão para a leitura de campo",
       full_name: "Nome completo",
       headphones_confirmed: "Confirmo que usarei fones de ouvido.",
       private_room_confirmed: "Confirmo que estarei numa sala privada durante a sessão.",
@@ -492,6 +580,7 @@ function fallbackIntakeFields(locale: Locale, productId?: string): IntakeField[]
       address: "Address",
       birth_date: "Date of birth",
       email: "Email",
+      field_reading_preview: "Briefly describe the question for the field reading",
       full_name: "Full name",
       headphones_confirmed: "I confirm I will use headphones.",
       private_room_confirmed: "I confirm I will be in a private room during the session.",
@@ -504,6 +593,7 @@ function fallbackIntakeFields(locale: Locale, productId?: string): IntakeField[]
       address: "Dirección",
       birth_date: "Fecha de nacimiento",
       email: "Correo electrónico",
+      field_reading_preview: "Describa brevemente la cuestión para la lectura de campo",
       full_name: "Nombre completo",
       headphones_confirmed: "Confirmo que usaré auriculares.",
       private_room_confirmed: "Confirmo que estaré en una sala privada durante la sesión.",
@@ -516,6 +606,7 @@ function fallbackIntakeFields(locale: Locale, productId?: string): IntakeField[]
       address: "Adres",
       birth_date: "Geboortedatum",
       email: "E-mail",
+      field_reading_preview: "Beschrijf kort de vraag voor de veldlezing",
       full_name: "Volledige naam",
       headphones_confirmed: "Ik bevestig dat ik een koptelefoon zal gebruiken.",
       private_room_confirmed: "Ik bevestig dat ik tijdens de sessie in een privekamer zal zijn.",
@@ -540,9 +631,15 @@ function fallbackIntakeFields(locale: Locale, productId?: string): IntakeField[]
     ["headphones_confirmed", "checkbox"],
     ["water_confirmed", "checkbox"],
   ];
+  const fieldReadingFields: Array<[string, IntakeField["fieldType"]]> = [
+    ["field_reading_preview", "textarea"],
+  ];
 
-  const fields =
-    productId === "guided-healing-movement" ? [...commonFields, ...guidedHealingFields] : commonFields;
+  const fields = productId === "guided-healing-movement"
+    ? [...commonFields, ...guidedHealingFields]
+    : productId?.startsWith("tarot-field-reading")
+      ? [...commonFields, ...fieldReadingFields]
+      : commonFields;
 
   const helpTexts: Record<Locale, Record<string, string>> = {
     pt: {
@@ -571,11 +668,12 @@ function fallbackIntakeFields(locale: Locale, productId?: string): IntakeField[]
 }
 
 function mapBlogPost(row: BlogRow, locale: Locale): SiteBlogPost {
-  const fallbackText = {
-    pt: localise(row.excerpt, locale),
-    en: localise(row.excerpt, locale),
-    es: localise(row.excerpt, locale),
-    nl: localise(row.excerpt, locale),
+  const fallbackPost = fallbackBlogPosts.find((post) => post.slug === row.slug);
+  const fallbackText = fallbackPost?.excerpt || {
+    pt: localise(row.excerpt, "pt"),
+    en: localise(row.excerpt, "en"),
+    es: localise(row.excerpt, "es"),
+    nl: localise(row.excerpt, "nl"),
   };
 
   return {
@@ -586,7 +684,7 @@ function mapBlogPost(row: BlogRow, locale: Locale): SiteBlogPost {
     image: row.image_url || "/services/original-energy-cleansing.webp",
     readingTime: localise(row.reading_time, locale, "4 min"),
     slug: row.slug,
-    title: asLocaleRecord(row.title, {
+    title: asLocaleRecord(row.title, fallbackPost?.title || {
       pt: row.slug,
       en: row.slug,
       es: row.slug,
@@ -708,10 +806,13 @@ export async function getCheckoutProduct(productId: string, locale: Locale): Pro
         | "title"
       >;
       const fields = await getIntakeFields(service.id, locale);
+      const supplements = fallbackIntakeFields(locale, service.product_id).filter(
+        (field) => field.key === "field_reading_preview" && !fields.some((current) => current.key === field.key),
+      );
 
       return {
         capacityLimit: service.capacity_limit ?? null,
-        intakeFields: fields,
+        intakeFields: [...fields, ...supplements],
         name: localise(service.title, locale, productId),
         productId: service.product_id,
         requiresIntake: service.requires_intake,
@@ -895,11 +996,12 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       blogPosts: [],
       configured: false,
       courses: [],
+      sections: [],
       services: [],
     };
   }
 
-  const [services, courses, blog] = await Promise.all([
+  const [services, courses, blog, sections] = await Promise.all([
     supabase
       .from("content_services")
       .select("*")
@@ -914,12 +1016,20 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       .from("blog_posts")
       .select("*")
       .order("sort_order", { ascending: true }),
+    supabase
+      .from("site_sections")
+      .select("*")
+      .order("page_key", { ascending: true })
+      .order("sort_order", { ascending: true }),
   ]);
 
   return {
     blogPosts: ((blog.data || []) as BlogRow[]),
     configured: !(services.error || courses.error || blog.error),
     courses: ((courses.data || []) as ServiceRow[]),
+    sections: sections.data?.length
+      ? (sections.data as SiteSectionRow[])
+      : getAdminSectionFallbackRows(),
     services: ((services.data || []) as ServiceRow[]),
   };
 }

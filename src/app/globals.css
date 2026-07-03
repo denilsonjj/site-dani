@@ -7,7 +7,7 @@
   --sage: #799a81;
   --mint: #dcece2;
   --ivory: #f8f5ec;
-  --gold: #c6a86e;
+  --gold: #c6a15b;
   --white: #ffffff;
 }
 
@@ -48,7 +48,7 @@ button {
 }
 
 :focus-visible {
-  outline: 3px solid #e5c886;
+  outline: 3px solid #c6a15b;
   outline-offset: 4px;
 }
 
@@ -137,6 +137,20 @@ button {
 
 .prompt-card {
   min-height: 18rem;
+}
+
+.service-carousel {
+  scrollbar-color: var(--gold) transparent;
+  scrollbar-width: thin;
+}
+
+.service-carousel::-webkit-scrollbar {
+  height: 6px;
+}
+
+.service-carousel::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border-radius: 999px;
 }
 
 .hero-copy {

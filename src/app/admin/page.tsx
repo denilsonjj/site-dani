@@ -10,7 +10,7 @@ function AdminLogin() {
   return (
     <main className="grid min-h-screen place-items-center bg-[#f8f5ec] px-5 py-16 text-[#123c2d]">
       <section className="w-full max-w-md rounded-[2rem] bg-white p-7 shadow-[0_25px_80px_rgba(10,43,31,0.12)] sm:p-10">
-        <LockKeyhole className="text-[#d8bd82]" size={34} strokeWidth={1.5} />
+        <LockKeyhole className="text-[#c6a15b]" size={34} strokeWidth={1.5} />
         <p className="mt-8 text-xs font-bold uppercase tracking-[0.2em] text-[#547461]">
           Acesso restrito
         </p>
@@ -60,7 +60,7 @@ export default async function AdminPage() {
       <section className="bg-[#0b2a20] px-5 py-8 text-white sm:py-12">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <Link className="inline-flex text-sm font-bold text-[#e5cc96]" href="/pt">
+            <Link className="inline-flex text-sm font-bold text-[#d8b96a]" href="/pt">
               ← Voltar ao site
             </Link>
             <form action="/api/admin/logout" method="post">
@@ -75,7 +75,7 @@ export default async function AdminPage() {
 
           <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_0.42fr] lg:items-end">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#d8bd82]">
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#c6a15b]">
                 Painel administrativo
               </p>
               <h1 className="display mt-4 max-w-3xl text-5xl font-semibold leading-[0.98] sm:text-7xl">
@@ -85,13 +85,13 @@ export default async function AdminPage() {
                 Edite sessões, cursos, blog, imagens, preços e publicação. O conteúdo salvo aparece no site automaticamente.
               </p>
             </div>
-            <div className="rounded-[2rem] border border-[#d8bd82]/25 bg-white/[0.08] p-5 shadow-2xl shadow-black/20">
+            <div className="rounded-[2rem] border border-[#c6a15b]/25 bg-white/[0.08] p-5 shadow-2xl shadow-black/20">
               {overview.configured ? (
-                <CheckCircle2 className="text-[#d8bd82]" size={28} strokeWidth={1.5} />
+                <CheckCircle2 className="text-[#c6a15b]" size={28} strokeWidth={1.5} />
               ) : (
-                <LockKeyhole className="text-[#d8bd82]" size={28} strokeWidth={1.5} />
+                <LockKeyhole className="text-[#c6a15b]" size={28} strokeWidth={1.5} />
               )}
-              <p className="mt-5 text-sm font-bold uppercase tracking-[0.14em] text-[#d8bd82]">
+              <p className="mt-5 text-sm font-bold uppercase tracking-[0.14em] text-[#c6a15b]">
                 Conteúdo
               </p>
               <p className="mt-2 leading-7 text-white/72">
@@ -133,7 +133,12 @@ export default async function AdminPage() {
         </section>
       ) : (
         <section className="px-5 pb-16">
-          <AdminContentEditor blogPosts={overview.blogPosts} courses={overview.courses} services={overview.services} />
+          <AdminContentEditor
+            blogPosts={overview.blogPosts}
+            courses={overview.courses}
+            sections={overview.sections}
+            services={overview.services}
+          />
         </section>
       )}
     </main>

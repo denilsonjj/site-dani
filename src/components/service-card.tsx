@@ -65,19 +65,19 @@ export function ServiceCard({ actionLabel, detailsLabel, index, locale, service 
           {service.badge}
         </span>
         {remainingSeats !== null && remainingSeats !== undefined ? (
-          <span className="absolute bottom-5 left-5 rounded-full border border-white/20 bg-[#0b2a20]/70 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-white backdrop-blur-md">
+          <span className="absolute right-5 top-5 rounded-full border border-white/20 bg-[#0b2a20]/70 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-white backdrop-blur-md">
             {isSoldOut ? availability.soldOut : availability.remaining(remainingSeats)}
           </span>
         ) : null}
+        <h3 className="display absolute bottom-5 left-5 right-5 text-2xl font-semibold leading-tight text-white drop-shadow-lg">
+          {service.title}
+        </h3>
       </div>
       <div className="flex flex-1 flex-col p-7">
         <div className="text-[#547461]">
           <Icon aria-hidden="true" size={30} strokeWidth={1.5} />
         </div>
-        <h3 className="display mt-7 text-3xl font-semibold leading-tight text-[#123c2d]">
-          {service.title}
-        </h3>
-        <p className="mt-4 leading-7 text-[#52675e]">{service.text}</p>
+        <p className="mt-7 leading-7 text-[#52675e]">{service.text}</p>
         <div className="mt-auto pt-7">
           <div className="mb-5 flex items-center justify-between gap-4 border-t border-[#123c2d]/10 pt-5">
             <p className="min-w-0 flex-1 text-sm font-bold leading-5 text-[#547461]">

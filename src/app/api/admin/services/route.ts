@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { requireAdminRequest } from "@/lib/admin-auth";
+import { findMissingTranslations } from "@/lib/admin-content-validation";
 
 type ServicePayload = {
   amountCents?: number;
@@ -51,6 +53,23 @@ export async function POST(request: Request) {
     );
   }
 
+  if (payload.isPublished) {
+    const missing = findMissingTranslations({
+      badge: payload.badge,
+      description: payload.description,
+      duration: payload.duration,
+      priceLabel: payload.priceLabel,
+      summary: payload.summary,
+      title: payload.title,
+    });
+    if (missing.length) {
+      return NextResponse.json(
+        { error: `Complete as traduções antes de publicar: ${missing.join(", ")}.` },
+        { status: 400 },
+      );
+    }
+  }
+
   const { data, error: mutationError } = await supabase
     .from("content_services")
     .upsert(
@@ -81,6 +100,13 @@ export async function POST(request: Request) {
 
   if (mutationError) {
     return NextResponse.json({ error: mutationError.message }, { status: 500 });
+  }
+
+  const listPath = payload.category === "course" ? "cursos" : "sessoes";
+  for (const locale of ["pt", "en", "es", "nl"]) {
+    revalidatePath(`/${locale}`);
+    revalidatePath(`/${locale}/${listPath}`);
+    revalidatePath(`/${locale}/${listPath}/${payload.slug}`);
   }
 
   return NextResponse.json({ item: data });

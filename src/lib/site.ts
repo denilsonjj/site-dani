@@ -4,6 +4,11 @@ export const siteConfig = {
   domain: "https://www.danitherapies.com",
   name: "Dani Therapies",
   whatsapp: "31616018467",
+  social: {
+    facebook: "https://www.facebook.com/share/1B2Me1Zekh/?mibextid=wwXIfr",
+    instagram: "https://www.instagram.com/dani_therapies",
+    youtube: "https://www.youtube.com/@VoceandI",
+  },
   email: "hello@danitherapies.com",
   kvk: "94756279",
   defaultLocale: "pt" satisfies Locale,

@@ -1,5 +1,3 @@
-import type { ProductId } from "./catalog";
-
 export const locales = ["pt", "en", "es", "nl"] as const;
 export type Locale = (typeof locales)[number];
 
@@ -11,7 +9,7 @@ export const localeOptions: Record<Locale, { flag: string; short: string; label:
 };
 
 type ServiceCopy = {
-  productId: Exclude<ProductId, "online-course">;
+  productId: string;
   title: string;
   text: string;
   duration: string;
@@ -53,7 +51,7 @@ const ptServices: ServiceCopy[] = [
     badge: "Orientação",
   },
   {
-    productId: "chakra-restoration",
+    productId: "chakra-unblocking",
     title: "Restauração Integral dos Chakras",
     text: "Cuidado focado no equilíbrio energético, conexão corporal e estabilidade interior.",
     duration: "À distância",
@@ -120,7 +118,7 @@ const enServices: ServiceCopy[] = [
     badge: "Guidance",
   },
   {
-    productId: "chakra-restoration",
+    productId: "chakra-unblocking",
     title: "Integral Chakra Restoration",
     text: "Care focused on energetic balance, body connection and inner stability.",
     duration: "Remote",
@@ -187,7 +185,7 @@ const esServices: ServiceCopy[] = [
     badge: "Orientación",
   },
   {
-    productId: "chakra-restoration",
+    productId: "chakra-unblocking",
     title: "Restauración Integral de Chakras",
     text: "Cuidado enfocado en equilibrio energético, conexión corporal y estabilidad interior.",
     duration: "A distancia",
@@ -254,7 +252,7 @@ const nlServices: ServiceCopy[] = [
     badge: "Begeleiding",
   },
   {
-    productId: "chakra-restoration",
+    productId: "chakra-unblocking",
     title: "Integrale Chakra Herstelling",
     text: "Zorg gericht op energetisch evenwicht, lichaamsverbinding en innerlijke stabiliteit.",
     duration: "Op afstand",
@@ -286,6 +284,76 @@ const nlServices: ServiceCopy[] = [
     badge: "Ruimtes",
   },
 ];
+
+type ServiceTuple = [productId: string, title: string, text: string, duration: string, price: string, badge: string];
+
+const additionalServiceCopies: Record<Locale, ServiceTuple[]> = {
+  pt: [
+    ["environment-harmonization-3-homes", "Harmonização de Ambientes · 3 Residências", "Pacote para até três residências ou espaços que precisam de equilíbrio.", "Até 3 residências", "294 €", "Pacote"],
+    ["tarot-field-reading-2h", "Tarô e Leitura de Campo · 2 horas", "Leitura estendida para perguntas mais profundas e campo energético.", "2 horas", "195,99 €", "Estendida"],
+    ["depression-support-3-months", "Tratamento para Depressão · 3 meses", "Acompanhamento energético contínuo durante três meses.", "3 meses contínuos", "690 €", "Contínuo"],
+    ["migraine-support", "Tratamento Enxaqueca Crônica + Consulta", "Apoio energético com consulta para casos de enxaqueca crônica.", "15 dias", "267,99 €", "Apoio"],
+    ["migraine-support-3-months", "Tratamento Enxaqueca Crônica · 3 meses", "Acompanhamento energético contínuo para enxaqueca crônica.", "3 meses contínuos", "690 €", "Contínuo"],
+    ["terminal-transition-support", "Apoio Fase Terminal e Transição + Consulta", "Acolhimento energético em processos delicados de transição.", "Consulta + apoio", "150,99 €", "Transição"],
+    ["guided-healing-movement", "Movimento de Cura Guiada com Equipe Seriana", "Sessão guiada de cura energética com preparação e formulário obrigatório.", "1 hora", "114,99 €", "Cura guiada"],
+    ["mental-relief", "Alívio Mental Imediato e Confusão Mental", "Sessão para clareza, leveza mental e organização energética.", "1 hora", "105,99 €", "Clareza"],
+    ["trauma-intensive-3", "3 Sessões Intensivas: Traumas, Bloqueios e Libertações", "Pacote de três sessões intensivas de duas horas.", "3 sessões · 2 horas cada", "555,99 €", "Pacote"],
+    ["trauma-intensive-6", "6 Sessões Intensivas: Traumas, Bloqueios e Libertações", "Plano completo de seis sessões intensivas de duas horas.", "6 sessões · 2 horas cada", "996,99 €", "Acompanhamento"],
+  ],
+  en: [
+    ["environment-harmonization-3-homes", "Environment Harmonisation · 3 Homes", "Package for up to three homes or spaces that need energetic balance.", "Up to 3 homes", "294 €", "Package"],
+    ["tarot-field-reading-2h", "Tarot and Field Reading · 2 hours", "Extended reading for deeper questions and the energetic field.", "2 hours", "195.99 €", "Extended"],
+    ["depression-support-3-months", "Depression Support Treatment · 3 months", "Continuous energetic support over three months.", "3 continuous months", "690 €", "Ongoing"],
+    ["migraine-support", "Chronic Migraine Support + Consultation", "Energetic support with consultation for chronic migraine.", "15 days", "267.99 €", "Support"],
+    ["migraine-support-3-months", "Chronic Migraine Support · 3 months", "Continuous energetic support for chronic migraine.", "3 continuous months", "690 €", "Ongoing"],
+    ["terminal-transition-support", "End-of-Life and Transition Support + Consultation", "Energetic care during delicate transition processes.", "Consultation + support", "150.99 €", "Transition"],
+    ["guided-healing-movement", "Guided Healing Movement with the Seriana Team", "Guided energetic healing session with preparation and a required form.", "1 hour", "114.99 €", "Guided healing"],
+    ["mental-relief", "Immediate Mental Relief and Mental Confusion", "Session for clarity, mental lightness and energetic organisation.", "1 hour", "105.99 €", "Clarity"],
+    ["trauma-intensive-3", "3 Intensive Sessions: Trauma, Blockages and Release", "Package of three intensive two-hour sessions.", "3 sessions · 2 hours each", "555.99 €", "Package"],
+    ["trauma-intensive-6", "6 Intensive Sessions: Trauma, Blockages and Release", "Complete plan of six intensive two-hour sessions.", "6 sessions · 2 hours each", "996.99 €", "Follow-up"],
+  ],
+  es: [
+    ["environment-harmonization-3-homes", "Armonización de Ambientes · 3 Residencias", "Paquete para hasta tres residencias o espacios que necesitan equilibrio.", "Hasta 3 residencias", "294 €", "Paquete"],
+    ["tarot-field-reading-2h", "Tarot y Lectura de Campo · 2 horas", "Lectura ampliada para preguntas más profundas y el campo energético.", "2 horas", "195,99 €", "Ampliada"],
+    ["depression-support-3-months", "Tratamiento para Depresión · 3 meses", "Acompañamiento energético continuo durante tres meses.", "3 meses continuos", "690 €", "Continuo"],
+    ["migraine-support", "Tratamiento para Migraña Crónica + Consulta", "Apoyo energético con consulta para casos de migraña crónica.", "15 días", "267,99 €", "Apoyo"],
+    ["migraine-support-3-months", "Tratamiento para Migraña Crónica · 3 meses", "Acompañamiento energético continuo para la migraña crónica.", "3 meses continuos", "690 €", "Continuo"],
+    ["terminal-transition-support", "Apoyo en Fase Terminal y Transición + Consulta", "Acogida energética en procesos delicados de transición.", "Consulta + apoyo", "150,99 €", "Transición"],
+    ["guided-healing-movement", "Movimiento de Cura Guiada con el Equipo Seriana", "Sesión guiada de sanación energética con preparación y formulario obligatorio.", "1 hora", "114,99 €", "Cura guiada"],
+    ["mental-relief", "Alivio Mental Inmediato y Confusión Mental", "Sesión para claridad, ligereza mental y organización energética.", "1 hora", "105,99 €", "Claridad"],
+    ["trauma-intensive-3", "3 Sesiones Intensivas: Traumas, Bloqueos y Liberaciones", "Paquete de tres sesiones intensivas de dos horas.", "3 sesiones · 2 horas cada una", "555,99 €", "Paquete"],
+    ["trauma-intensive-6", "6 Sesiones Intensivas: Traumas, Bloqueos y Liberaciones", "Plan completo de seis sesiones intensivas de dos horas.", "6 sesiones · 2 horas cada una", "996,99 €", "Acompañamiento"],
+  ],
+  nl: [
+    ["environment-harmonization-3-homes", "Harmonisatie van Ruimtes · 3 Woningen", "Pakket voor maximaal drie woningen of ruimtes die balans nodig hebben.", "Tot 3 woningen", "294 €", "Pakket"],
+    ["tarot-field-reading-2h", "Tarot en Veldlezing · 2 uur", "Uitgebreide lezing voor diepere vragen en het energetische veld.", "2 uur", "195,99 €", "Uitgebreid"],
+    ["depression-support-3-months", "Behandeling bij Depressie · 3 maanden", "Doorlopende energetische ondersteuning gedurende drie maanden.", "3 aaneengesloten maanden", "690 €", "Doorlopend"],
+    ["migraine-support", "Ondersteuning bij Chronische Migraine + Consult", "Energetische ondersteuning met consult bij chronische migraine.", "15 dagen", "267,99 €", "Ondersteuning"],
+    ["migraine-support-3-months", "Ondersteuning bij Chronische Migraine · 3 maanden", "Doorlopende energetische ondersteuning bij chronische migraine.", "3 aaneengesloten maanden", "690 €", "Doorlopend"],
+    ["terminal-transition-support", "Ondersteuning in de Terminale Fase en Overgang + Consult", "Energetische zorg tijdens een gevoelig overgangsproces.", "Consult + ondersteuning", "150,99 €", "Overgang"],
+    ["guided-healing-movement", "Begeleide Helingsbeweging met Team Seriana", "Begeleide energetische helingssessie met voorbereiding en verplicht formulier.", "1 uur", "114,99 €", "Begeleide heling"],
+    ["mental-relief", "Directe Mentale Verlichting en Mentale Verwarring", "Sessie voor helderheid, mentale lichtheid en energetische ordening.", "1 uur", "105,99 €", "Helderheid"],
+    ["trauma-intensive-3", "3 Intensieve Sessies: Trauma, Blokkades en Bevrijding", "Pakket van drie intensieve sessies van twee uur.", "3 sessies · elk 2 uur", "555,99 €", "Pakket"],
+    ["trauma-intensive-6", "6 Intensieve Sessies: Trauma, Blokkades en Bevrijding", "Volledig traject van zes intensieve sessies van twee uur.", "6 sessies · elk 2 uur", "996,99 €", "Begeleiding"],
+  ],
+};
+
+for (const locale of locales) {
+  const target = locale === "pt" ? ptServices : locale === "en" ? enServices : locale === "es" ? esServices : nlServices;
+  target.push(...additionalServiceCopies[locale].map(([productId, title, text, duration, price, badge]) => ({
+    badge,
+    duration,
+    price,
+    productId,
+    text,
+    title,
+  })));
+}
+
+export function getServiceTranslation(locale: Locale, productId: string) {
+  const services = locale === "pt" ? ptServices : locale === "en" ? enServices : locale === "es" ? esServices : nlServices;
+  return services.find((service) => service.productId === productId);
+}
 
 const content = {
   pt: {
