@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { ContactForm } from "@/components/contact-form";
 import { AutoCarousel } from "@/components/auto-carousel";
+import { HeroVideo } from "@/components/hero-video";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { ServiceCard } from "@/components/service-card";
 import { SiteFooter } from "@/components/site-footer";
@@ -100,6 +101,7 @@ export default async function LocalizedHome({
     nl: "Uitgelichte cursus",
   }[locale];
   const heroUsesVideo = /\.(?:mp4|webm)(?:\?|$)/i.test(hero.imageUrl);
+  const heroAppleVideo = hero.imageUrl === "/aurora-real.webm" ? "/aurora-real.mp4" : hero.imageUrl;
 
   return (
     <main>
@@ -108,18 +110,11 @@ export default async function LocalizedHome({
 
       <section className="hero relative min-h-[720px] overflow-hidden text-white">
         {heroUsesVideo ? (
-          <video
-            aria-hidden="true"
-            autoPlay
-            className="hero-video absolute inset-0 h-full w-full"
-            loop
-            muted
-            playsInline
+          <HeroVideo
+            appleSrc={heroAppleVideo}
+            defaultSrc={hero.imageUrl}
             poster="/aurora-hero.webp"
-            preload="auto"
-          >
-            <source src={hero.imageUrl} />
-          </video>
+          />
         ) : (
           <Image alt={hero.imageAlt} className="object-cover" fill priority sizes="100vw" src={hero.imageUrl} />
         )}
