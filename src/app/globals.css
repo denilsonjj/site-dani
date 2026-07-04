@@ -135,8 +135,47 @@ button {
   background-size: 14px 14px;
 }
 
+.prompt-carousel {
+  cursor: grab;
+  margin-top: 3.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.prompt-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.prompt-carousel-track,
+.prompt-carousel-group {
+  display: flex;
+  gap: 1.25rem;
+  width: max-content;
+}
+
+.prompt-carousel-track {
+  animation: prompt-carousel-loop 24s linear infinite;
+}
+
+.prompt-carousel:hover .prompt-carousel-track,
+.prompt-carousel:focus-within .prompt-carousel-track,
+.prompt-carousel.is-dragging .prompt-carousel-track {
+  animation-play-state: paused;
+}
+
+.prompt-carousel.is-dragging {
+  cursor: grabbing;
+}
+
+.prompt-carousel img {
+  pointer-events: none;
+}
+
 .prompt-card {
   min-height: 18rem;
+  width: clamp(18rem, 30vw, 25rem);
 }
 
 .service-carousel {
@@ -224,6 +263,12 @@ button {
   }
 }
 
+@keyframes prompt-carousel-loop {
+  to {
+    transform: translateX(calc(-50% - 0.625rem));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -241,6 +286,10 @@ button {
     animation: none;
   }
 
+  .prompt-carousel-track {
+    animation: none;
+  }
+
   [data-reveal] {
     opacity: 1;
     transform: none;
@@ -250,6 +299,10 @@ button {
 }
 
 @media (max-width: 767px) {
+  .prompt-card {
+    width: 82vw;
+  }
+
   .hero {
     background-image:
       linear-gradient(90deg, rgba(5, 25, 18, 0.9), rgba(5, 25, 18, 0.5)),

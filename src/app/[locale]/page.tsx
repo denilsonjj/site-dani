@@ -11,6 +11,7 @@ import {
   Video,
 } from "lucide-react";
 import { ContactForm } from "@/components/contact-form";
+import { AutoCarousel } from "@/components/auto-carousel";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { ServiceCard } from "@/components/service-card";
 import { SiteFooter } from "@/components/site-footer";
@@ -231,10 +232,10 @@ export default async function LocalizedHome({
               {promptsHeader.body}
             </p>
           </div>
-          <div className="mt-14 grid gap-5 md:grid-cols-3">
+          <AutoCarousel>
             {prompts.map((prompt, index) => (
               <article
-                className="prompt-card group relative min-h-72 overflow-hidden rounded-[2rem] border border-[#173f30]/10 bg-[#123c2d] shadow-[0_20px_55px_rgba(19,35,29,0.12)] transition-[transform,box-shadow] duration-700 ease-out hover:-translate-y-1 hover:shadow-[0_26px_70px_rgba(19,35,29,0.2)]"
+                className="prompt-card group relative min-h-72 shrink-0 snap-start overflow-hidden rounded-[2rem] border border-[#173f30]/10 bg-[#123c2d] shadow-[0_20px_55px_rgba(19,35,29,0.12)] transition-[transform,box-shadow] duration-700 ease-out hover:-translate-y-1 hover:shadow-[0_26px_70px_rgba(19,35,29,0.2)]"
                 data-reveal
                 key={prompt.sectionKey}
                 style={{ "--reveal-delay": `${index * 90}ms` } as RevealStyle}
@@ -257,7 +258,7 @@ export default async function LocalizedHome({
                 </div>
               </article>
             ))}
-          </div>
+          </AutoCarousel>
         </div>
       </section>
 
@@ -283,9 +284,9 @@ export default async function LocalizedHome({
               <ArrowRight aria-hidden="true" size={17} />
             </Link>
           </div>
-          <div className="service-carousel mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-6">
+          <div className="service-carousel mt-12 flex snap-x snap-mandatory items-stretch gap-4 overflow-x-auto pb-6">
             {servicePreview.map((service, index) => (
-              <div className="w-[86%] shrink-0 snap-start sm:w-[48%] xl:w-[calc(25%-0.75rem)]" key={service.productId}>
+              <div className="flex w-[86%] shrink-0 snap-start sm:w-[48%] xl:w-[calc(25%-0.75rem)]" key={service.productId}>
                 <ServiceCard actionLabel={copy.services.action} detailsLabel={copy.services.detailsLabel} index={index} locale={locale} service={service} />
               </div>
             ))}

@@ -47,7 +47,7 @@ export function ServiceCard({ actionLabel, detailsLabel, index, locale, service 
 
   return (
     <article
-      className="flex min-h-[31rem] flex-col overflow-hidden rounded-[2rem] border border-[#123c2d]/10 bg-[#f8f5ec] shadow-[0_18px_55px_rgba(19,35,29,0.08)]"
+      className="flex h-full min-h-[31rem] flex-col overflow-hidden rounded-[2rem] border border-[#123c2d]/10 bg-[#f8f5ec] shadow-[0_18px_55px_rgba(19,35,29,0.08)]"
       data-reveal
       id={service.slug}
       style={{ "--reveal-delay": `${index * 70}ms` } as RevealStyle}
