@@ -1,29 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getContent, locales, type Locale } from "@/lib/content";
+import { locales, type Locale } from "@/lib/content";
+import { legalDocuments, type LegalDocumentKey } from "@/lib/legal-content";
 
 const legalPages = {
   "politica-de-cookies": "cookies",
   "termos-e-condicoes": "terms",
   "politica-de-privacidade": "privacy",
-} as const;
-
-const legalSections = {
-  cookies: [
-    "Uso de cookies essenciais para funcionamento e segurança do site.",
-    "Cookies de análise somente serão utilizados mediante consentimento, quando aplicável.",
-    "O visitante pode gerir ou eliminar cookies através das definições do navegador.",
-  ],
-  privacy: [
-    "Dados de contacto serão usados apenas para responder pedidos, inscrições e marcações.",
-    "Os pagamentos são processados de forma segura pelo Stripe; o site não armazena os dados completos do cartão.",
-    "Pedidos de acesso, correção ou remoção poderão ser enviados diretamente à Dani Therapies.",
-  ],
-  terms: [
-    "Sessões e cursos online dependem de confirmação de disponibilidade e pagamento.",
-    "Cancelamentos, remarcações e transferências seguem a Política de Cancelamento apresentada antes do pagamento.",
-    "As sessões não substituem acompanhamento médico, psicológico ou emergência.",
-  ],
 } as const;
 
 export function generateStaticParams() {
@@ -44,9 +27,8 @@ export default async function LegalPage({
   }
 
   const locale = rawLocale as Locale;
-  const copy = getContent(locale);
-  const key = legalPages[legal as keyof typeof legalPages];
-  const title = copy.footer.legal[key];
+  const key = legalPages[legal as keyof typeof legalPages] as LegalDocumentKey;
+  const document = legalDocuments[key];
 
   return (
     <main className="min-h-screen bg-[#f8f5ec] px-5 py-16 text-[#123c2d]">
@@ -54,20 +36,29 @@ export default async function LegalPage({
         <Link className="text-sm font-bold text-[#547461]" href={`/${locale}`}>
           ← Dani Therapies
         </Link>
-        <h1 className="display mt-10 text-4xl font-semibold sm:text-6xl">{title}</h1>
-        <p className="mt-6 leading-8 text-[#52675e]">
-          Este documento está em validação para a nova versão do site. Até à
-          publicação final, as condições oficiais devem ser confirmadas
-          diretamente com Dani Therapies.
-        </p>
-        <div className="mt-8 grid gap-4">
-          {legalSections[key].map((section) => (
-            <div className="rounded-2xl bg-[#f8f5ec] p-5 leading-7 text-[#40564d]" key={section}>
-              {section}
-            </div>
+        <h1 className="display mt-10 text-4xl font-semibold sm:text-6xl">{document.title}</h1>
+        <div className="mt-7 grid gap-4 text-base leading-8 text-[#40564d]">
+          {document.introduction.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+        </div>
+        <div className="mt-10 grid gap-8">
+          {document.sections.map((section, index) => (
+            <section className="rounded-2xl bg-[#f8f5ec] p-6 text-[#40564d] sm:p-8" key={`${section.heading || "section"}-${index}`}>
+              {section.heading ? <h2 className="display text-2xl font-bold text-[#123c2d] sm:text-3xl">{section.heading}</h2> : null}
+              <div className={`${section.heading ? "mt-4" : ""} grid gap-4 leading-8`}>
+                {section.paragraphs?.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+                {section.items ? (
+                  <ul className="list-disc space-y-2 pl-6">
+                    {section.items.map((item) => <li key={item}>{item}</li>)}
+                  </ul>
+                ) : null}
+              </div>
+            </section>
           ))}
         </div>
-        <p className="mt-6 text-sm font-bold text-[#547461]">{copy.footer.legal.kvk}</p>
+        <a className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full border border-[#123c2d]/20 px-6 font-bold text-[#123c2d] transition hover:bg-[#e4eee6]" href={document.pdfUrl} rel="noopener noreferrer" target="_blank">
+          Abrir documento em PDF
+        </a>
+        <p className="mt-8 text-sm font-bold text-[#547461]">KVK- 94756279</p>
       </article>
     </main>
   );

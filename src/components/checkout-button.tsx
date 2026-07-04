@@ -34,6 +34,7 @@ const checkoutCopy: Record<
   {
     fieldFallback: string;
     formTitle: string;
+    generalTermsLink: string;
     loading: string;
     optionPlaceholder: string;
     paymentFallback: string;
@@ -48,52 +49,56 @@ const checkoutCopy: Record<
   pt: {
     fieldFallback: "Confirmo",
     formTitle: "Formulário obrigatório",
+    generalTermsLink: "Termos e Condições",
     loading: "A preparar...",
     optionPlaceholder: "Selecione",
     paymentFallback: "Pagamento indisponível neste momento. Entre em contacto pelo WhatsApp.",
     policyLabel: "Política de Cancelamento",
     requiredFallback: "Preencha os dados obrigatórios para continuar.",
     submit: "Continuar pagamento",
-    termsLink: "Termo de Conduta",
+    termsLink: "Termos e Conduta do Curso",
     termsTextAfter: " e a Política de Cancelamento antes da finalização do pagamento.",
     termsTextBefore: "Li e aceito o ",
   },
   en: {
     fieldFallback: "I confirm",
     formTitle: "Required form",
+    generalTermsLink: "Terms and Conditions",
     loading: "Preparing...",
     optionPlaceholder: "Select",
     paymentFallback: "Payment is currently unavailable. Please contact us through WhatsApp.",
     policyLabel: "Cancellation Policy",
     requiredFallback: "Please fill in the required information to continue.",
     submit: "Continue to payment",
-    termsLink: "Code of Conduct",
+    termsLink: "Course Terms and Conduct",
     termsTextAfter: " and the Cancellation Policy before completing the payment.",
     termsTextBefore: "I have read and accept the ",
   },
   es: {
     fieldFallback: "Confirmo",
     formTitle: "Formulario obligatorio",
+    generalTermsLink: "Términos y Condiciones",
     loading: "Preparando...",
     optionPlaceholder: "Seleccione",
     paymentFallback: "El pago no está disponible en este momento. Contacte por WhatsApp.",
     policyLabel: "Política de Cancelación",
     requiredFallback: "Complete los datos obligatorios para continuar.",
     submit: "Continuar al pago",
-    termsLink: "Término de Conducta",
+    termsLink: "Términos y Conducta del Curso",
     termsTextAfter: " y la Política de Cancelación antes de finalizar el pago.",
     termsTextBefore: "He leído y acepto el ",
   },
   nl: {
     fieldFallback: "Ik bevestig",
     formTitle: "Verplicht formulier",
+    generalTermsLink: "Algemene Voorwaarden",
     loading: "Voorbereiden...",
     optionPlaceholder: "Selecteer",
     paymentFallback: "Betalen is momenteel niet beschikbaar. Neem contact op via WhatsApp.",
     policyLabel: "Annuleringsbeleid",
     requiredFallback: "Vul de verplichte gegevens in om verder te gaan.",
     submit: "Doorgaan naar betaling",
-    termsLink: "Gedragscode",
+    termsLink: "Cursusvoorwaarden en Gedragscode",
     termsTextAfter: " en het annuleringsbeleid voordat ik de betaling afrond.",
     termsTextBefore: "Ik heb de ",
   },
@@ -105,6 +110,7 @@ export function CheckoutButton({ children, disabled = false, locale, productId }
   const [requiredFields, setRequiredFields] = useState<RequiredField[]>([]);
   const [policyRequired, setPolicyRequired] = useState(false);
   const copy = checkoutCopy[locale] || checkoutCopy.pt;
+  const isCourse = productId === "online-course";
 
   async function requestCheckout(body: Record<string, unknown>) {
     const response = await fetch("/api/checkout", {
@@ -236,11 +242,11 @@ export function CheckoutButton({ children, disabled = false, locale, productId }
                 {copy.termsTextBefore}
                 <a
                   className="font-bold text-[#123c2d] underline underline-offset-4"
-                  href="/legal/termos-conduta.pdf"
+                  href={isCourse ? "/legal/termos-conduta-curso-percepcao-sensorial.pdf" : `/${locale}/termos-e-condicoes`}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  {copy.termsLink}
+                  {isCourse ? copy.termsLink : copy.generalTermsLink}
                 </a>
                 {copy.termsTextAfter}
               </span>
