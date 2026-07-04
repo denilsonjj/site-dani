@@ -413,7 +413,7 @@ const content = {
       eyebrow: "Sessões e valores",
       title: "Escolha o cuidado que faz sentido agora",
       intro:
-        "Valores baseados nas sessões disponíveis no site atual. A confirmação final acontece antes do pagamento, com Stripe preparado para euro.",
+        "Consulte a duração e o valor de cada sessão e escolha o cuidado mais adequado para o seu momento.",
       action: "Reservar / pagar",
       detailsLabel: "Ver detalhes",
       items: ptServices,
@@ -421,7 +421,7 @@ const content = {
     servicesPreview: {
       title: "Uma prévia das sessões",
       intro:
-        "A home mostra apenas alguns caminhos. A lista completa fica numa página própria, com valores, duração e checkout preparado.",
+        "Conheça alguns dos caminhos disponíveis para o seu cuidado energético e espiritual.",
       allLabel: "Ver todas as sessões",
     },
     course: {
@@ -438,22 +438,21 @@ const content = {
       email: "E-mail",
       submit: "Continuar inscrição",
       paymentNote:
-        "A base do Stripe já está preparada. Quando as chaves e os Price IDs forem adicionados, este formulário envia a pessoa para o checkout.",
+        "Após preencher os seus dados, poderá continuar para o pagamento seguro.",
       fallback:
-        "Se o pagamento ainda não estiver ativo, a inscrição é enviada por WhatsApp para a Dani dar seguimento.",
+        "Se precisar de ajuda com a inscrição, entre em contacto com a Dani pelo WhatsApp.",
     },
     coursePreview: {
       allLabel: "Ver cursos",
       detailsLabel: "Conhecer o curso",
-      note: "Inscrição separada para manter a página principal mais leve.",
     },
     process: {
       eyebrow: "Como funciona",
       title: "Menos fricção, mais clareza",
       steps: [
-        ["01", "Escolha a sessão ou curso", "A página mostra duração, valor e o próximo passo sem páginas soltas."],
+        ["01", "Escolha a sessão ou curso", "Consulte a duração, o valor e os detalhes para encontrar o caminho mais adequado."],
         ["02", "Preencha só o necessário", "Curso: nome, idade e e-mail. Atendimento: conversa direta para confirmar o melhor caminho."],
-        ["03", "Pague com segurança", "Stripe fica pronto para cartões europeus e pagamentos em euro quando a cliente enviar as chaves."],
+        ["03", "Pague com segurança", "Conclua o pagamento online de forma simples e segura."],
       ],
     },
     quote:
@@ -514,7 +513,7 @@ const content = {
       imageAlt: "Dani Therapies during an energetic care session",
       imageCaption: "Healing, guidance and presence for energetic and spiritual processes.",
       title: "Sensitive work with a clear structure.",
-      body: "The main page introduces the essence of the work, the first consultation, selected pathways and contact. Full sessions and courses have their own pages, so the website stays lighter, calmer and easy to navigate on mobile.",
+      body: "I am a Spiritual Noetic Healer and Consciousness Awakening Educator, working with therapeutic, spiritual and energetic care. My mission is to guide people back to their essence, restoring vital energy, aligning the subtle bodies and reconnecting each being with their deepest truth.",
       detailsLabel: "Read my full story",
       stats: [
         { title: "Online", text: "Sessions by video call" },
@@ -535,14 +534,14 @@ const content = {
     services: {
       eyebrow: "Sessions and prices",
       title: "Choose the care that fits your moment",
-      intro: "Prices are based on the current available sessions. Final confirmation happens before payment, with Stripe prepared for euros.",
+      intro: "Review the duration and price of each session and choose the care that best suits your present moment.",
       action: "Book / pay",
       detailsLabel: "View details",
       items: enServices,
     },
     servicesPreview: {
       title: "A preview of the sessions",
-      intro: "The home page shows only a few pathways. The complete list has its own page, with prices, duration and checkout prepared.",
+      intro: "Discover some of the available pathways for your energetic and spiritual care.",
       allLabel: "View all sessions",
     },
     course: {
@@ -557,21 +556,20 @@ const content = {
       age: "Age",
       email: "Email",
       submit: "Continue enrolment",
-      paymentNote: "Stripe is already prepared. Once keys and Price IDs are added, this form sends the person to checkout.",
-      fallback: "If payment is not active yet, the enrolment is sent via WhatsApp so Dani can follow up.",
+      paymentNote: "After completing your details, you can continue to secure payment.",
+      fallback: "If you need help with enrolment, contact Dani via WhatsApp.",
     },
     coursePreview: {
       allLabel: "View courses",
       detailsLabel: "Explore the course",
-      note: "Separate enrolment keeps the main page lighter.",
     },
     process: {
       eyebrow: "How it works",
       title: "Less friction, more clarity",
       steps: [
-        ["01", "Choose a session or course", "The page shows duration, price and the next step without scattered pages."],
+        ["01", "Choose a session or course", "Review the duration, price and details to find the most suitable path."],
         ["02", "Share only what is needed", "Course: name, age and email. Session: direct conversation to confirm the best path."],
-        ["03", "Pay securely", "Stripe is ready for European card payments and euro checkout once the client sends the keys."],
+        ["03", "Pay securely", "Complete your online payment simply and securely."],
       ],
     },
     quote: "Caring for your energy also means creating space for new choices, new meaning and a more conscious life.",
@@ -629,7 +627,7 @@ const content = {
       imageAlt: "Dani Therapies durante una sesión de cuidado energético",
       imageCaption: "Cura, guía y presencia para procesos energéticos y espirituales.",
       title: "Un trabajo sensible, con una estructura clara.",
-      body: "La página principal presenta la esencia del trabajo, la primera consulta, algunos caminos posibles y el contacto. Las sesiones completas y los cursos tienen páginas propias, para que el sitio respire mejor y siga siendo fácil de navegar en móvil.",
+      body: "Soy Sanadora Noética Espiritual y Educadora del Despertar de la Conciencia, y trabajo con el cuidado terapéutico, espiritual y energético. Mi misión es guiar a las personas de regreso a su esencia, restaurando su energía vital, alineando los cuerpos sutiles y reconectando cada Ser con su verdad más profunda.",
       detailsLabel: "Conocer mi trayectoria",
       stats: [
         { title: "Online", text: "Sesiones por videollamada" },
@@ -650,14 +648,14 @@ const content = {
     services: {
       eyebrow: "Sesiones y valores",
       title: "Elige el cuidado que encaja con tu momento",
-      intro: "Valores basados en las sesiones actuales. La confirmación final ocurre antes del pago, con Stripe preparado para euros.",
+      intro: "Consulta la duración y el valor de cada sesión y elige el cuidado más adecuado para tu momento actual.",
       action: "Reservar / pagar",
       detailsLabel: "Ver detalles",
       items: esServices,
     },
     servicesPreview: {
       title: "Una vista previa de las sesiones",
-      intro: "La página principal muestra solo algunos caminos. La lista completa tiene su propia página, con valores, duración y checkout preparado.",
+      intro: "Descubre algunos de los caminos disponibles para tu cuidado energético y espiritual.",
       allLabel: "Ver todas las sesiones",
     },
     course: {
@@ -672,21 +670,20 @@ const content = {
       age: "Edad",
       email: "Email",
       submit: "Continuar inscripción",
-      paymentNote: "Stripe ya está preparado. Cuando se añadan las claves y Price IDs, este formulario enviará al checkout.",
-      fallback: "Si el pago aún no está activo, la inscripción se envía por WhatsApp para que Dani dé seguimiento.",
+      paymentNote: "Después de completar tus datos, podrás continuar al pago seguro.",
+      fallback: "Si necesitas ayuda con la inscripción, contacta con Dani por WhatsApp.",
     },
     coursePreview: {
       allLabel: "Ver cursos",
       detailsLabel: "Conocer el curso",
-      note: "La inscripción separada mantiene la página principal más ligera.",
     },
     process: {
       eyebrow: "Cómo funciona",
       title: "Menos fricción, más claridad",
       steps: [
-        ["01", "Elige sesión o curso", "La página muestra duración, valor y próximo paso sin páginas dispersas."],
+        ["01", "Elige sesión o curso", "Consulta la duración, el valor y los detalles para encontrar el camino más adecuado."],
         ["02", "Rellena solo lo necesario", "Curso: nombre, edad y email. Atención: conversación directa para confirmar el mejor camino."],
-        ["03", "Paga con seguridad", "Stripe queda listo para tarjetas europeas y pagos en euros cuando la clienta envíe las claves."],
+        ["03", "Paga con seguridad", "Completa el pago online de forma sencilla y segura."],
       ],
     },
     quote: "Cuidar la energía también es crear espacio para nuevas elecciones, nuevos sentidos y una vida más consciente.",
@@ -744,7 +741,7 @@ const content = {
       imageAlt: "Dani Therapies tijdens een energetische sessie",
       imageCaption: "Heling, begeleiding en aanwezigheid voor energetische en spirituele processen.",
       title: "Gevoelig werk met een duidelijke structuur.",
-      body: "De hoofdpagina introduceert de essentie van het werk, het eerste consult, enkele mogelijke paden en contact. De volledige sessies en cursussen hebben eigen pagina's, zodat de site rustiger blijft en makkelijk te gebruiken is op mobiel.",
+      body: "Ik ben Spiritueel Noëtisch Healer en begeleider bij het Ontwaken van Bewustzijn, met therapeutische, spirituele en energetische zorg. Mijn missie is mensen terug te begeleiden naar hun essentie, hun levensenergie te herstellen, de subtiele lichamen op één lijn te brengen en ieder mens opnieuw te verbinden met zijn diepste waarheid.",
       detailsLabel: "Lees mijn volledige verhaal",
       stats: [
         { title: "Online", text: "Sessies via videogesprek" },
@@ -765,14 +762,14 @@ const content = {
     services: {
       eyebrow: "Sessies en prijzen",
       title: "Kies de zorg die nu bij je past",
-      intro: "Prijzen zijn gebaseerd op de huidige beschikbare sessies. Definitieve bevestiging gebeurt vóór betaling, met Stripe voorbereid op euro's.",
+      intro: "Bekijk de duur en prijs van elke sessie en kies de zorg die het beste bij jouw huidige moment past.",
       action: "Boeken / betalen",
       detailsLabel: "Bekijk details",
       items: nlServices,
     },
     servicesPreview: {
       title: "Een preview van de sessies",
-      intro: "De homepagina toont alleen enkele paden. De volledige lijst heeft een eigen pagina, met prijzen, duur en checkout voorbereid.",
+      intro: "Ontdek enkele beschikbare paden voor jouw energetische en spirituele welzijn.",
       allLabel: "Bekijk alle sessies",
     },
     course: {
@@ -787,21 +784,20 @@ const content = {
       age: "Leeftijd",
       email: "E-mail",
       submit: "Inschrijving doorgaan",
-      paymentNote: "Stripe is al voorbereid. Zodra sleutels en Price IDs zijn toegevoegd, stuurt dit formulier de persoon naar checkout.",
-      fallback: "Als betaling nog niet actief is, wordt de inschrijving via WhatsApp verzonden zodat Dani kan opvolgen.",
+      paymentNote: "Na het invullen van je gegevens kun je doorgaan naar de beveiligde betaling.",
+      fallback: "Neem via WhatsApp contact op met Dani als je hulp nodig hebt bij de inschrijving.",
     },
     coursePreview: {
       allLabel: "Bekijk cursussen",
       detailsLabel: "Ontdek de cursus",
-      note: "Een aparte inschrijving houdt de hoofdpagina lichter.",
     },
     process: {
       eyebrow: "Hoe het werkt",
       title: "Minder frictie, meer duidelijkheid",
       steps: [
-        ["01", "Kies een sessie of cursus", "De pagina toont duur, prijs en volgende stap zonder losse pagina's."],
+        ["01", "Kies een sessie of cursus", "Bekijk de duur, prijs en details om het meest geschikte pad te vinden."],
         ["02", "Deel alleen wat nodig is", "Cursus: naam, leeftijd en e-mail. Sessie: direct gesprek om de beste route te bevestigen."],
-        ["03", "Betaal veilig", "Stripe staat klaar voor Europese kaarten en betalingen in euro zodra de klant de sleutels stuurt."],
+        ["03", "Betaal veilig", "Rond de online betaling eenvoudig en veilig af."],
       ],
     },
     quote: "Voor je energie zorgen betekent ook ruimte maken voor nieuwe keuzes, nieuwe betekenis en een bewuster leven.",

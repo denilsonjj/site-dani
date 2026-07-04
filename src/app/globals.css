@@ -130,6 +130,17 @@ button {
   z-index: 2;
 }
 
+@media (min-width: 1200px) {
+  .hero,
+  .hero-content {
+    min-height: 880px;
+  }
+
+  .hero-video {
+    object-position: center 48%;
+  }
+}
+
 .noise {
   background-image: radial-gradient(rgba(255, 255, 255, 0.42) 0.7px, transparent 0.7px);
   background-size: 14px 14px;

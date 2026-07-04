@@ -32,7 +32,7 @@ export async function generateMetadata({
 
   return {
     title: "Sessões | Dani Therapies",
-    description: "Lista completa de sessões energéticas e espirituais da Dani Therapies, com duração, valores e checkout preparado.",
+    description: "Sessões energéticas e espirituais da Dani Therapies, com informações sobre duração, valores e formas de atendimento.",
   };
 }
 

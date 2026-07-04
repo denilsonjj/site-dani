@@ -125,7 +125,7 @@ export default async function LocalizedHome({
         )}
         <div aria-hidden="true" className="hero-video-scrim absolute inset-0" />
 
-        <div className="relative z-10 mx-auto flex min-h-[720px] max-w-7xl items-center px-5 py-20 lg:px-8">
+        <div className="hero-content relative z-10 mx-auto flex min-h-[720px] max-w-7xl items-center px-5 py-20 lg:px-8">
           <div className="hero-copy min-w-0 w-full max-w-3xl">
             <p className="mb-6 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.25em] text-[#d8b96a]">
               <span className="h-px w-10 bg-[#d8b96a]" />
@@ -341,12 +341,9 @@ export default async function LocalizedHome({
                   {primaryCourse?.duration || copy.course.duration}
                 </p>
               </div>
-              <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.06] p-5">
+              <div className="flex items-center justify-center rounded-[1.25rem] border border-white/10 bg-white/[0.06] p-5 text-center">
                 <p className="price-text text-2xl font-bold leading-tight text-[#c6a15b] sm:text-3xl">
                   {primaryCourse?.price || copy.course.price}
-                </p>
-                <p className="mt-4 text-sm leading-6 text-white/55">
-                  {copy.coursePreview.note}
                 </p>
               </div>
             </div>

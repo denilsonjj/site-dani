@@ -11,17 +11,17 @@ const legalPages = {
 const legalSections = {
   cookies: [
     "Uso de cookies essenciais para funcionamento e segurança do site.",
-    "Cookies de análise poderão ser ativados apenas quando a ferramenta oficial for definida.",
-    "O visitante poderá rever preferências quando o banner de consentimento for ligado.",
+    "Cookies de análise somente serão utilizados mediante consentimento, quando aplicável.",
+    "O visitante pode gerir ou eliminar cookies através das definições do navegador.",
   ],
   privacy: [
     "Dados de contacto serão usados apenas para responder pedidos, inscrições e marcações.",
-    "Dados de pagamento serão processados pelo Stripe quando a integração oficial estiver ativa.",
+    "Os pagamentos são processados de forma segura pelo Stripe; o site não armazena os dados completos do cartão.",
     "Pedidos de acesso, correção ou remoção poderão ser enviados diretamente à Dani Therapies.",
   ],
   terms: [
     "Sessões e cursos online dependem de confirmação de disponibilidade e pagamento.",
-    "Cancelamentos, remarcações e transferências serão descritos na versão jurídica final.",
+    "Cancelamentos, remarcações e transferências seguem a Política de Cancelamento apresentada antes do pagamento.",
     "As sessões não substituem acompanhamento médico, psicológico ou emergência.",
   ],
 } as const;
