@@ -9,6 +9,7 @@ import { getServiceImage } from "@/lib/service-visuals";
 
 type ServiceCardProps = {
   actionLabel: string;
+  anchor?: boolean;
   detailsLabel: string;
   index: number;
   locale: Locale;
@@ -38,7 +39,7 @@ const availabilityCopy = {
   },
 };
 
-export function ServiceCard({ actionLabel, detailsLabel, index, locale, service }: ServiceCardProps) {
+export function ServiceCard({ actionLabel, anchor = true, detailsLabel, index, locale, service }: ServiceCardProps) {
   const icons = [Sparkles, HeartHandshake, MoonStar, ShieldCheck];
   const Icon = icons[index % icons.length];
   const remainingSeats = service.remainingSeats;
@@ -49,7 +50,7 @@ export function ServiceCard({ actionLabel, detailsLabel, index, locale, service 
     <article
       className="flex h-full min-h-[31rem] flex-col overflow-hidden rounded-[2rem] border border-[#123c2d]/10 bg-[#f8f5ec] shadow-[0_18px_55px_rgba(19,35,29,0.08)]"
       data-reveal
-      id={service.slug}
+      id={anchor ? service.slug : undefined}
       style={{ "--reveal-delay": `${index * 70}ms` } as RevealStyle}
     >
       <div className="relative h-44 overflow-hidden bg-[#123c2d]">

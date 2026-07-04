@@ -1,8 +1,17 @@
 "use client";
 
-import { useRef, type PointerEvent, type ReactNode } from "react";
+import { useRef, type CSSProperties, type PointerEvent, type ReactNode } from "react";
 
-export function AutoCarousel({ children }: { children: ReactNode }) {
+type CarouselStyle = CSSProperties & { "--carousel-duration": string };
+
+type AutoCarouselProps = {
+  children: ReactNode;
+  className?: string;
+  duplicateChildren?: ReactNode;
+  duration?: number;
+};
+
+export function AutoCarousel({ children, className = "", duplicateChildren, duration = 24 }: AutoCarouselProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef({ left: 0, startX: 0, dragging: false });
 
@@ -31,16 +40,17 @@ export function AutoCarousel({ children }: { children: ReactNode }) {
 
   return (
     <div
-      className="prompt-carousel"
+      className={`auto-carousel ${className}`}
       onPointerCancel={stopDrag}
       onPointerDown={startDrag}
       onPointerMove={moveDrag}
       onPointerUp={stopDrag}
       ref={rootRef}
+      style={{ "--carousel-duration": `${duration}s` } as CarouselStyle}
     >
-      <div className="prompt-carousel-track">
-        <div className="prompt-carousel-group">{children}</div>
-        <div aria-hidden="true" className="prompt-carousel-group">{children}</div>
+      <div className="auto-carousel-track">
+        <div className="auto-carousel-group">{children}</div>
+        <div aria-hidden="true" className="auto-carousel-group" inert>{duplicateChildren ?? children}</div>
       </div>
     </div>
   );

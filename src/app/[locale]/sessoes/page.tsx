@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AutoCarousel } from "@/components/auto-carousel";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { ScrollReveal } from "@/components/scroll-reveal";
@@ -93,13 +94,21 @@ export default async function SessionsPage({
             </Link>
           </div>
 
-          <div className="service-carousel flex snap-x snap-mandatory items-stretch gap-4 overflow-x-auto pb-6">
+          <AutoCarousel
+            className="service-auto-carousel"
+            duplicateChildren={services.map((service, index) => (
+              <div className="service-slide shrink-0 snap-start" key={service.productId}>
+                <ServiceCard actionLabel={copy.services.action} anchor={false} detailsLabel={copy.services.detailsLabel} index={index} locale={locale} service={service} />
+              </div>
+            ))}
+            duration={services.length * 11}
+          >
             {services.map((service, index) => (
-              <div className="flex w-[86%] shrink-0 snap-start sm:w-[48%] xl:w-[calc(25%-0.75rem)]" key={service.productId}>
+              <div className="service-slide shrink-0 snap-start" key={service.productId}>
                 <ServiceCard actionLabel={copy.services.action} detailsLabel={copy.services.detailsLabel} index={index} locale={locale} service={service} />
               </div>
             ))}
-          </div>
+          </AutoCarousel>
         </div>
       </section>
 

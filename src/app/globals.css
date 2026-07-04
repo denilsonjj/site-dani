@@ -135,7 +135,7 @@ button {
   background-size: 14px 14px;
 }
 
-.prompt-carousel {
+.auto-carousel {
   cursor: grab;
   margin-top: 3.5rem;
   overflow-x: auto;
@@ -144,38 +144,47 @@ button {
   user-select: none;
 }
 
-.prompt-carousel::-webkit-scrollbar {
+.auto-carousel::-webkit-scrollbar {
   display: none;
 }
 
-.prompt-carousel-track,
-.prompt-carousel-group {
+.auto-carousel-track,
+.auto-carousel-group {
   display: flex;
   gap: 1.25rem;
   width: max-content;
 }
 
-.prompt-carousel-track {
-  animation: prompt-carousel-loop 24s linear infinite;
+.auto-carousel-track {
+  animation: carousel-loop var(--carousel-duration) linear infinite;
 }
 
-.prompt-carousel:hover .prompt-carousel-track,
-.prompt-carousel:focus-within .prompt-carousel-track,
-.prompt-carousel.is-dragging .prompt-carousel-track {
+.auto-carousel:hover .auto-carousel-track,
+.auto-carousel:focus-within .auto-carousel-track,
+.auto-carousel.is-dragging .auto-carousel-track {
   animation-play-state: paused;
 }
 
-.prompt-carousel.is-dragging {
+.auto-carousel.is-dragging {
   cursor: grabbing;
 }
 
-.prompt-carousel img {
+.auto-carousel img {
   pointer-events: none;
 }
 
 .prompt-card {
   min-height: 18rem;
   width: clamp(18rem, 30vw, 25rem);
+}
+
+.service-auto-carousel .auto-carousel-group {
+  align-items: stretch;
+}
+
+.service-auto-carousel .service-slide {
+  display: flex;
+  width: min(21rem, 86vw);
 }
 
 .service-carousel {
@@ -263,7 +272,7 @@ button {
   }
 }
 
-@keyframes prompt-carousel-loop {
+@keyframes carousel-loop {
   to {
     transform: translateX(calc(-50% - 0.625rem));
   }
@@ -286,7 +295,7 @@ button {
     animation: none;
   }
 
-  .prompt-carousel-track {
+  .auto-carousel-track {
     animation: none;
   }
 

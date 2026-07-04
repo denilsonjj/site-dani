@@ -284,13 +284,21 @@ export default async function LocalizedHome({
               <ArrowRight aria-hidden="true" size={17} />
             </Link>
           </div>
-          <div className="service-carousel mt-12 flex snap-x snap-mandatory items-stretch gap-4 overflow-x-auto pb-6">
+          <AutoCarousel
+            className="service-auto-carousel mt-12"
+            duplicateChildren={servicePreview.map((service, index) => (
+              <div className="service-slide shrink-0 snap-start" key={service.productId}>
+                <ServiceCard actionLabel={copy.services.action} anchor={false} detailsLabel={copy.services.detailsLabel} index={index} locale={locale} service={service} />
+              </div>
+            ))}
+            duration={servicePreview.length * 11}
+          >
             {servicePreview.map((service, index) => (
-              <div className="flex w-[86%] shrink-0 snap-start sm:w-[48%] xl:w-[calc(25%-0.75rem)]" key={service.productId}>
+              <div className="service-slide shrink-0 snap-start" key={service.productId}>
                 <ServiceCard actionLabel={copy.services.action} detailsLabel={copy.services.detailsLabel} index={index} locale={locale} service={service} />
               </div>
             ))}
-          </div>
+          </AutoCarousel>
         </div>
       </section>
 
