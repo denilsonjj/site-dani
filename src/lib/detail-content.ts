@@ -169,40 +169,40 @@ export const detailPageCopy = {
 
 const courseDetails: Record<Locale, string[]> = {
   pt: [
-    "Nas comunicações de leitura sensorial, existem diferentes formas de realizá-las.",
-    "Uma delas é a ativação do corpo sensorial, feita por meio de exercícios de percepção. Ao ativarmos as células do corpo, a sensibilidade natural do ser humano desperta novamente, permitindo que ele sinta as energias ao seu redor. Assim, é possível perceber e compreender o que está acontecendo, mesmo sem usar a visão física. O próprio corpo passa a “ler” as energias, sendo capaz de enxergar além dos olhos, mesmo que estejam fechados.",
-    "Outra forma é a leitura sensorial eletromagnética, que ocorre através de ondas enviadas por pessoas ou seres à distância, ou que estejam em outras dimensões. Animais também emitem ondas de energia. Quando aprendemos a identificar a assinatura energética de um ser, torna-se quase impossível nos confundirmos com sua identidade. Cada ser no universo possui uma energia única, capaz de se movimentar entre dimensões das mais densas às mais sutis. É por meio dessa capacidade que se estabelece a comunicação entre humanos com baixa elevação vibracional e seres de dimensões mais elevadas.",
-    "Durante nossos encontros em grupo, vamos treinar nossas percepções para, com o tempo, desenvolver a capacidade de entrar em contato com seres de vibração mais elevada. Nosso curso não promete milagres. Aqui, ensinamos um caminho natural e progressivo para alcançar esse nível de percepção com segurança, o que exige disciplina e dedicação. Cada pessoa tem seu próprio ritmo de desenvolvimento.",
-    "Faremos exercícios de meditação e de percepção do campo sensório. Vamos exercitar esse campo como se estivéssemos em uma academia: fortalecendo essa capacidade inata de cada um, desenvolvendo autonomia e resgatando a sensibilidade natural que nos pertence por essência.",
-    "Também aprenderemos a respirar corretamente, pois a respiração é uma das chaves para o despertar sensorial.",
-    "Este curso contará com a orientação sutil de Anele, que faz parte da equipe espiritual que acompanha e orienta o meu trabalho. Sua presença amorosa e sábia será um dos pilares invisíveis que dão sustentação aos encontros, oferecendo direcionamentos, aprofundamentos e alinhamentos energéticos ao longo do processo. Anele estará à frente na condução espiritual deste curso, colaborando para que cada participante possa acessar com mais confiança seus próprios canais de percepção e reconexão interior.",
+    "Na leitura sensorial existem várias maneiras de fazê-la.",
+    "Uma delas é ativar o corpo sensorial por meio de exercícios de percepção. Quando ativamos as células do corpo, a sensibilidade natural desperta novamente. É assim que você começa a sentir as energias ao seu redor. Dessa forma você entende o que está acontecendo, mesmo sem usar a visão física. O próprio corpo passa a ler a energia. Você pode ver além dos olhos, mesmo de olhos fechados.",
+    "Outra forma é a leitura sensorial eletromagnética. Acontece através de ondas enviadas por pessoas ou seres à distância, ou que se encontrem noutras dimensões. Os animais também emitem ondas de energia. Quando aprendemos a identificar a assinatura energética de um Ser, torna-se quase impossível confundirmo-nos com a sua identidade. Cada ser no universo possui uma energia única, que se consegue mover entre dimensões, das mais densas às mais subtis. É através dessa capacidade que se estabelece a comunicação entre humanos com baixa elevação vibracional e seres de dimensões mais elevadas.",
+    "Durante os nossos encontros em grupo, vamos treinar a nossa percepção para, com o tempo, desenvolvermos a capacidade de entrar em contacto com seres de vibração mais elevada. O nosso curso não promete milagres. Aqui ensinamos um caminho natural e progressivo para alcançar esse nível de percepção com segurança, o que exige disciplina e dedicação. Cada pessoa tem o seu próprio ritmo de desenvolvimento.",
+    "Faremos exercícios de movimentos guiados de energia e de percepção do campo sensório, desenvolvendo autonomia e resgatando a sensibilidade natural que nos pertence por essência.",
+    "Vamos aprender também a respirar em sintonia com a essência do teu Ser, pois a respiração é uma das chaves para o despertar sensorial.",
+    "Anele estará à frente na condução do movimento. Este curso contará com a orientação sutil de Anele, que faz parte da equipa espiritual que acompanha o meu trabalho. A sua presença amorosa e sábia será um dos pilares invisíveis, à frente da condução do movimento guiado de energia. Eu atuo como canal de transmissão e organização do conteúdo, para que a aprendizagem aconteça de forma gradual, segura e consciente.",
   ],
   en: [
     "There are different ways to carry out sensory reading and communication.",
     "One of them is activation of the sensory body through perception exercises. By activating the body's cells, our natural sensitivity awakens again, allowing us to sense the energies around us. It becomes possible to perceive and understand what is happening without relying on physical sight. The body itself begins to read energies and see beyond the eyes, even when they are closed.",
     "Another form is electromagnetic sensory reading through waves sent by people or beings at a distance or in other dimensions. Animals also emit energetic waves. When we learn to identify a being's energetic signature, confusing its identity becomes almost impossible. Every being in the universe has a unique energy that can move between denser and subtler dimensions.",
     "During our group meetings, we train perception progressively so that participants can safely develop contact with beings of a higher vibration. The course does not promise miracles: it teaches a natural, gradual path that requires discipline, dedication and respect for each person's pace.",
-    "We practise meditation and perception of the sensory field as if training in a gym, strengthening an innate ability, developing autonomy and reclaiming our natural sensitivity.",
-    "We also learn how to breathe correctly, because breathing is one of the keys to sensory awakening.",
-    "The course includes the subtle guidance of Anele, a member of the spiritual team that accompanies my work. Her loving and wise presence supports the meetings with direction, depth and energetic alignment, helping each participant access their own channels of perception and inner reconnection with greater confidence.",
+    "We will practise guided energy movements and perception of the sensory field, developing autonomy and reclaiming the natural sensitivity that belongs to us by essence.",
+    "We will also learn to breathe in harmony with the essence of your Being, because breathing is one of the keys to sensory awakening.",
+    "Anele will lead the movement. This course includes the subtle guidance of Anele, a member of the spiritual team that accompanies my work. Her loving and wise presence will be one of the invisible pillars leading the guided energy movement. I act as a channel for transmitting and organising the content so that learning unfolds gradually, safely and consciously.",
   ],
   es: [
     "Existen diferentes formas de realizar la comunicación y la lectura sensorial.",
     "Una de ellas es la activación del cuerpo sensorial mediante ejercicios de percepción. Al activar las células del cuerpo, despierta de nuevo la sensibilidad natural del ser humano, permitiéndole sentir las energías de su entorno. Así es posible percibir y comprender lo que sucede sin utilizar la visión física. El propio cuerpo empieza a leer las energías y a ver más allá de los ojos, incluso cuando están cerrados.",
     "Otra forma es la lectura sensorial electromagnética, que se produce a través de ondas enviadas por personas o seres a distancia o presentes en otras dimensiones. Los animales también emiten ondas de energía. Cuando aprendemos a identificar la firma energética de un ser, resulta casi imposible confundir su identidad. Cada ser del universo posee una energía única capaz de desplazarse entre dimensiones más densas y más sutiles.",
     "Durante los encuentros grupales entrenaremos nuestras percepciones para desarrollar, con el tiempo y de forma segura, la capacidad de entrar en contacto con seres de vibración más elevada. El curso no promete milagros: enseña un camino natural y progresivo que requiere disciplina, dedicación y respeto por el ritmo de cada persona.",
-    "Realizaremos ejercicios de meditación y percepción del campo sensorial, fortaleciéndolo como si entrenáramos en un gimnasio, desarrollando autonomía y recuperando nuestra sensibilidad natural.",
-    "También aprenderemos a respirar correctamente, porque la respiración es una de las claves del despertar sensorial.",
-    "El curso contará con la orientación sutil de Anele, integrante del equipo espiritual que acompaña mi trabajo. Su presencia amorosa y sabia sostendrá los encuentros con dirección, profundidad y alineación energética, ayudando a cada participante a acceder con mayor confianza a sus propios canales de percepción y reconexión interior.",
+    "Realizaremos ejercicios de movimientos guiados de energía y de percepción del campo sensorial, desarrollando autonomía y recuperando la sensibilidad natural que nos pertenece por esencia.",
+    "También aprenderemos a respirar en sintonía con la esencia de tu Ser, porque la respiración es una de las claves del despertar sensorial.",
+    "Anele estará al frente de la conducción del movimiento. El curso contará con la orientación sutil de Anele, integrante del equipo espiritual que acompaña mi trabajo. Su presencia amorosa y sabia será uno de los pilares invisibles al frente del movimiento guiado de energía. Yo actúo como canal de transmisión y organización del contenido para que el aprendizaje suceda de forma gradual, segura y consciente.",
   ],
   nl: [
     "Er bestaan verschillende vormen van zintuiglijke communicatie en waarneming.",
     "Een daarvan is de activering van het zintuiglijke lichaam via waarnemingsoefeningen. Door de cellen van het lichaam te activeren, ontwaakt de natuurlijke gevoeligheid opnieuw en kunnen we energieën om ons heen voelen. Zo wordt het mogelijk te begrijpen wat er gebeurt zonder uitsluitend op het fysieke zicht te vertrouwen. Het lichaam zelf leert energie te lezen en verder te zien dan de ogen, zelfs wanneer die gesloten zijn.",
     "Een andere vorm is elektromagnetische zintuiglijke waarneming via golven die worden uitgezonden door mensen of wezens op afstand of in andere dimensies. Ook dieren zenden energetische golven uit. Wanneer we de energetische signatuur van een wezen leren herkennen, wordt verwarring over de identiteit vrijwel onmogelijk. Elk wezen in het universum heeft een unieke energie die zich tussen dichtere en subtielere dimensies kan bewegen.",
     "Tijdens de groepsbijeenkomsten trainen we onze waarneming geleidelijk, zodat contact met wezens met een hogere trilling veilig kan worden ontwikkeld. De cursus belooft geen wonderen, maar leert een natuurlijke en stapsgewijze weg die discipline, toewijding en respect voor ieders tempo vraagt.",
-    "We doen meditatie- en waarnemingsoefeningen voor het zintuiglijke veld. Zoals in een sportschool versterken we deze aangeboren vaardigheid, ontwikkelen we zelfstandigheid en herontdekken we onze natuurlijke gevoeligheid.",
-    "We leren ook correct ademen, omdat ademhaling een van de sleutels tot zintuiglijk ontwaken is.",
-    "De cursus ontvangt de subtiele begeleiding van Anele, lid van het spirituele team dat mijn werk ondersteunt. Haar liefdevolle en wijze aanwezigheid draagt de bijeenkomsten met richting, verdieping en energetische afstemming en helpt elke deelnemer met meer vertrouwen de eigen kanalen van waarneming en innerlijke herverbinding te openen.",
+    "We doen oefeningen met begeleide energiebewegingen en waarneming van het zintuiglijke veld, ontwikkelen zelfstandigheid en herontdekken de natuurlijke gevoeligheid die wezenlijk bij ons hoort.",
+    "We leren ook ademen in afstemming met de essentie van je Zijn, omdat ademhaling een van de sleutels tot zintuiglijk ontwaken is.",
+    "Anele zal de beweging leiden. De cursus ontvangt de subtiele begeleiding van Anele, lid van het spirituele team dat mijn werk ondersteunt. Haar liefdevolle en wijze aanwezigheid is een van de onzichtbare pijlers achter de begeleide energiebeweging. Ik treed op als kanaal voor de overdracht en ordening van de inhoud, zodat het leerproces geleidelijk, veilig en bewust verloopt.",
   ],
 };
 
@@ -339,10 +339,10 @@ function splitDescription(description: string) {
 
 export function getDetailParagraphs(service: SiteService, locale: Locale) {
   const cmsDescription = service.description.trim();
+  if (service.productId === "online-course") return courseDetails[locale];
   const hasCompleteCmsDescription = cmsDescription.length >= 600 || cmsDescription.includes("\n\n");
 
   if (hasCompleteCmsDescription) return splitDescription(cmsDescription);
-  if (service.category === "course") return courseDetails[locale];
   if (locale === "pt" && sessionDetailsPt[service.productId]) return sessionDetailsPt[service.productId];
 
   return splitDescription(cmsDescription || service.text);

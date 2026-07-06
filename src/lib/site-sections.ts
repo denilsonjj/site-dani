@@ -70,14 +70,17 @@ export function getHomeSectionFallbacks(locale: Locale): SiteSection[] {
       body: copy.promptsIntro,
       title: copy.promptsTitle,
     }),
-    ...copy.prompts.slice(0, 3).map((prompt, index) =>
+    ...copy.prompts.map((prompt, index) =>
       section("home", `prompt-${index + 1}`, {
         eyebrow: copy.promptTones[index],
         imageAlt: prompt,
         imageUrl: [
-          "/gallery/prompt-crystal.webp",
+          "/gallery/prompt-singing-bowls.webp",
           "/gallery/prompt-waterfall.webp",
+          "/gallery/prompt-horse.webp",
           "/gallery/prompt-pet.avif",
+          "/gallery/prompt-crystal.webp",
+          "/gallery/prompt-amethyst.webp",
         ][index],
         title: prompt,
       }),

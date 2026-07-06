@@ -11,8 +11,8 @@ import {
   Video,
 } from "lucide-react";
 import { ContactForm } from "@/components/contact-form";
-import { AutoCarousel } from "@/components/auto-carousel";
 import { HeroVideo } from "@/components/hero-video";
+import { ManualCarousel } from "@/components/manual-carousel";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { ServiceCard } from "@/components/service-card";
 import { SiteFooter } from "@/components/site-footer";
@@ -82,14 +82,33 @@ export default async function LocalizedHome({
     getPublishedCourses(locale),
     getPublishedSiteSections("home", locale, getHomeSectionFallbacks(locale)),
   ]);
-  const servicePreview = services.slice(0, 8);
+  const servicePreview = services.slice(0, 4);
   const blogPreview = blogPosts.slice(0, 3);
   const primaryCourse = courses[0];
   const hero = sections.hero;
   const firstVisit = sections["first-visit"];
-  const about = sections.about;
   const promptsHeader = sections.prompts;
-  const prompts = [sections["prompt-1"], sections["prompt-2"], sections["prompt-3"]];
+  const promptImages = [
+    "/gallery/prompt-singing-bowls.webp",
+    "/gallery/prompt-waterfall.webp",
+    "/gallery/prompt-horse.webp",
+    "/gallery/prompt-pet.avif",
+    "/gallery/prompt-crystal.webp",
+    "/gallery/prompt-amethyst.webp",
+  ];
+  const legacyPromptImages = new Set([
+    "/gallery/prompt-crystal.webp",
+    "/gallery/prompt-waterfall.webp",
+    "/gallery/prompt-pet.avif",
+  ]);
+  const prompts = Array.from({ length: 6 }, (_, index) => {
+    const section = sections[`prompt-${index + 1}`];
+    const title = copy.prompts[index];
+    const imageUrl = !section.imageUrl || legacyPromptImages.has(section.imageUrl)
+      ? promptImages[index]
+      : section.imageUrl;
+    return { ...section, imageAlt: title, imageUrl, title };
+  });
   const servicesSection = sections.sessions;
   const courseSection = sections.course;
   const blogSection = sections.blog;
@@ -99,6 +118,12 @@ export default async function LocalizedHome({
     en: "Featured course",
     es: "Curso destacado",
     nl: "Uitgelichte cursus",
+  }[locale];
+  const carouselLabels = {
+    pt: { next: "Próximo", previous: "Anterior" },
+    en: { next: "Next", previous: "Previous" },
+    es: { next: "Siguiente", previous: "Anterior" },
+    nl: { next: "Volgende", previous: "Vorige" },
   }[locale];
   const heroUsesVideo = /\.(?:mp4|webm)(?:\?|$)/i.test(hero.imageUrl);
   const heroAppleVideo = hero.imageUrl === "/aurora-real.webm" ? "/aurora-real.mp4" : hero.imageUrl;
@@ -122,8 +147,8 @@ export default async function LocalizedHome({
 
         <div className="hero-content relative z-10 mx-auto flex min-h-[720px] max-w-7xl items-center px-5 py-20 lg:px-8">
           <div className="hero-copy min-w-0 w-full max-w-3xl">
-            <p className="mb-6 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.25em] text-[#d8b96a]">
-              <span className="h-px w-10 bg-[#d8b96a]" />
+            <p className="mb-6 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.25em] text-[#C9A227]">
+              <span className="h-px w-10 bg-[#C9A227]" />
               {hero.eyebrow}
             </p>
             <h1 className="display max-w-3xl text-[2.3rem] font-semibold leading-[1.06] tracking-[-0.03em] sm:text-5xl lg:text-[4.6rem] lg:leading-[1]">
@@ -134,7 +159,7 @@ export default async function LocalizedHome({
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link
-                className="inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-[#c6a15b] px-5 text-center font-bold text-[#10251d] transition hover:bg-[#dfc27a] sm:w-auto sm:px-7"
+                className="inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-[#C9A227] px-5 text-center font-bold text-[#10251d] transition hover:bg-[#C9A227] sm:w-auto sm:px-7"
                 href={hero.primaryCtaHref}
               >
                 {hero.primaryCtaLabel}
@@ -157,7 +182,7 @@ export default async function LocalizedHome({
 
       <section className="relative z-10 -mt-8 px-5" id="consulta">
         <div className="mx-auto max-w-5xl rounded-[2rem] bg-[#f8f5ec] p-8 text-center shadow-[0_25px_80px_rgba(10,43,31,0.16)] sm:p-12 lg:p-16" data-reveal>
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#a77b2f]">{firstVisit.eyebrow}</p>
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#C9A227]">{firstVisit.eyebrow}</p>
             <h2 className="display mx-auto mt-4 max-w-3xl text-4xl font-semibold leading-tight text-[#123c2d] sm:text-5xl">
               {firstVisit.title}
             </h2>
@@ -177,42 +202,27 @@ export default async function LocalizedHome({
         </div>
       </section>
 
-      <section className="px-5 py-24 sm:py-32" id="sobre">
-        <div className="mx-auto max-w-6xl text-center" data-reveal>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#547461]">
+      <section className="px-5 py-14 sm:py-16" id="sobre">
+        <div className="mx-auto max-w-6xl" data-reveal>
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 border-y border-[#123c2d]/10 py-8">
+            <p className="text-lg font-bold uppercase tracking-[0.18em] text-[#123c2d] sm:text-xl">
               Dani Therapies
             </p>
-            <h2 className="display mx-auto mt-4 max-w-3xl text-4xl font-semibold leading-tight text-[#123c2d] sm:text-6xl">
-              {about.title}
-            </h2>
-            <p className="mx-auto mt-7 max-w-4xl whitespace-pre-line text-base leading-8 text-[#52675e] sm:text-lg">
-              {about.body}
-            </p>
-            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {[1, 2, 3].map((index) => sections[`about-stat-${index}`]).filter(Boolean).map(({ title, body }) => (
-                <div className="rounded-[1.5rem] bg-white p-5 shadow-[0_18px_50px_rgba(19,35,29,0.08)]" key={title}>
-                  <p className="text-lg font-bold text-[#123c2d]">{title}</p>
-                  <p className="mt-2 text-sm leading-6 text-[#52675e]">{body}</p>
-                </div>
-              ))}
-              <div className="flex min-h-36 items-center justify-center px-3">
-                <Image
-                  alt="Assinatura Dani Matta"
-                  className="h-auto w-full max-w-36"
-                  height={700}
-                  src="/dani-matta-signature.webp"
-                  width={700}
-                />
-              </div>
-            </div>
             <Link
-              className="mt-8 inline-flex min-h-13 items-center justify-center gap-2 rounded-full bg-[#123c2d] px-6 font-bold text-white transition hover:bg-[#1f5742]"
-              href={about.primaryCtaHref}
+              className="inline-flex items-center gap-3 text-base font-bold text-[#C9A227] transition hover:gap-4 hover:text-[#C9A227] sm:text-lg"
+              href={`/${locale}/quem-somos`}
             >
-              {about.primaryCtaLabel}
-              <ArrowRight aria-hidden="true" size={17} />
+              <ArrowRight aria-hidden="true" size={22} />
+              {copy.nav.about}
             </Link>
+          </div>
+          <div className="mt-8 grid gap-4 sm:grid-cols-3">
+            {[1, 2, 3].map((index) => sections[`about-stat-${index}`]).filter(Boolean).map(({ title, body }) => (
+              <div className="rounded-[1.5rem] bg-white p-6 text-center shadow-[0_18px_50px_rgba(19,35,29,0.08)]" key={title}>
+                <p className="text-lg font-bold text-[#123c2d]">{title}</p>
+                <p className="mt-2 text-sm leading-6 text-[#52675e]">{body}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -227,10 +237,10 @@ export default async function LocalizedHome({
               {promptsHeader.body}
             </p>
           </div>
-          <AutoCarousel>
+          <ManualCarousel nextLabel={carouselLabels.next} previousLabel={carouselLabels.previous}>
             {prompts.map((prompt, index) => (
               <article
-                className="prompt-card group relative min-h-72 shrink-0 snap-start overflow-hidden rounded-[2rem] border border-[#173f30]/10 bg-[#123c2d] shadow-[0_20px_55px_rgba(19,35,29,0.12)] transition-[transform,box-shadow] duration-700 ease-out hover:-translate-y-1 hover:shadow-[0_26px_70px_rgba(19,35,29,0.2)]"
+                className="manual-carousel-item prompt-card group relative min-h-72 shrink-0 snap-start overflow-hidden rounded-[2rem] border border-[#173f30]/10 bg-[#123c2d] shadow-[0_20px_55px_rgba(19,35,29,0.12)] transition-[transform,box-shadow] duration-700 ease-out hover:-translate-y-1 hover:shadow-[0_26px_70px_rgba(19,35,29,0.2)]"
                 data-reveal
                 key={prompt.sectionKey}
                 style={{ "--reveal-delay": `${index * 90}ms` } as RevealStyle}
@@ -244,7 +254,7 @@ export default async function LocalizedHome({
                 />
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,32,24,0.08)_0%,rgba(8,32,24,0.48)_45%,rgba(8,32,24,0.88)_100%)]" />
                 <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-7">
-                  <span className="w-fit rounded-full border border-white/25 bg-white/12 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[#dfc27a] backdrop-blur-md">
+                  <span className="w-fit rounded-full border border-white/25 bg-white/12 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[#C9A227] backdrop-blur-md">
                     {prompt.eyebrow}
                   </span>
                   <p className="max-w-[28rem] text-xl font-semibold leading-8 text-white drop-shadow-[0_2px_14px_rgba(0,0,0,0.45)]">
@@ -253,7 +263,7 @@ export default async function LocalizedHome({
                 </div>
               </article>
             ))}
-          </AutoCarousel>
+          </ManualCarousel>
         </div>
       </section>
 
@@ -279,35 +289,27 @@ export default async function LocalizedHome({
               <ArrowRight aria-hidden="true" size={17} />
             </Link>
           </div>
-          <AutoCarousel
-            className="service-auto-carousel mt-12"
-            duplicateChildren={servicePreview.map((service, index) => (
-              <div className="service-slide shrink-0 snap-start" key={service.productId}>
-                <ServiceCard actionLabel={copy.services.action} anchor={false} detailsLabel={copy.services.detailsLabel} index={index} locale={locale} service={service} />
-              </div>
-            ))}
-            duration={servicePreview.length * 11}
-          >
+          <ManualCarousel className="service-auto-carousel" nextLabel={carouselLabels.next} previousLabel={carouselLabels.previous}>
             {servicePreview.map((service, index) => (
-              <div className="service-slide shrink-0 snap-start" key={service.productId}>
+              <div className="manual-carousel-item service-slide shrink-0 snap-start" key={service.productId}>
                 <ServiceCard actionLabel={copy.services.action} detailsLabel={copy.services.detailsLabel} index={index} locale={locale} service={service} />
               </div>
             ))}
-          </AutoCarousel>
+          </ManualCarousel>
         </div>
       </section>
 
       <section className="bg-[#0d3024] px-5 py-24 text-white sm:py-32" id="cursos">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div data-reveal>
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#c6a15b]">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#C9A227]">
               {courseSection.eyebrow}
             </p>
             <h2 className="display mt-4 max-w-xl text-5xl font-semibold leading-tight sm:text-6xl">
-              {primaryCourse?.title || courseSection.title}
+              {copy.course.title}
             </h2>
             <Link
-              className="mt-8 inline-flex min-h-13 items-center justify-center gap-2 rounded-full bg-[#c6a15b] px-6 font-bold text-[#10251d] transition hover:bg-[#dfc27a]"
+              className="mt-8 inline-flex min-h-13 items-center justify-center gap-2 rounded-full bg-[#C9A227] px-6 font-bold text-[#10251d] transition hover:bg-[#C9A227]"
               href={`/${locale}/cursos/${primaryCourse?.slug || "ativacao-sensorial-classes-em-portugues"}`}
             >
               {courseSection.primaryCtaLabel}
@@ -316,30 +318,42 @@ export default async function LocalizedHome({
           </div>
 
           <div
-            className="rounded-[2rem] border border-white/12 bg-white/[0.06] p-6 shadow-2xl shadow-black/10 sm:p-8"
+            className="overflow-hidden rounded-[2rem] border border-white/12 bg-white/[0.06] shadow-2xl shadow-black/10"
             data-reveal
             style={{ "--reveal-delay": "120ms" } as RevealStyle}
           >
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#c6a15b]">
-              {featuredCourseLabel}
-            </p>
-            <h3 className="display mt-4 text-3xl font-semibold leading-tight text-white sm:text-4xl">
-              {primaryCourse?.title || courseSection.title}
-            </h3>
-            <p className="mt-5 leading-8 text-white/68">
-              {primaryCourse?.description || primaryCourse?.text || courseSection.body}
-            </p>
-            <div className="mt-7 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.06] p-5">
-                <CreditCard aria-hidden="true" className="text-[#c6a15b]" size={24} />
-                <p className="mt-4 text-sm font-bold text-white/58">
-                  {primaryCourse?.duration || copy.course.duration}
-                </p>
-              </div>
-              <div className="flex items-center justify-center rounded-[1.25rem] border border-white/10 bg-white/[0.06] p-5 text-center">
-                <p className="price-text text-2xl font-bold leading-tight text-[#c6a15b] sm:text-3xl">
-                  {primaryCourse?.price || copy.course.price}
-                </p>
+            <div className="relative h-72 sm:h-80">
+              <Image
+                alt={copy.course.title}
+                className="object-cover"
+                fill
+                sizes="(min-width: 1024px) 55vw, 100vw"
+                src="/services/original-course-sensory-activation.webp"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0d3024]/70 via-transparent to-transparent" />
+            </div>
+            <div className="p-6 sm:p-8">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#C9A227]">
+                {featuredCourseLabel}
+              </p>
+              <h3 className="display mt-4 text-3xl font-semibold leading-tight text-white sm:text-4xl">
+                {copy.course.title}
+              </h3>
+              <p className="mt-5 leading-8 text-white/68">
+                {copy.course.intro}
+              </p>
+              <div className="mt-7 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.06] p-5">
+                  <CreditCard aria-hidden="true" className="text-[#C9A227]" size={24} />
+                  <p className="mt-4 text-sm font-bold text-white/58">
+                    {primaryCourse?.duration || copy.course.duration}
+                  </p>
+                </div>
+                <div className="flex items-center justify-center rounded-[1.25rem] border border-white/10 bg-white/[0.06] p-5 text-center">
+                  <p className="price-text text-2xl font-bold leading-tight text-[#C9A227] sm:text-3xl">
+                    {primaryCourse?.price || copy.course.price}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -404,8 +418,8 @@ export default async function LocalizedHome({
       <section className="px-5 pb-24 sm:pb-32" id="contato">
         <div className="mx-auto grid max-w-7xl overflow-hidden rounded-[2rem] bg-[#123c2d] text-white lg:grid-cols-[0.8fr_1.2fr]" data-reveal>
           <div className="noise border-b border-white/15 p-8 sm:p-12 lg:border-b-0 lg:border-r">
-            <MessageCircle className="text-[#c6a15b]" size={36} strokeWidth={1.5} />
-            <p className="mt-16 text-xs font-bold uppercase tracking-[0.22em] text-[#c6a15b]">
+            <MessageCircle className="text-[#C9A227]" size={36} strokeWidth={1.5} />
+            <p className="mt-16 text-xs font-bold uppercase tracking-[0.22em] text-[#C9A227]">
               {contactSection.eyebrow}
             </p>
             <h2 className="display mt-4 text-4xl font-semibold leading-tight sm:text-5xl">

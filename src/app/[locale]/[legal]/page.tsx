@@ -55,10 +55,6 @@ export default async function LegalPage({
             </section>
           ))}
         </div>
-        <a className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full border border-[#123c2d]/20 px-6 font-bold text-[#123c2d] transition hover:bg-[#e4eee6]" href={document.pdfUrl} rel="noopener noreferrer" target="_blank">
-          Abrir documento em PDF
-        </a>
-        <p className="mt-8 text-sm font-bold text-[#547461]">KVK- 94756279</p>
       </article>
     </main>
   );

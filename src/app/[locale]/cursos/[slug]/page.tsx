@@ -24,18 +24,19 @@ export async function generateMetadata({
   if (!locales.includes(rawLocale as Locale)) return {};
 
   const locale = rawLocale as Locale;
+  const copy = getContent(locale);
   const courses = await getPublishedCourses(locale);
   const course = courses.find((item) => (item.slug || item.productId) === slug);
   if (!course) return {};
 
   return {
-    title: `${course.title} | Dani Therapies`,
-    description: course.text,
+    title: `${copy.course.title} | Dani Therapies`,
+    description: copy.course.intro,
     alternates: { canonical: `/${locale}/cursos/${slug}` },
     openGraph: {
-      title: course.title,
-      description: course.text,
-      images: course.image ? [course.image] : undefined,
+      title: copy.course.title,
+      description: copy.course.intro,
+      images: ["/services/original-course-sensory-activation.webp"],
       type: "website",
     },
   };
@@ -69,7 +70,12 @@ export default async function CourseDetailPage({
       locale={locale}
       paragraphs={getDetailParagraphs(course, locale)}
       practicalTitle={labels.practicalTitle}
-      service={{ ...course, text: "" }}
+      service={{
+        ...course,
+        image: "/services/original-course-sensory-activation.webp",
+        text: "",
+        title: copy.course.title,
+      }}
     />
   );
 }

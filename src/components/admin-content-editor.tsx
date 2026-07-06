@@ -270,7 +270,7 @@ function SectionHeader({
       <div className="grid gap-3 sm:min-w-64">
         <LanguageSelector locale={activeLocale} onChange={onLocaleChange} />
         <button
-          className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#c6a15b] px-6 text-sm font-bold text-[#123c2d] transition hover:bg-[#e7ce93]"
+          className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#C9A227] px-6 text-sm font-bold text-[#123c2d] transition hover:bg-[#C9A227]"
           onClick={onCreate}
           type="button"
         >

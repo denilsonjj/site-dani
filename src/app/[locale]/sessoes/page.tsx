@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AutoCarousel } from "@/components/auto-carousel";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { ScrollReveal } from "@/components/scroll-reveal";
@@ -60,12 +59,12 @@ export default async function SessionsPage({
 
       <section className="bg-[#0d3024] px-5 py-16 text-white sm:py-24">
         <div className="mx-auto max-w-7xl">
-          <Link className="text-sm font-bold text-[#c6a15b]" href={`/${locale}`}>
+          <Link className="text-sm font-bold text-[#C9A227]" href={`/${locale}`}>
             ← Dani Therapies
           </Link>
           <div className="mt-14 max-w-4xl">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#c6a15b]">
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#C9A227]">
                 {hero.eyebrow}
               </p>
               <h1 className="display mt-4 text-5xl font-semibold leading-tight sm:text-7xl">
@@ -94,21 +93,11 @@ export default async function SessionsPage({
             </Link>
           </div>
 
-          <AutoCarousel
-            className="service-auto-carousel"
-            duplicateChildren={services.map((service, index) => (
-              <div className="service-slide shrink-0 snap-start" key={service.productId}>
-                <ServiceCard actionLabel={copy.services.action} anchor={false} detailsLabel={copy.services.detailsLabel} index={index} locale={locale} service={service} />
-              </div>
-            ))}
-            duration={services.length * 11}
-          >
+          <div className="grid gap-8">
             {services.map((service, index) => (
-              <div className="service-slide shrink-0 snap-start" key={service.productId}>
-                <ServiceCard actionLabel={copy.services.action} detailsLabel={copy.services.detailsLabel} index={index} locale={locale} service={service} />
-              </div>
+              <ServiceCard actionLabel={copy.services.action} detailsLabel={copy.services.detailsLabel} index={index} key={service.productId} layout="row" locale={locale} service={service} />
             ))}
-          </AutoCarousel>
+          </div>
         </div>
       </section>
 

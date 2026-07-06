@@ -5,7 +5,6 @@ export const siteConfig = {
   name: "Dani Therapies",
   whatsapp: "31616018467",
   social: {
-    facebook: "https://www.facebook.com/share/1B2Me1Zekh/?mibextid=wwXIfr",
     instagram: "https://www.instagram.com/dani_therapies",
     youtube: "https://www.youtube.com/@VoceandI",
   },

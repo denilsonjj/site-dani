@@ -51,7 +51,7 @@ export function SiteHeader({ copy, locale }: SiteHeaderProps) {
         >
           {items.map(([label, href]) => (
             <Link
-              className="rounded-full px-4 py-3 transition hover:bg-white/10 hover:text-[#d8b96a]"
+              className="rounded-full px-4 py-3 transition hover:bg-white/10 hover:text-[#C9A227]"
               href={href}
               key={href}
             >
@@ -63,7 +63,7 @@ export function SiteHeader({ copy, locale }: SiteHeaderProps) {
         <div className="flex items-center gap-3">
           <LanguageSwitcher locale={locale} />
           <Link
-            className="hidden min-h-11 items-center justify-center rounded-full bg-[#c6a15b] px-5 text-xs font-bold text-[#10251d] shadow-[0_12px_30px_rgba(0,0,0,0.14)] transition hover:bg-[#dfc27a] md:inline-flex"
+            className="hidden min-h-11 items-center justify-center rounded-full bg-[#C9A227] px-5 text-xs font-bold text-[#10251d] shadow-[0_12px_30px_rgba(0,0,0,0.14)] transition hover:bg-[#C9A227] md:inline-flex"
             href={`/${locale}/sessoes#primeira-consulta-online`}
           >
             {copy.book}

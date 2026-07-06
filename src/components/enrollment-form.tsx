@@ -72,7 +72,7 @@ export function EnrollmentForm({ labels, locale }: EnrollmentFormProps) {
   return (
     <div className="rounded-[2rem] border border-white/15 bg-white/[0.06] p-5 shadow-2xl shadow-black/10 backdrop-blur md:p-7">
       <button
-        className="inline-flex min-h-13 w-full items-center justify-center gap-2 rounded-full bg-[#c6a15b] px-6 font-bold text-[#10251d] transition hover:bg-[#dfc27a] sm:w-auto"
+        className="inline-flex min-h-13 w-full items-center justify-center gap-2 rounded-full bg-[#C9A227] px-6 font-bold text-[#10251d] transition hover:bg-[#C9A227] sm:w-auto"
         onClick={() => setIsOpen((current) => !current)}
         type="button"
       >
@@ -86,7 +86,7 @@ export function EnrollmentForm({ labels, locale }: EnrollmentFormProps) {
           <label className="grid gap-2 text-sm font-bold text-white/80">
             {labels.name}
             <span className="flex items-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-4">
-              <UserRound aria-hidden="true" className="text-[#c6a15b]" size={18} />
+              <UserRound aria-hidden="true" className="text-[#C9A227]" size={18} />
               <input
                 className="min-h-13 flex-1 bg-transparent text-white outline-none placeholder:text-white/35"
                 name="name"
@@ -109,7 +109,7 @@ export function EnrollmentForm({ labels, locale }: EnrollmentFormProps) {
             <label className="grid gap-2 text-sm font-bold text-white/80">
               {labels.email}
               <span className="flex items-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-4">
-                <Mail aria-hidden="true" className="text-[#c6a15b]" size={18} />
+                <Mail aria-hidden="true" className="text-[#C9A227]" size={18} />
                 <input
                   className="min-h-13 flex-1 bg-transparent text-white outline-none placeholder:text-white/35"
                   name="email"

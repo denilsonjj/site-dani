@@ -14,7 +14,7 @@ export default function LocaleLoading() {
             src="/dani-therapies-logo-cropped.webp"
           />
         </div>
-        <span className="mt-5 h-px w-24 bg-[#c6a15b]/70" />
+        <span className="mt-5 h-px w-24 bg-[#C9A227]/70" />
       </div>
     </main>
   );

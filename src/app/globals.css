@@ -7,7 +7,7 @@
   --sage: #799a81;
   --mint: #dcece2;
   --ivory: #f8f5ec;
-  --gold: #c6a15b;
+  --gold: #C9A227;
   --white: #ffffff;
 }
 
@@ -48,7 +48,7 @@ button {
 }
 
 :focus-visible {
-  outline: 3px solid #c6a15b;
+  outline: 3px solid #C9A227;
   outline-offset: 4px;
 }
 
@@ -146,51 +146,48 @@ button {
   background-size: 14px 14px;
 }
 
-.auto-carousel {
-  cursor: grab;
-  margin-top: 3.5rem;
-  overflow-x: auto;
-  scrollbar-width: none;
-  touch-action: pan-y;
-  user-select: none;
-}
-
-.auto-carousel::-webkit-scrollbar {
-  display: none;
-}
-
-.auto-carousel-track,
-.auto-carousel-group {
-  display: flex;
-  gap: 1.25rem;
-  width: max-content;
-}
-
-.auto-carousel-track {
-  animation: carousel-loop var(--carousel-duration) linear infinite;
-}
-
-.auto-carousel:hover .auto-carousel-track,
-.auto-carousel:focus-within .auto-carousel-track,
-.auto-carousel.is-dragging .auto-carousel-track {
-  animation-play-state: paused;
-}
-
-.auto-carousel.is-dragging {
-  cursor: grabbing;
-}
-
-.auto-carousel img {
-  pointer-events: none;
-}
-
 .prompt-card {
   min-height: 18rem;
   width: clamp(18rem, 30vw, 25rem);
 }
 
-.service-auto-carousel .auto-carousel-group {
-  align-items: stretch;
+.manual-carousel-track {
+  cursor: grab;
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.manual-carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.manual-carousel-track.is-dragging {
+  cursor: grabbing;
+  scroll-behavior: auto;
+}
+
+.carousel-arrow {
+  align-items: center;
+  background: #123c2d;
+  border: 1px solid rgba(18, 60, 45, 0.12);
+  border-radius: 9999px;
+  color: #C9A227;
+  display: inline-flex;
+  height: 3rem;
+  justify-content: center;
+  transition: background-color 300ms ease, transform 300ms ease;
+  width: 3rem;
+}
+
+.carousel-arrow:hover {
+  background: #1f5742;
+  transform: translateY(-2px);
 }
 
 .service-auto-carousel .service-slide {
@@ -283,12 +280,6 @@ button {
   }
 }
 
-@keyframes carousel-loop {
-  to {
-    transform: translateX(calc(-50% - 0.625rem));
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -303,10 +294,6 @@ button {
   }
 
   .hero-copy {
-    animation: none;
-  }
-
-  .auto-carousel-track {
     animation: none;
   }
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CreditCard, Sparkles } from "lucide-react";
@@ -84,12 +85,22 @@ export default async function CoursesPage({
   ]);
   const hero = sections.hero;
   const primaryCourse = courses[0];
-  const courseList = courses.length
-    ? courses
+  const normalizedCourses = courses.map((course) => course.productId === "online-course"
+    ? {
+        ...course,
+        description: copy.course.intro,
+        image: "/services/original-course-sensory-activation.webp",
+        text: copy.course.intro,
+        title: copy.course.title,
+      }
+    : course);
+  const courseList = normalizedCourses.length
+    ? normalizedCourses
     : [
         {
           description: copy.course.intro,
           duration: copy.course.duration,
+          image: "/services/original-course-sensory-activation.webp",
           price: copy.course.price,
           productId: "online-course",
           slug: "ativacao-sensorial-classes-em-portugues",
@@ -105,12 +116,12 @@ export default async function CoursesPage({
 
       <section className="bg-[#0d3024] px-5 py-16 text-white sm:py-24">
         <div className="mx-auto max-w-7xl">
-          <Link className="text-sm font-bold text-[#c6a15b]" href={`/${locale}`}>
+          <Link className="text-sm font-bold text-[#C9A227]" href={`/${locale}`}>
             {labels.back}
           </Link>
           <div className="mt-14 grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#c6a15b]">
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#C9A227]">
                 {hero.eyebrow}
               </p>
               <h1 className="display mt-4 text-5xl font-semibold leading-tight sm:text-7xl">
@@ -121,8 +132,8 @@ export default async function CoursesPage({
               </p>
             </div>
             <div className="rounded-[2rem] border border-white/12 bg-white/[0.06] p-6 shadow-2xl shadow-black/10">
-              <Sparkles className="text-[#c6a15b]" size={30} strokeWidth={1.5} />
-              <p className="mt-5 text-sm font-bold uppercase tracking-[0.16em] text-[#c6a15b]">
+              <Sparkles className="text-[#C9A227]" size={30} strokeWidth={1.5} />
+              <p className="mt-5 text-sm font-bold uppercase tracking-[0.16em] text-[#C9A227]">
                 {labels.beforeTitle}
               </p>
               <p className="mt-3 leading-7 text-white/68">
@@ -147,10 +158,19 @@ export default async function CoursesPage({
           <div className="mt-12 grid gap-6">
             {courseList.map((course, index) => (
               <article
-                className="grid overflow-hidden rounded-[2rem] border border-[#123c2d]/10 bg-white shadow-[0_22px_70px_rgba(19,35,29,0.10)] lg:grid-cols-[1fr_0.38fr]"
+                className="grid overflow-hidden rounded-[2rem] border border-[#123c2d]/10 bg-white shadow-[0_22px_70px_rgba(19,35,29,0.10)] lg:grid-cols-[0.48fr_1fr_0.38fr]"
                 data-reveal
                 key={course.productId}
               >
+                <div className="relative min-h-72 bg-[#123c2d] lg:min-h-full">
+                  <Image
+                    alt={course.title}
+                    className="object-cover"
+                    fill
+                    sizes="(min-width: 1024px) 28vw, 100vw"
+                    src={course.image || "/services/original-course-sensory-activation.webp"}
+                  />
+                </div>
                 <div className="p-7 sm:p-9">
                   <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#799a81]">
                     {labels.itemLabel} {String(index + 1).padStart(2, "0")}
@@ -171,11 +191,11 @@ export default async function CoursesPage({
 
                 <div className="flex flex-col justify-between gap-6 bg-[#123c2d] p-7 text-white sm:p-9">
                   <div>
-                    <CreditCard aria-hidden="true" className="text-[#c6a15b]" size={28} />
+                    <CreditCard aria-hidden="true" className="text-[#C9A227]" size={28} />
                     <p className="mt-6 text-sm font-bold text-white/58">
                       {course.duration}
                     </p>
-                    <p className="price-text mt-5 text-3xl font-bold leading-tight text-[#c6a15b]">
+                    <p className="price-text mt-5 text-3xl font-bold leading-tight text-[#C9A227]">
                       {course.price}
                     </p>
                   </div>

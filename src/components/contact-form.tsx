@@ -72,7 +72,7 @@ export function ContactForm({ labels }: ContactFormProps) {
       <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="max-w-sm text-xs leading-5 text-white/55">{labels.privacy}</p>
         <button
-          className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full bg-[#c6a15b] px-6 font-bold text-[#10251d] transition hover:bg-[#dfc27a]"
+          className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full bg-[#C9A227] px-6 font-bold text-[#10251d] transition hover:bg-[#C9A227]"
           type="submit"
         >
           {labels.submit}

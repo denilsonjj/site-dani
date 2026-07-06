@@ -48,14 +48,14 @@ export function CatalogDetail({
 
       <section className="overflow-hidden bg-[#0d3024] px-5 py-14 text-white sm:py-20">
         <div className="mx-auto max-w-7xl">
-          <Link className="inline-flex items-center gap-2 text-sm font-bold text-[#c6a15b] transition hover:text-[#dfc27a]" href={backHref}>
+          <Link className="inline-flex items-center gap-2 text-sm font-bold text-[#C9A227] transition hover:text-[#C9A227]" href={backHref}>
             <ArrowLeft aria-hidden="true" size={17} />
             {backLabel}
           </Link>
 
           <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_0.82fr] lg:items-center">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#c6a15b]">{eyebrow}</p>
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#C9A227]">{eyebrow}</p>
               <h1 className="display mt-4 max-w-4xl text-5xl font-semibold leading-[1.04] sm:text-7xl">
                 {service.title}
               </h1>
@@ -83,7 +83,7 @@ export function CatalogDetail({
       <section className="px-5 py-16 sm:py-24">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_22rem] lg:items-start">
           <article className="rounded-[2rem] border border-[#123c2d]/10 bg-white p-7 shadow-[0_22px_70px_rgba(19,35,29,0.08)] sm:p-10" data-reveal>
-            <Sparkles aria-hidden="true" className="text-[#a77b2f]" size={30} strokeWidth={1.5} />
+            <Sparkles aria-hidden="true" className="text-[#C9A227]" size={30} strokeWidth={1.5} />
             <h2 className="display mt-5 text-4xl font-semibold sm:text-5xl">{aboutTitle}</h2>
             <div className="mt-7 grid gap-6 text-base leading-8 text-[#52675e] sm:text-lg">
               {paragraphs.map((paragraph, index) => <p key={`${service.productId}-${index}`}>{paragraph}</p>)}
@@ -91,17 +91,17 @@ export function CatalogDetail({
           </article>
 
           <aside className="rounded-[2rem] bg-[#123c2d] p-7 text-white shadow-[0_22px_70px_rgba(19,35,29,0.16)] lg:sticky lg:top-28" data-reveal>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#c6a15b]">{practicalTitle}</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#C9A227]">{practicalTitle}</p>
             <div className="mt-7 grid gap-5">
               <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.06] p-5">
-                <Clock3 aria-hidden="true" className="text-[#c6a15b]" size={24} />
+                <Clock3 aria-hidden="true" className="text-[#C9A227]" size={24} />
                 <p className="mt-4 text-xs font-bold uppercase tracking-[0.14em] text-white/50">{durationLabel}</p>
                 <p className="mt-2 font-bold">{service.duration}</p>
               </div>
               <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.06] p-5">
-                <CreditCard aria-hidden="true" className="text-[#c6a15b]" size={24} />
+                <CreditCard aria-hidden="true" className="text-[#C9A227]" size={24} />
                 <p className="mt-4 text-xs font-bold uppercase tracking-[0.14em] text-white/50">{investmentLabel}</p>
-                <p className="price-text mt-2 text-3xl font-bold text-[#c6a15b]">{service.price}</p>
+                <p className="price-text mt-2 text-3xl font-bold text-[#C9A227]">{service.price}</p>
               </div>
             </div>
             <div className="mt-6">

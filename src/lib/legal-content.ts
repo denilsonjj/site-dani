@@ -8,7 +8,6 @@ type LegalSection = {
 
 type LegalDocument = {
   introduction: readonly string[];
-  pdfUrl: string;
   sections: readonly LegalSection[];
   title: string;
 };
@@ -16,7 +15,6 @@ type LegalDocument = {
 export const legalDocuments: Record<LegalDocumentKey, LegalDocument> = {
   cookies: {
     title: "Política de Cookies",
-    pdfUrl: "/legal/politica-de-cookies.pdf",
     introduction: [
       "O website da Dani Therapies utiliza apenas os cookies estritamente necessários ao seu correto funcionamento, segurança e prestação dos serviços disponibilizados.",
       "Os cookies são pequenos ficheiros de texto armazenados no dispositivo do utilizador quando visita um website. Estes permitem garantir o funcionamento adequado de determinadas funcionalidades.",
@@ -52,7 +50,6 @@ export const legalDocuments: Record<LegalDocumentKey, LegalDocument> = {
   },
   privacy: {
     title: "Política de Privacidade",
-    pdfUrl: "/legal/politica-de-privacidade.pdf",
     introduction: [
       "A Dani Therapies respeita a privacidade dos utilizadores do seu website e compromete-se a proteger os seus dados pessoais, em conformidade com o Regulamento Geral sobre a Proteção de Dados (RGPD) e a legislação aplicável nos Países Baixos.",
     ],
@@ -121,7 +118,6 @@ export const legalDocuments: Record<LegalDocumentKey, LegalDocument> = {
   },
   terms: {
     title: "Termos e Condições - Dani Therapies",
-    pdfUrl: "/legal/termos-e-condicoes.pdf",
     introduction: [
       "Agradecemos por escolher os serviços da Dani Therapies.",
       "Para garantir uma experiência transparente, respeitosa e segura para ambas as partes, solicitamos que leia atentamente os presentes Termos e Condições antes de agendar qualquer serviço.",

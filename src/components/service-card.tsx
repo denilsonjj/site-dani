@@ -12,6 +12,7 @@ type ServiceCardProps = {
   anchor?: boolean;
   detailsLabel: string;
   index: number;
+  layout?: "card" | "row";
   locale: Locale;
   service: SiteService;
 };
@@ -39,7 +40,7 @@ const availabilityCopy = {
   },
 };
 
-export function ServiceCard({ actionLabel, anchor = true, detailsLabel, index, locale, service }: ServiceCardProps) {
+export function ServiceCard({ actionLabel, anchor = true, detailsLabel, index, layout = "card", locale, service }: ServiceCardProps) {
   const icons = [Sparkles, HeartHandshake, MoonStar, ShieldCheck];
   const Icon = icons[index % icons.length];
   const remainingSeats = service.remainingSeats;
@@ -48,12 +49,14 @@ export function ServiceCard({ actionLabel, anchor = true, detailsLabel, index, l
 
   return (
     <article
-      className="flex h-full min-h-[31rem] flex-col overflow-hidden rounded-[2rem] border border-[#123c2d]/10 bg-[#f8f5ec] shadow-[0_18px_55px_rgba(19,35,29,0.08)]"
+      className={layout === "row"
+        ? "grid overflow-hidden rounded-[2rem] border border-[#123c2d]/10 bg-[#f8f5ec] shadow-[0_18px_55px_rgba(19,35,29,0.08)] md:grid-cols-[20rem_1fr]"
+        : "flex h-full min-h-[31rem] flex-col overflow-hidden rounded-[2rem] border border-[#123c2d]/10 bg-[#f8f5ec] shadow-[0_18px_55px_rgba(19,35,29,0.08)]"}
       data-reveal
       id={anchor ? service.slug : undefined}
       style={{ "--reveal-delay": `${index * 70}ms` } as RevealStyle}
     >
-      <div className="relative h-44 overflow-hidden bg-[#123c2d]">
+      <div className={layout === "row" ? "relative h-64 overflow-hidden bg-[#123c2d] md:h-full" : "relative h-44 overflow-hidden bg-[#123c2d]"}>
         <Image
           alt=""
           className="object-cover transition-transform duration-1000 ease-out hover:scale-[1.04]"
@@ -74,7 +77,7 @@ export function ServiceCard({ actionLabel, anchor = true, detailsLabel, index, l
           {service.title}
         </h3>
       </div>
-      <div className="flex flex-1 flex-col p-7">
+      <div className="flex flex-1 flex-col p-7 sm:p-8">
         <div className="text-[#547461]">
           <Icon aria-hidden="true" size={30} strokeWidth={1.5} />
         </div>
