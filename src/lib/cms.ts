@@ -133,7 +133,9 @@ export type SiteBlogPost = {
 };
 
 export type CheckoutProduct = {
+  amountCents?: number | null;
   capacityLimit?: number | null;
+  currency?: string;
   intakeFields: IntakeField[];
   name: string;
   productId: string;
@@ -183,8 +185,65 @@ function asLocaleRecord(value: LocalisedValue | undefined, fallback: Record<Loca
   };
 }
 
+const legacyThirtyDayServices = new Set(["depression-support", "migraine-support"]);
+const legacyFifteenDayLabels = new Set(["15 dias", "15 days", "15 días", "15 dagen"]);
+const thirtyDayLabels: Record<Locale, string> = {
+  pt: "30 dias",
+  en: "30 days",
+  es: "30 días",
+  nl: "30 dagen",
+};
+
+const courseTitles: Record<Locale, string> = {
+  pt: "Percepção Sensorial | Aulas em português",
+  en: "Sensory Perception | Lessons in Portuguese",
+  es: "Percepción Sensorial | Clases en portugués",
+  nl: "Zintuiglijke Waarneming | Lessen in het Portugees",
+};
+
+const englishCourseTitles: Record<Locale, string> = {
+  pt: "Sensory Perception | Lessons in English",
+  en: "Sensory Perception | Lessons in English",
+  es: "Sensory Perception | Lessons in English",
+  nl: "Sensory Perception | Lessons in English",
+};
+
+const legacyCourseTitles = [
+  "ativação sensorial",
+  "ativacao sensorial",
+  "perceção sensorial",
+  "percepcao sensorial",
+  "sensory activation",
+  "sensory perception",
+  "activación sensorial",
+  "percepción sensorial",
+  "sensorische activering",
+];
+
 function mapService(row: ServiceRow, locale: Locale): SiteService {
   const translated = getServiceTranslation(locale, row.product_id);
+  const storedDuration = localise(row.duration, locale, translated?.duration);
+  const storedTitle = localise(row.title, locale, translated?.title);
+  const normalisedCourseDuration = row.product_id === "online-course" && !/21h30|21:30/.test(storedDuration)
+    ? {
+        pt: "6 semanas · início: 15/08/2026 · horário: 21h30 (horário de Amesterdão)",
+        en: "6 weeks · starts: 15/08/2026 · time: 21:30 (Amsterdam time)",
+        es: "6 semanas · inicio: 15/08/2026 · horario: 21:30 (hora de Ámsterdam)",
+        nl: "6 weken · start: 15/08/2026 · tijd: 21:30 (Amsterdamse tijd)",
+      }[locale]
+    : row.product_id === "online-course-en" && !/21h30|21:30/.test(storedDuration)
+      ? {
+          pt: "6 semanas · início: 21/11/2026 · horário: 21h30 (horário de Amesterdão)",
+          en: "6 weeks · starts: 21/11/2026 · time: 21:30 (Amsterdam time)",
+          es: "6 semanas · inicio: 21/11/2026 · horario: 21:30 (hora de Ámsterdam)",
+          nl: "6 weken · start: 21/11/2026 · tijd: 21:30 (Amsterdamse tijd)",
+        }[locale]
+      : storedDuration;
+  const slug = row.product_id === "online-course" && row.slug.includes("ativacao-sensorial")
+    ? "percepcao-sensorial-aulas-em-portugues"
+    : row.product_id === "online-course-en" && !row.slug
+      ? "sensory-perception-lessons-in-english"
+      : row.slug;
   return {
     amountCents: row.amount_cents ?? undefined,
     badge: localise(row.badge, locale, translated?.badge),
@@ -192,7 +251,9 @@ function mapService(row: ServiceRow, locale: Locale): SiteService {
     category: row.category,
     currency: row.currency,
     description: localise(row.description, locale, translated?.text),
-    duration: localise(row.duration, locale, translated?.duration),
+    duration: legacyThirtyDayServices.has(row.product_id) && legacyFifteenDayLabels.has(storedDuration)
+      ? thirtyDayLabels[locale]
+      : normalisedCourseDuration,
     id: row.id,
     image: row.image_url || undefined,
     price: localise(row.price_label, locale, translated?.price),
@@ -205,10 +266,14 @@ function mapService(row: ServiceRow, locale: Locale): SiteService {
         : Math.max(row.capacity_limit - (row.seats_reserved || 0), 0),
     seatsPaid: row.seats_paid || 0,
     seatsReserved: row.seats_reserved || 0,
-    slug: row.slug,
+    slug,
     stripePriceEnv: row.stripe_price_env || undefined,
     text: localise(row.summary, locale, translated?.text),
-    title: localise(row.title, locale, translated?.title),
+    title: row.product_id === "online-course-en"
+      ? (storedTitle || englishCourseTitles[locale])
+      : row.product_id === "online-course" && legacyCourseTitles.some((title) => storedTitle.toLocaleLowerCase(locale).includes(title))
+        ? courseTitles[locale]
+        : storedTitle,
   };
 }
 
@@ -329,7 +394,7 @@ const fallbackSessionSeed: Array<Omit<SiteService, "category" | "currency" | "re
     amountCents: 26799,
     badge: "Apoio",
     description: "Tratamento à distância com primeira consulta, orientação e cuidado energético estruturado.",
-    duration: "15 dias",
+    duration: "30 dias",
     image: "/services/original-depression-support.webp",
     price: "267,99 €",
     productId: "depression-support",
@@ -357,7 +422,7 @@ const fallbackSessionSeed: Array<Omit<SiteService, "category" | "currency" | "re
     amountCents: 26799,
     badge: "Apoio",
     description: "Atendimento à distância com consulta inicial e plano de apoio energético para enxaqueca crônica.",
-    duration: "15 dias",
+    duration: "30 dias",
     image: "/services/original-energy-cleansing.webp",
     price: "267,99 €",
     productId: "migraine-support",
@@ -487,27 +552,122 @@ function fallbackServices(locale: Locale): SiteService[] {
   }));
 }
 
-function fallbackCourse(locale: Locale): SiteService {
-  const copy = getContent(locale).course;
+const courseIntros: Record<string, Record<Locale, string>> = {
+  "online-course": {
+    pt: "Na leitura sensorial existem várias maneiras de fazê-la. Uma delas é ativar o corpo sensorial por meio de exercícios de percepção. Quando ativamos as células do corpo, a sensibilidade natural desperta novamente.",
+    en: "Sensory reading can be developed through perception exercises that activate the sensory body and awaken natural sensitivity again.",
+    es: "La lectura sensorial puede desarrollarse mediante ejercicios de percepción que activan el cuerpo sensorial y despiertan nuevamente la sensibilidad natural.",
+    nl: "Zintuiglijke waarneming kan worden ontwikkeld via waarnemingsoefeningen die het zintuiglijke lichaam activeren en de natuurlijke gevoeligheid opnieuw wekken.",
+  },
+  "online-course-en": {
+    pt: "Curso em inglês para desenvolver a percepção sensorial, treinar a leitura energética e praticar movimentos guiados de energia com segurança e acompanhamento.",
+    en: "There are several ways to do a sensory reading. One of them is to activate the Sensory Body through perception exercises. When we activate the body's cells, natural sensitivity awakens again.",
+    es: "Curso en inglés para desarrollar la percepción sensorial, entrenar la lectura energética y practicar movimientos guiados de energía con seguridad y acompañamiento.",
+    nl: "Engelstalige cursus om zintuiglijke waarneming te ontwikkelen, energetisch lezen te oefenen en begeleide energiebewegingen veilig te trainen.",
+  },
+};
 
-  return {
+const courseDurations: Record<string, Record<Locale, string>> = {
+  "online-course": {
+    pt: "6 semanas · início: 15/08/2026 · horário: 21h30 (horário de Amesterdão)",
+    en: "6 weeks · starts: 15/08/2026 · time: 21:30 (Amsterdam time)",
+    es: "6 semanas · inicio: 15/08/2026 · horario: 21:30 (hora de Ámsterdam)",
+    nl: "6 weken · start: 15/08/2026 · tijd: 21:30 (Amsterdamse tijd)",
+  },
+  "online-course-en": {
+    pt: "6 semanas · início: 21/11/2026 · horário: 21h30 (horário de Amesterdão)",
+    en: "6 weeks · starts: 21/11/2026 · time: 21:30 (Amsterdam time)",
+    es: "6 semanas · inicio: 21/11/2026 · horario: 21:30 (hora de Ámsterdam)",
+    nl: "6 weken · start: 21/11/2026 · tijd: 21:30 (Amsterdamse tijd)",
+  },
+};
+
+const fallbackCourseConfig = [
+  {
     amountCents: 28500,
-    badge: copy.eyebrow,
+    badge: {
+      pt: "Aulas em português",
+      en: "Lessons in Portuguese",
+      es: "Clases en portugués",
+      nl: "Lessen in het Portugees",
+    },
+    image: "/services/original-course-sensory-activation.webp",
+    price: "285 €",
+    productId: "online-course",
+    slug: "percepcao-sensorial-aulas-em-portugues",
+    stripePriceEnv: "STRIPE_PRICE_ONLINE_COURSE",
+    titles: courseTitles,
+  },
+  {
+    amountCents: 38400,
+    badge: {
+      pt: "Aulas em inglês",
+      en: "Lessons in English",
+      es: "Clases en inglés",
+      nl: "Lessen in het Engels",
+    },
+    image: "/services/course-sensory-perception-english.webp",
+    price: "€384,00",
+    productId: "online-course-en",
+    slug: "sensory-perception-lessons-in-english",
+    stripePriceEnv: "STRIPE_PRICE_ONLINE_COURSE_EN",
+    titles: englishCourseTitles,
+  },
+] as const;
+
+function fallbackCourses(locale: Locale): SiteService[] {
+  return fallbackCourseConfig.map((course) => ({
+    amountCents: course.amountCents,
+    badge: course.badge[locale],
     category: "course",
     currency: "EUR",
-    description:
-      copy.intro,
-    duration: copy.duration,
-    image: "/services/original-course-sensory-activation.webp",
-    price: copy.price,
-    productId: "online-course",
+    description: courseIntros[course.productId][locale],
+    duration: courseDurations[course.productId][locale],
+    image: course.image,
+    price: course.price,
+    productId: course.productId,
     requiresIntake: true,
     requiresPolicyAcceptance: true,
-    slug: "ativacao-sensorial-classes-em-portugues",
-    stripePriceEnv: "STRIPE_PRICE_ONLINE_COURSE",
-    text: copy.intro,
-    title: copy.title,
-  };
+    slug: course.slug,
+    stripePriceEnv: course.stripePriceEnv,
+    text: courseIntros[course.productId][locale],
+    title: course.titles[locale],
+  }));
+}
+
+function fallbackCourseRows(): ServiceRow[] {
+  return fallbackCourseConfig.map((course, index) => {
+    const localised = (values: Record<Locale, string>) => ({
+      en: values.en,
+      es: values.es,
+      nl: values.nl,
+      pt: values.pt,
+    });
+
+    return {
+      amount_cents: course.amountCents,
+      badge: localised(course.badge),
+      capacity_limit: null,
+      category: "course",
+      currency: "EUR",
+      description: localised(courseIntros[course.productId]),
+      duration: localised(courseDurations[course.productId]),
+      id: `fallback-${course.productId}`,
+      image_url: course.image,
+      is_published: true,
+      price_label: { en: course.price, es: course.price, nl: course.price, pt: course.price },
+      product_id: course.productId,
+      requires_intake: true,
+      requires_policy_acceptance: true,
+      seats_paid: 0,
+      seats_reserved: 0,
+      slug: course.slug,
+      sort_order: index + 1,
+      stripe_price_env: course.stripePriceEnv,
+      summary: localised(courseIntros[course.productId]),
+      title: localised(course.titles),
+    };
+  });
 }
 
 function mapSiteSection(row: SiteSectionRow, locale: Locale): SiteSection {
@@ -657,14 +817,40 @@ function fallbackIntakeFields(locale: Locale, productId?: string): IntakeField[]
   };
   const helpSource = helpTexts[locale] || helpTexts.pt;
 
-  return fields.map(([key, fieldType]) => ({
+  return adaptCourseIntakeFields(fields.map(([key, fieldType]) => ({
     fieldType: fieldType as IntakeField["fieldType"],
     helpText: helpSource[key] || "",
     key,
     label: source[key] || labels.pt[key] || key,
     options: [],
     required: true,
-  }));
+  })), locale, productId);
+}
+
+const courseIntakeLabels: Record<Locale, Record<string, string>> = {
+  pt: {
+    service_goal: "O que espera desenvolver ou aprender com este curso?",
+    service_specific_information: "Existe alguma informação que considere importante partilhar antes de iniciar o curso?",
+  },
+  en: {
+    service_goal: "What do you hope to develop or learn from this course?",
+    service_specific_information: "Is there anything you consider important to share before starting the course?",
+  },
+  es: {
+    service_goal: "¿Qué espera desarrollar o aprender con este curso?",
+    service_specific_information: "¿Hay alguna información que considere importante compartir antes de comenzar el curso?",
+  },
+  nl: {
+    service_goal: "Wat hoopt u met deze cursus te ontwikkelen of te leren?",
+    service_specific_information: "Is er informatie die u belangrijk vindt om te delen voordat de cursus begint?",
+  },
+};
+
+function adaptCourseIntakeFields(fields: IntakeField[], locale: Locale, productId?: string) {
+  if (!productId?.startsWith("online-course")) return fields;
+
+  const labels = courseIntakeLabels[locale] || courseIntakeLabels.pt;
+  return fields.map((field) => labels[field.key] ? { ...field, label: labels[field.key] } : field);
 }
 
 function mapBlogPost(row: BlogRow, locale: Locale): SiteBlogPost {
@@ -717,7 +903,8 @@ export async function getPublishedServices(locale: Locale): Promise<SiteService[
 
 export async function getPublishedCourses(locale: Locale): Promise<SiteService[]> {
   const supabase = getSupabasePublicClient();
-  if (!supabase) return [fallbackCourse(locale)];
+  const fallbackItems = fallbackCourses(locale);
+  if (!supabase) return fallbackItems;
 
   const { data, error } = await supabase
     .from("content_services")
@@ -727,10 +914,37 @@ export async function getPublishedCourses(locale: Locale): Promise<SiteService[]
     .order("sort_order", { ascending: true });
 
   if (error || !data?.length) {
-    return [fallbackCourse(locale)];
+    return fallbackItems;
   }
 
-  return (data as ServiceRow[]).map((row) => mapService(row, locale));
+  const mapped = (data as ServiceRow[]).map((row) => {
+    const course = mapService(row, locale);
+    const fallback = fallbackItems.find((item) => item.productId === course.productId);
+    const isLegacyCourse =
+      course.productId === "online-course"
+      && legacyCourseTitles.some((title) => course.title.toLocaleLowerCase(locale).includes(title));
+
+    return isLegacyCourse && fallback
+      ? {
+          ...course,
+          description: fallback.description,
+          duration: fallback.duration,
+          image: course.image || fallback.image,
+          slug: fallback.slug,
+          text: fallback.text,
+          title: fallback.title,
+        }
+      : course;
+  });
+  const existingProductIds = new Set(mapped.map((course) => course.productId));
+  return [
+    ...mapped,
+    ...fallbackItems.filter((course) => !existingProductIds.has(course.productId)),
+  ].sort((left, right) => {
+    const leftOrder = left.productId === "online-course" ? 1 : left.productId === "online-course-en" ? 2 : 99;
+    const rightOrder = right.productId === "online-course" ? 1 : right.productId === "online-course-en" ? 2 : 99;
+    return leftOrder - rightOrder;
+  });
 }
 
 export async function getPublishedBlogPosts(locale: Locale): Promise<SiteBlogPost[]> {
@@ -787,7 +1001,7 @@ export async function getCheckoutProduct(productId: string, locale: Locale): Pro
     const { data } = await supabase
       .from("content_services")
       .select(
-        "id, product_id, title, stripe_price_env, requires_intake, requires_policy_acceptance, capacity_limit, seats_reserved",
+        "id, product_id, title, stripe_price_env, requires_intake, requires_policy_acceptance, capacity_limit, seats_reserved, amount_cents, currency",
       )
       .eq("product_id", productId)
       .eq("is_published", true)
@@ -797,6 +1011,8 @@ export async function getCheckoutProduct(productId: string, locale: Locale): Pro
       const service = data as Pick<
         ServiceRow,
         | "capacity_limit"
+        | "amount_cents"
+        | "currency"
         | "id"
         | "product_id"
         | "requires_intake"
@@ -805,13 +1021,15 @@ export async function getCheckoutProduct(productId: string, locale: Locale): Pro
         | "stripe_price_env"
         | "title"
       >;
-      const fields = await getIntakeFields(service.id, locale);
+      const fields = adaptCourseIntakeFields(await getIntakeFields(service.id, locale), locale, service.product_id);
       const supplements = fallbackIntakeFields(locale, service.product_id).filter(
         (field) => field.key === "field_reading_preview" && !fields.some((current) => current.key === field.key),
       );
 
       return {
         capacityLimit: service.capacity_limit ?? null,
+        amountCents: service.amount_cents ?? null,
+        currency: service.currency || "EUR",
         intakeFields: [...fields, ...supplements],
         name: localise(service.title, locale, productId),
         productId: service.product_id,
@@ -829,11 +1047,13 @@ export async function getCheckoutProduct(productId: string, locale: Locale): Pro
   }
 
   const staticProduct = getProduct(productId);
-  const fallbackProduct = fallbackServices(locale).find((service) => service.productId === productId);
+  const fallbackProduct = [...fallbackServices(locale), ...fallbackCourses(locale)].find((service) => service.productId === productId);
   if (!staticProduct && !fallbackProduct) return null;
 
   return {
     capacityLimit: fallbackProduct?.capacityLimit ?? null,
+    amountCents: fallbackProduct?.amountCents ?? null,
+    currency: fallbackProduct?.currency || "EUR",
     intakeFields: fallbackProduct?.requiresIntake ? fallbackIntakeFields(locale, productId) : [],
     name: fallbackProduct?.title || staticProduct?.name || productId,
     productId,
@@ -1023,10 +1243,34 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       .order("sort_order", { ascending: true }),
   ]);
 
+  const fallbackRows = fallbackCourseRows();
+  const courseRows = ((courses.data || []) as ServiceRow[]).map((course) => {
+    const fallback = fallbackRows.find((item) => item.product_id === course.product_id);
+    if (!fallback) return course;
+
+    const hasLegacyTitle = Object.values(course.title || {}).some((title) =>
+      legacyCourseTitles.some((legacyTitle) => title.toLocaleLowerCase().includes(legacyTitle)),
+    );
+    const hasMissingTime = Object.values(course.duration || {}).some((duration) => !/21h30|21:30/.test(duration));
+
+    return {
+      ...course,
+      duration: hasMissingTime ? fallback.duration : course.duration,
+      image_url: course.product_id === "online-course-en" && !course.image_url ? fallback.image_url : course.image_url,
+      slug: course.product_id === "online-course" && course.slug.includes("ativacao-sensorial") ? fallback.slug : course.slug,
+      title: hasLegacyTitle ? fallback.title : course.title,
+    };
+  });
+  const existingCourseIds = new Set(courseRows.map((course) => course.product_id));
+  const mergedCourses = [
+    ...courseRows,
+    ...fallbackRows.filter((course) => !existingCourseIds.has(course.product_id)),
+  ].sort((left, right) => left.sort_order - right.sort_order);
+
   return {
     blogPosts: ((blog.data || []) as BlogRow[]),
     configured: !(services.error || courses.error || blog.error),
-    courses: ((courses.data || []) as ServiceRow[]),
+    courses: mergedCourses,
     sections: sections.data?.length
       ? (sections.data as SiteSectionRow[])
       : getAdminSectionFallbackRows(),

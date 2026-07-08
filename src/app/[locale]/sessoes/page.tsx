@@ -93,9 +93,9 @@ export default async function SessionsPage({
             </Link>
           </div>
 
-          <div className="grid gap-8">
+          <div className="mx-auto grid max-w-4xl gap-8">
             {services.map((service, index) => (
-              <ServiceCard actionLabel={copy.services.action} detailsLabel={copy.services.detailsLabel} index={index} key={service.productId} layout="row" locale={locale} service={service} />
+              <ServiceCard actionLabel={copy.services.action} detailsLabel={copy.services.detailsLabel} index={index} key={service.productId} layout="vertical" locale={locale} service={service} />
             ))}
           </div>
         </div>

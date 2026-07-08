@@ -110,7 +110,10 @@ export function CheckoutButton({ children, disabled = false, locale, productId }
   const [requiredFields, setRequiredFields] = useState<RequiredField[]>([]);
   const [policyRequired, setPolicyRequired] = useState(false);
   const copy = checkoutCopy[locale] || checkoutCopy.pt;
-  const isCourse = productId === "online-course";
+  const isCourse = productId.startsWith("online-course");
+  const courseTermsHref = productId === "online-course-en"
+    ? "/legal/terms-conduct-sensory-perception.pdf"
+    : "/legal/termos-conduta-curso-percepcao-sensorial.pdf";
 
   async function requestCheckout(body: Record<string, unknown>) {
     const response = await fetch("/api/checkout", {
@@ -242,7 +245,7 @@ export function CheckoutButton({ children, disabled = false, locale, productId }
                 {copy.termsTextBefore}
                 <a
                   className="font-bold text-[#123c2d] underline underline-offset-4"
-                  href={isCourse ? "/legal/termos-conduta-curso-percepcao-sensorial.pdf" : `/${locale}/termos-e-condicoes`}
+                  href={isCourse ? courseTermsHref : `/${locale}/termos-e-condicoes`}
                   rel="noopener noreferrer"
                   target="_blank"
                 >

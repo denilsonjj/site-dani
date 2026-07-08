@@ -13,6 +13,7 @@ export const serviceVisuals: Record<string, string> = {
   "migraine-support": "/services/session-migraine-support.webp",
   "migraine-support-3-months": "/services/session-migraine-support-3-months.webp",
   "online-course": "/services/original-course-sensory-activation.webp",
+  "online-course-en": "/services/course-sensory-perception-english.webp",
   "tarot-field-reading": "/services/session-tarot-field-reading.webp",
   "tarot-field-reading-2h": "/services/session-tarot-field-reading-2h.webp",
   "terminal-transition-support": "/services/session-terminal-transition-support.webp",

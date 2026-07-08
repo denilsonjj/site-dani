@@ -36,8 +36,12 @@ export const productCatalog = {
     stripePriceEnv: "STRIPE_PRICE_GUIDED_HEALING_MOVEMENT",
   },
   "online-course": {
-    name: "Ativação Sensorial | Aulas em português",
+    name: "Perceção Sensorial",
     stripePriceEnv: "STRIPE_PRICE_ONLINE_COURSE",
+  },
+  "online-course-en": {
+    name: "Sensory Perception",
+    stripePriceEnv: "STRIPE_PRICE_ONLINE_COURSE_EN",
   },
 } as const;
 

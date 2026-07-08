@@ -93,7 +93,7 @@ export async function POST(request: Request) {
     }${customerEmail ? ` E-mail: ${customerEmail}.` : ""}`,
   );
 
-  if (!process.env.STRIPE_SECRET_KEY || !priceId) {
+  if (!process.env.STRIPE_SECRET_KEY || (!priceId && !product.amountCents)) {
     await saveCheckoutSubmission({
       customerEmail,
       customerName,
@@ -139,10 +139,23 @@ export async function POST(request: Request) {
 
   let session;
   try {
+    const lineItem = product.amountCents
+      ? {
+          price_data: {
+            currency: (product.currency || "EUR").toLowerCase(),
+            product_data: {
+              name: product.name,
+            },
+            unit_amount: product.amountCents,
+          },
+          quantity: 1,
+        }
+      : { price: priceId, quantity: 1 };
+
     session = await getStripe().checkout.sessions.create({
       allow_promotion_codes: true,
       customer_email: customerEmail || undefined,
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: [lineItem],
       metadata: {
         age: payload.age || "",
         locale,

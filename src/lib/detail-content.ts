@@ -27,7 +27,7 @@ export const aboutPageContent: Record<Locale, AboutPageContent> = {
       "Cada processo que conduzo é único, guiado com presença, respeito e precisão intuitiva.",
       "Em colaboração com as minhas equipas espirituais, ofereço cursos que aprofundam a perceção sensorial sutil e promovem a elevação da percepção em múltiplos níveis: experiências guiadas que unem ensinamentos canalizados, práticas vibracionais e expansão do Ser.",
     ],
-    quote: "Não prometo milagres! Mas ofereço qualidade de vida.",
+    quote: "Não prometo milagres. Ofereço qualidade de vida.",
     servicesEyebrow: "Dani Therapies",
     servicesTitle: "Cuidado personalizado em múltiplos níveis do Ser",
     servicesBody: [
@@ -175,16 +175,16 @@ const courseDetails: Record<Locale, string[]> = {
     "Durante os nossos encontros em grupo, vamos treinar a nossa percepção para, com o tempo, desenvolvermos a capacidade de entrar em contacto com seres de vibração mais elevada. O nosso curso não promete milagres. Aqui ensinamos um caminho natural e progressivo para alcançar esse nível de percepção com segurança, o que exige disciplina e dedicação. Cada pessoa tem o seu próprio ritmo de desenvolvimento.",
     "Faremos exercícios de movimentos guiados de energia e de percepção do campo sensório, desenvolvendo autonomia e resgatando a sensibilidade natural que nos pertence por essência.",
     "Vamos aprender também a respirar em sintonia com a essência do teu Ser, pois a respiração é uma das chaves para o despertar sensorial.",
-    "Anele estará à frente na condução do movimento. Este curso contará com a orientação sutil de Anele, que faz parte da equipa espiritual que acompanha o meu trabalho. A sua presença amorosa e sábia será um dos pilares invisíveis, à frente da condução do movimento guiado de energia. Eu atuo como canal de transmissão e organização do conteúdo, para que a aprendizagem aconteça de forma gradual, segura e consciente.",
+    "Este curso contará com a orientação sutil de Anele, que faz parte da equipa espiritual que acompanha o meu trabalho e estará à frente da condução do movimento guiado de energia. A sua presença amorosa e sábia será um dos pilares invisíveis desta aprendizagem. Eu atuo como canalizadora deste conhecimento, organizando o conteúdo para que a aprendizagem aconteça de forma gradual, segura e consciente.",
   ],
   en: [
-    "There are different ways to carry out sensory reading and communication.",
-    "One of them is activation of the sensory body through perception exercises. By activating the body's cells, our natural sensitivity awakens again, allowing us to sense the energies around us. It becomes possible to perceive and understand what is happening without relying on physical sight. The body itself begins to read energies and see beyond the eyes, even when they are closed.",
-    "Another form is electromagnetic sensory reading through waves sent by people or beings at a distance or in other dimensions. Animals also emit energetic waves. When we learn to identify a being's energetic signature, confusing its identity becomes almost impossible. Every being in the universe has a unique energy that can move between denser and subtler dimensions.",
-    "During our group meetings, we train perception progressively so that participants can safely develop contact with beings of a higher vibration. The course does not promise miracles: it teaches a natural, gradual path that requires discipline, dedication and respect for each person's pace.",
-    "We will practise guided energy movements and perception of the sensory field, developing autonomy and reclaiming the natural sensitivity that belongs to us by essence.",
-    "We will also learn to breathe in harmony with the essence of your Being, because breathing is one of the keys to sensory awakening.",
-    "Anele will lead the movement. This course includes the subtle guidance of Anele, a member of the spiritual team that accompanies my work. Her loving and wise presence will be one of the invisible pillars leading the guided energy movement. I act as a channel for transmitting and organising the content so that learning unfolds gradually, safely and consciously.",
+    "There are several ways to do a sensory reading.",
+    "One of them is to activate the Sensory Body through perception exercises. When we activate the body's cells, natural sensitivity awakens again. This is how you begin to feel the energies around you. In this way, you understand what is happening, even without using physical vision. The body itself begins to read the energy. You can see beyond the eyes, even with your eyes closed.",
+    "Another way is electromagnetic sensory reading. It takes place through waves sent by people or Beings at a distance, or by those who are in other dimensions. Animals also emit energy waves. When we learn to identify the energetic signature of a Being, it becomes almost impossible for us to mistake its identity. Every being in the universe possesses a unique energy that is able to move between dimensions, from the densest to the most subtle. It is through this ability that communication is established between humans with a low vibrational frequency and beings from higher dimensions.",
+    "During our group sessions, we will train our perception so that, over time, we develop the ability to come into contact with beings of higher vibration. Our course does not promise miracles. Here, we teach a natural and progressive path to reach this level of perception safely, which requires discipline and dedication. Each person has their own pace of development.",
+    "We will practise guided energy movement exercises and sensory field perception exercises, developing independence and restoring the natural sensitivity that belongs to us by essence.",
+    "We will also learn to breathe in harmony with the essence of your Being, as breathing is one of the keys to sensory awakening.",
+    "This course will be guided by the subtle presence of Anele, who is part of the spiritual team that accompanies my work and will lead the guided energy movement. Her loving and wise presence will be one of the invisible pillars of this learning journey. I act as the channel for this knowledge, organizing the content so that learning unfolds gradually, safely, and consciously.",
   ],
   es: [
     "Existen diferentes formas de realizar la comunicación y la lectura sensorial.",
@@ -217,6 +217,7 @@ const sessionDetailsPt: Record<string, string[]> = {
   ],
   "energy-cleansing-initial": [
     "A primeira consulta é essencial para entender as suas necessidades e oferecer um atendimento personalizado. Durante essa consulta, são recolhidas as informações necessárias para avaliar a sua situação e estabelecer um plano personalizado.",
+    "Dependendo do caso e da avaliação realizada durante o atendimento, já poderão ser iniciadas as primeiras intervenções necessárias.",
     "A Limpeza Energética e Espiritual realiza a remoção de energias negativas, impurezas e bloqueios que afetam o seu equilíbrio vibracional. Com o equilíbrio dos chakras, a estabilização da aura e dos corpos sutis, a sua vibração será elevada, permitindo uma conexão mais profunda com níveis de consciência e expansão espiritual.",
     "Também será realizada uma medição energética de várias áreas da sua vida e diversas medições vibracionais para identificar a sua posição energética e espiritual atual, bloqueios pessoais, desajustes, padrões negativos ou kármicos e desequilíbrios nos campos emocional, físico e espiritual.",
     "O objetivo dessa análise completa é conscientizar o cliente sobre os seus obstáculos e proporcionar opções sobre qual caminho terapêutico seguir.",
@@ -265,7 +266,8 @@ const sessionDetailsPt: Record<string, string[]> = {
   "depression-support": [
     "Este tratamento é realizado de forma espiritual e energética, combinando técnicas que atuam nos campos espiritual e energético para desvincular progressivamente situações e influências negativas associadas ao estado de depressão e restaurar o equilíbrio interno.",
     "O trabalho é intensivo durante 30 dias: um período inicial de 15 dias dedicado à parte espiritual, seguido de mais 15 dias voltados à parte energética.",
-    "Durante a primeira consulta, recolhemos as informações necessárias, avaliamos a origem do quadro e definimos um plano personalizado. Dependendo do caso, as primeiras intervenções já poderão ser iniciadas.",
+    "Durante a primeira consulta, recolhemos as informações necessárias, avaliamos a origem do quadro e definimos um plano personalizado.",
+    "Dependendo do caso e da avaliação realizada durante o atendimento, já poderão ser iniciadas as primeiras intervenções necessárias.",
     "A consulta tem duração de 1 hora e é realizada online através do Zoom. Este cuidado complementar não substitui acompanhamento médico ou psicológico.",
   ],
   "depression-support-3-months": [
@@ -277,7 +279,8 @@ const sessionDetailsPt: Record<string, string[]> = {
   "migraine-support": [
     "Este tratamento é realizado de forma espiritual e energética, combinando técnicas que atuam nesses campos para dissolver bloqueios e influências negativas associadas à enxaqueca crónica e restaurar o equilíbrio interno.",
     "O trabalho é intensivo durante 30 dias: um período inicial de 15 dias dedicado à parte espiritual, seguido de mais 15 dias voltados à parte energética.",
-    "Durante a primeira consulta, recolhemos as informações necessárias e definimos um plano personalizado. Dependendo do caso, as primeiras intervenções já poderão ser iniciadas.",
+    "Durante a primeira consulta, recolhemos as informações necessárias e definimos um plano personalizado.",
+    "Dependendo do caso e da avaliação realizada durante o atendimento, já poderão ser iniciadas as primeiras intervenções necessárias.",
     "A consulta tem duração de 1 hora e é realizada online através do Zoom. Este cuidado complementar não substitui avaliação ou tratamento médico.",
   ],
   "migraine-support-3-months": [
@@ -330,6 +333,39 @@ const sessionDetailsPt: Record<string, string[]> = {
   ],
 };
 
+const guidedHealingRecordingDetails: Record<Locale, string[]> = {
+  pt: [
+    "A gravação da sessão pode ser adquirida à parte e ficará disponível durante 3 meses.",
+    "Por se tratar de um trabalho vibracional, reescutar a gravação ao longo desse período favorece a integração gradual das frequências e do movimento energético realizado durante a sessão.",
+  ],
+  en: [
+    "The session recording can be purchased separately and will remain available for 3 months.",
+    "Because this is vibrational work, listening to the recording again during this period supports the gradual integration of the frequencies and energetic movement carried out during the session.",
+  ],
+  es: [
+    "La grabación de la sesión puede adquirirse por separado y estará disponible durante 3 meses.",
+    "Al tratarse de un trabajo vibracional, volver a escuchar la grabación durante ese período favorece la integración gradual de las frecuencias y del movimiento energético realizado durante la sesión.",
+  ],
+  nl: [
+    "De opname van de sessie kan afzonderlijk worden aangeschaft en blijft 3 maanden beschikbaar.",
+    "Omdat dit vibrationeel werk is, ondersteunt het opnieuw beluisteren van de opname gedurende deze periode de geleidelijke integratie van de frequenties en de energetische beweging die tijdens de sessie is uitgevoerd.",
+  ],
+};
+
+const earlyInterventionDetails: Record<Locale, string> = {
+  pt: "Dependendo do caso e da avaliação realizada durante o atendimento, já poderão ser iniciadas as primeiras intervenções necessárias.",
+  en: "Depending on the case and the assessment carried out during the appointment, the first necessary interventions may already be started.",
+  es: "Dependiendo del caso y de la evaluación realizada durante la atención, ya podrán iniciarse las primeras intervenciones necesarias.",
+  nl: "Afhankelijk van de situatie en de beoordeling tijdens de afspraak kunnen de eerste noodzakelijke interventies al worden gestart.",
+};
+
+const earlyInterventionServices = new Set([
+  "first-consultation",
+  "energy-cleansing-initial",
+  "depression-support",
+  "migraine-support",
+]);
+
 function splitDescription(description: string) {
   return description
     .split(/\n\s*\n/)
@@ -339,13 +375,40 @@ function splitDescription(description: string) {
 
 export function getDetailParagraphs(service: SiteService, locale: Locale) {
   const cmsDescription = service.description.trim();
-  if (service.productId === "online-course") return courseDetails[locale];
+  if (service.productId === "online-course-en") return courseDetails.en;
+  if (service.productId === "online-course") return courseDetails.pt;
   const hasCompleteCmsDescription = cmsDescription.length >= 600 || cmsDescription.includes("\n\n");
 
-  if (hasCompleteCmsDescription) return splitDescription(cmsDescription);
-  if (locale === "pt" && sessionDetailsPt[service.productId]) return sessionDetailsPt[service.productId];
+  if (service.productId === "guided-healing-movement") {
+    const baseParagraphs = hasCompleteCmsDescription
+      ? splitDescription(cmsDescription)
+      : locale === "pt"
+        ? sessionDetailsPt[service.productId]
+        : splitDescription(cmsDescription || service.text);
+    const recordingMarker = { pt: "gravação", en: "recording", es: "grabación", nl: "opname" }[locale];
+    return baseParagraphs.some((paragraph) => paragraph.toLocaleLowerCase(locale).includes(recordingMarker))
+      ? baseParagraphs
+      : [...baseParagraphs, ...guidedHealingRecordingDetails[locale]];
+  }
 
-  return splitDescription(cmsDescription || service.text);
+  const baseParagraphs = hasCompleteCmsDescription
+    ? splitDescription(cmsDescription)
+    : locale === "pt" && sessionDetailsPt[service.productId]
+      ? sessionDetailsPt[service.productId]
+      : splitDescription(cmsDescription || service.text);
+
+  if (!earlyInterventionServices.has(service.productId)) return baseParagraphs;
+
+  const paragraphs = locale === "pt"
+    ? baseParagraphs.map((paragraph) =>
+        paragraph.replace(" Dependendo do caso, as primeiras intervenções já poderão ser iniciadas.", ""),
+      )
+    : baseParagraphs;
+  const detail = earlyInterventionDetails[locale];
+
+  return paragraphs.some((paragraph) => paragraph.toLocaleLowerCase(locale).includes(detail.toLocaleLowerCase(locale)))
+    ? paragraphs
+    : [...paragraphs, detail];
 }
 
 export function getFallbackDetailText(productId: string) {

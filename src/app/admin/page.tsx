@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { BookOpenText, CheckCircle2, Database, Eye, LockKeyhole } from "lucide-react";
-import { AdminContentEditor } from "@/components/admin-content-editor";
+import { LockKeyhole } from "lucide-react";
+import { AdminDashboard } from "@/components/admin-dashboard";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getAdminOverview } from "@/lib/cms";
 
@@ -51,89 +51,37 @@ export default async function AdminPage() {
   }
 
   const overview = await getAdminOverview();
-  const publishedServices = overview.services.filter((service) => service.is_published).length;
-  const publishedCourses = overview.courses.filter((course) => course.is_published).length;
-  const publishedPosts = overview.blogPosts.filter((post) => post.is_published).length;
-
   return (
-    <main className="min-h-screen bg-[#f8f5ec] text-[#123c2d]">
-      <section className="bg-[#0b2a20] px-5 py-8 text-white sm:py-12">
-        <div className="mx-auto max-w-7xl">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <Link className="inline-flex text-sm font-bold text-[#C9A227]" href="/pt">
+    <main className="min-h-screen bg-[#f7f4ef] px-4 py-8 text-[#123c2d] sm:px-6 sm:py-12">
+      <div className="mx-auto max-w-6xl">
+        <header className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <Link className="inline-flex text-sm font-bold text-[#8b711b] transition hover:text-[#123c2d]" href="/pt">
               ← Voltar ao site
             </Link>
-            <form action="/api/admin/logout" method="post">
-              <button
-                className="inline-flex min-h-10 items-center rounded-full border border-white/15 px-4 text-sm font-bold text-white/78 transition hover:bg-white/10"
-                type="submit"
-              >
-                Sair do painel
-              </button>
-            </form>
+            <p className="mt-7 text-xs font-bold uppercase tracking-[0.2em] text-[#6f8378]">Dani Therapies</p>
+            <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Painel administrativo</h1>
+            <p className="mt-3 max-w-2xl leading-7 text-[#617268]">
+              Controle o que aparece no site de forma simples e organizada.
+            </p>
           </div>
-
-          <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_0.42fr] lg:items-end">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#C9A227]">
-                Painel administrativo
-              </p>
-              <h1 className="display mt-4 max-w-3xl text-5xl font-semibold leading-[0.98] sm:text-7xl">
-                Gestão de conteúdo
-              </h1>
-              <p className="mt-6 max-w-2xl text-base leading-8 text-white/72">
-                Edite sessões, cursos, blog, imagens, preços e publicação. O conteúdo salvo aparece no site automaticamente.
-              </p>
-            </div>
-            <div className="rounded-[2rem] border border-[#C9A227]/25 bg-white/[0.08] p-5 shadow-2xl shadow-black/20">
-              {overview.configured ? (
-                <CheckCircle2 className="text-[#C9A227]" size={28} strokeWidth={1.5} />
-              ) : (
-                <LockKeyhole className="text-[#C9A227]" size={28} strokeWidth={1.5} />
-              )}
-              <p className="mt-5 text-sm font-bold uppercase tracking-[0.14em] text-[#C9A227]">
-                Conteúdo
-              </p>
-              <p className="mt-2 leading-7 text-white/72">
-                {overview.configured
-                  ? "Base de conteúdo conectada."
-                  : "Base de conteúdo aguardando configuração."}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="px-5 py-8 sm:py-12">
-        <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-3">
-          {[
-            ["Sessões publicadas", `${publishedServices}/${overview.services.length}`, Database],
-            ["Cursos publicados", `${publishedCourses}/${overview.courses.length}`, BookOpenText],
-            ["Posts publicados", `${publishedPosts}/${overview.blogPosts.length}`, Eye],
-          ].map(([label, value, Icon]) => (
-            <article className="rounded-[1.5rem] bg-white p-6 shadow-[0_18px_50px_rgba(19,35,29,0.08)]" key={label as string}>
-              <Icon className="text-[#1f5742]" size={28} strokeWidth={1.6} />
-              <p className="mt-5 text-sm font-bold uppercase tracking-[0.16em] text-[#547461]">
-                {label as string}
-              </p>
-              <p className="mt-2 text-3xl font-bold">{value as string}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+          <form action="/api/admin/logout" method="post">
+            <button className="inline-flex min-h-11 items-center rounded-xl border border-[#123c2d]/15 bg-white px-5 text-sm font-bold shadow-sm transition hover:bg-[#edf3ee]" type="submit">
+              Sair do painel
+            </button>
+          </form>
+        </header>
 
       {!overview.configured ? (
-        <section className="px-5 pb-16">
-          <div className="mx-auto max-w-7xl rounded-[2rem] border border-[#123c2d]/10 bg-white p-7 shadow-[0_20px_60px_rgba(19,35,29,0.08)]">
-            <h2 className="display text-4xl font-semibold">Conteúdo ainda não conectado</h2>
+        <section className="mt-8 rounded-2xl border border-[#123c2d]/10 bg-white p-7 shadow-sm">
+            <h2 className="text-2xl font-bold">Conteúdo ainda não conectado</h2>
             <p className="mt-4 max-w-3xl leading-7 text-[#52675e]">
               Quando a base de conteúdo estiver configurada, esta tela passa a listar sessões, cursos e posts cadastrados.
             </p>
-          </div>
         </section>
       ) : (
-        <section className="px-5 pb-16">
-          <AdminContentEditor
+        <section className="mt-8">
+          <AdminDashboard
             blogPosts={overview.blogPosts}
             courses={overview.courses}
             sections={overview.sections}
@@ -141,6 +89,7 @@ export default async function AdminPage() {
           />
         </section>
       )}
+      </div>
     </main>
   );
 }

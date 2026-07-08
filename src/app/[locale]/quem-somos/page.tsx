@@ -11,6 +11,13 @@ import { getContent, locales, type Locale } from "@/lib/content";
 import { aboutPageContent } from "@/lib/detail-content";
 import { getAboutSectionFallbacks, splitParagraphs } from "@/lib/site-sections";
 
+const legacyIntroductionDescriptions: Partial<Record<Locale, string[]>> = {
+  pt: [
+    "Não prometo milagres! Mas ofereço qualidade de vida.",
+    "Não prometo milagres. Mas ofereço qualidade de vida.",
+  ],
+};
+
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
@@ -52,7 +59,10 @@ export default async function AboutPage({
   const copy = getContent(locale);
   const page = aboutPageContent[locale];
   const sections = await getPublishedSiteSections("about", locale, getAboutSectionFallbacks(locale));
-  const introduction = sections.introduction;
+  const storedIntroduction = sections.introduction;
+  const introduction = legacyIntroductionDescriptions[locale]?.includes(storedIntroduction.description.trim())
+    ? { ...storedIntroduction, description: page.quote }
+    : storedIntroduction;
   const work = sections.work;
 
   return (

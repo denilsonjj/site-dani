@@ -84,7 +84,6 @@ export default async function LocalizedHome({
   ]);
   const servicePreview = services.slice(0, 4);
   const blogPreview = blogPosts.slice(0, 3);
-  const primaryCourse = courses[0];
   const hero = sections.hero;
   const firstVisit = sections["first-visit"];
   const promptsHeader = sections.prompts;
@@ -113,11 +112,42 @@ export default async function LocalizedHome({
   const courseSection = sections.course;
   const blogSection = sections.blog;
   const contactSection = sections.contact;
+  const legacyCourseTitles = new Set([
+    "ativação sensorial",
+    "ativacao sensorial",
+    "perceção sensorial",
+    "percepção sensorial",
+    "sensory perception",
+    "percepción sensorial",
+    "zintuiglijke waarneming",
+  ]);
   const featuredCourseLabel = {
     pt: "Curso em destaque",
     en: "Featured course",
     es: "Curso destacado",
     nl: "Uitgelichte cursus",
+  }[locale];
+  const coursesPreviewTitle = legacyCourseTitles.has(courseSection.title.toLocaleLowerCase(locale))
+    ? {
+        pt: "Conheça os nossos cursos online",
+        en: "Explore our online courses",
+        es: "Conoce nuestros cursos online",
+        nl: "Ontdek onze online cursussen",
+      }[locale]
+    : courseSection.title;
+  const coursesPreviewBody = legacyCourseTitles.has(courseSection.title.toLocaleLowerCase(locale))
+    ? {
+        pt: "Encontre os cursos online disponíveis e escolha entre as turmas em português e em inglês.",
+        en: "Explore the available online courses and choose between the Portuguese and English classes.",
+        es: "Conoce los cursos online disponibles y elige entre las clases en portugués o en inglés.",
+        nl: "Bekijk de beschikbare online cursussen en kies tussen lessen in het Portugees of Engels.",
+      }[locale]
+    : courseSection.body;
+  const coursesPreviewCount = {
+    pt: `${courses.length} cursos disponíveis`,
+    en: `${courses.length} available courses`,
+    es: `${courses.length} cursos disponibles`,
+    nl: `${courses.length} beschikbare cursussen`,
   }[locale];
   const carouselLabels = {
     pt: { next: "Próximo", previous: "Anterior" },
@@ -126,7 +156,7 @@ export default async function LocalizedHome({
     nl: { next: "Volgende", previous: "Vorige" },
   }[locale];
   const heroUsesVideo = /\.(?:mp4|webm)(?:\?|$)/i.test(hero.imageUrl);
-  const heroAppleVideo = hero.imageUrl === "/aurora-real.webm" ? "/aurora-real.mp4" : hero.imageUrl;
+  const heroAppleVideo = hero.imageUrl.endsWith(".webm") ? hero.imageUrl.replace(/\.webm$/, ".mp4") : hero.imageUrl;
 
   return (
     <main>
@@ -306,15 +336,15 @@ export default async function LocalizedHome({
               {courseSection.eyebrow}
             </p>
             <h2 className="display mt-4 max-w-xl text-5xl font-semibold leading-tight sm:text-6xl">
-              {copy.course.title}
+              {coursesPreviewTitle}
             </h2>
-            <Link
+            <a
               className="mt-8 inline-flex min-h-13 items-center justify-center gap-2 rounded-full bg-[#C9A227] px-6 font-bold text-[#10251d] transition hover:bg-[#C9A227]"
-              href={`/${locale}/cursos/${primaryCourse?.slug || "ativacao-sensorial-classes-em-portugues"}`}
+              href={`/${locale}/cursos`}
             >
-              {courseSection.primaryCtaLabel}
+              {copy.coursePreview.allLabel}
               <ArrowRight aria-hidden="true" size={17} />
-            </Link>
+            </a>
           </div>
 
           <div
@@ -337,21 +367,21 @@ export default async function LocalizedHome({
                 {featuredCourseLabel}
               </p>
               <h3 className="display mt-4 text-3xl font-semibold leading-tight text-white sm:text-4xl">
-                {copy.course.title}
+                {coursesPreviewTitle}
               </h3>
               <p className="mt-5 leading-8 text-white/68">
-                {copy.course.intro}
+                {coursesPreviewBody}
               </p>
               <div className="mt-7 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.06] p-5">
                   <CreditCard aria-hidden="true" className="text-[#C9A227]" size={24} />
                   <p className="mt-4 text-sm font-bold text-white/58">
-                    {primaryCourse?.duration || copy.course.duration}
+                    {coursesPreviewCount}
                   </p>
                 </div>
                 <div className="flex items-center justify-center rounded-[1.25rem] border border-white/10 bg-white/[0.06] p-5 text-center">
                   <p className="price-text text-2xl font-bold leading-tight text-[#C9A227] sm:text-3xl">
-                    {primaryCourse?.price || copy.course.price}
+                    {copy.coursePreview.allLabel}
                   </p>
                 </div>
               </div>

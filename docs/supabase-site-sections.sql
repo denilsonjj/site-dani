@@ -54,7 +54,7 @@ values (
   'site-media',
   'site-media',
   true,
-  15728640,
+  62914560,
   array['image/avif', 'image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/webm']
 )
 on conflict (id) do update set

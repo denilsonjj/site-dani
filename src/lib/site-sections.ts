@@ -93,12 +93,23 @@ export function getHomeSectionFallbacks(locale: Locale): SiteSection[] {
       title: copy.servicesPreview.title,
     }),
     section("home", "course", {
-      body: copy.course.intro,
+      body: {
+        pt: "Encontre os cursos online disponíveis e escolha entre as turmas em português e em inglês.",
+        en: "Explore the available online courses and choose between the Portuguese and English classes.",
+        es: "Conoce los cursos online disponibles y elige entre las clases en portugués o en inglés.",
+        nl: "Bekijk de beschikbare online cursussen en kies tussen lessen in het Portugees of Engels.",
+      }[locale],
       eyebrow: copy.course.eyebrow,
-      imageAlt: copy.course.title,
+      imageAlt: copy.nav.courses,
       imageUrl: "/services/original-course-sensory-activation.webp",
+      primaryCtaHref: `/${locale}/cursos`,
       primaryCtaLabel: copy.coursePreview.detailsLabel,
-      title: copy.course.title,
+      title: {
+        pt: "Conheça os nossos cursos online",
+        en: "Explore our online courses",
+        es: "Conoce nuestros cursos online",
+        nl: "Ontdek onze online cursussen",
+      }[locale],
     }),
     section("home", "blog", {
       description: `${copy.blogPreview.quotePrefix}${copy.quote}${copy.blogPreview.quoteSuffix}`,

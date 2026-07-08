@@ -30,13 +30,13 @@ export async function generateMetadata({
   if (!course) return {};
 
   return {
-    title: `${copy.course.title} | Dani Therapies`,
-    description: copy.course.intro,
+    title: `${course.title} | Dani Therapies`,
+    description: course.description || course.text || copy.course.intro,
     alternates: { canonical: `/${locale}/cursos/${slug}` },
     openGraph: {
-      title: copy.course.title,
-      description: copy.course.intro,
-      images: ["/services/original-course-sensory-activation.webp"],
+      title: course.title,
+      description: course.description || course.text || copy.course.intro,
+      images: [course.image || "/services/original-course-sensory-activation.webp"],
       type: "website",
     },
   };
@@ -70,12 +70,7 @@ export default async function CourseDetailPage({
       locale={locale}
       paragraphs={getDetailParagraphs(course, locale)}
       practicalTitle={labels.practicalTitle}
-      service={{
-        ...course,
-        image: "/services/original-course-sensory-activation.webp",
-        text: "",
-        title: copy.course.title,
-      }}
+      service={course}
     />
   );
 }

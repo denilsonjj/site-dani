@@ -152,7 +152,6 @@ button {
 }
 
 .manual-carousel-track {
-  cursor: grab;
   display: flex;
   gap: 1.25rem;
   overflow-x: auto;
@@ -165,11 +164,6 @@ button {
 
 .manual-carousel-track::-webkit-scrollbar {
   display: none;
-}
-
-.manual-carousel-track.is-dragging {
-  cursor: grabbing;
-  scroll-behavior: auto;
 }
 
 .carousel-arrow {

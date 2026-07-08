@@ -1,6 +1,5 @@
 import type { CSSProperties } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { HeartHandshake, MoonStar, ShieldCheck, Sparkles } from "lucide-react";
 import { CheckoutButton } from "@/components/checkout-button";
 import type { SiteService } from "@/lib/cms";
@@ -12,7 +11,7 @@ type ServiceCardProps = {
   anchor?: boolean;
   detailsLabel: string;
   index: number;
-  layout?: "card" | "row";
+  layout?: "card" | "row" | "vertical";
   locale: Locale;
   service: SiteService;
 };
@@ -56,7 +55,11 @@ export function ServiceCard({ actionLabel, anchor = true, detailsLabel, index, l
       id={anchor ? service.slug : undefined}
       style={{ "--reveal-delay": `${index * 70}ms` } as RevealStyle}
     >
-      <div className={layout === "row" ? "relative h-64 overflow-hidden bg-[#123c2d] md:h-full" : "relative h-44 overflow-hidden bg-[#123c2d]"}>
+      <div className={layout === "row"
+        ? "relative h-64 overflow-hidden bg-[#123c2d] md:h-full"
+        : layout === "vertical"
+          ? "relative h-72 overflow-hidden bg-[#123c2d] sm:h-96"
+          : "relative h-44 overflow-hidden bg-[#123c2d]"}>
         <Image
           alt=""
           className="object-cover transition-transform duration-1000 ease-out hover:scale-[1.04]"
@@ -92,12 +95,12 @@ export function ServiceCard({ actionLabel, anchor = true, detailsLabel, index, l
             </p>
           </div>
           <div className="grid gap-3">
-            <Link
+            <a
               className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#123c2d]/18 px-5 text-center font-bold text-[#123c2d] transition hover:border-[#123c2d]/35 hover:bg-[#e4eee6]"
               href={`/${locale}/sessoes/${service.slug || service.productId}`}
             >
               {detailsLabel}
-            </Link>
+            </a>
             <CheckoutButton disabled={isSoldOut} locale={locale} productId={service.productId}>
               {actionLabel}
             </CheckoutButton>
