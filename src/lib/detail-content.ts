@@ -129,7 +129,8 @@ export const detailPageCopy = {
     aboutTitle: "Sobre este trabalho",
     practicalTitle: "Informações práticas",
     duration: "Duração",
-    investment: "Investimento",
+    serviceInvestment: "Valor",
+    courseInvestment: "Investimento",
     detailsAction: "Ver detalhes",
   },
   en: {
@@ -140,7 +141,8 @@ export const detailPageCopy = {
     aboutTitle: "About this work",
     practicalTitle: "Practical information",
     duration: "Duration",
-    investment: "Investment",
+    serviceInvestment: "Value",
+    courseInvestment: "Investment",
     detailsAction: "View details",
   },
   es: {
@@ -151,7 +153,8 @@ export const detailPageCopy = {
     aboutTitle: "Sobre este trabajo",
     practicalTitle: "Información práctica",
     duration: "Duración",
-    investment: "Inversión",
+    serviceInvestment: "Valor",
+    courseInvestment: "Inversión",
     detailsAction: "Ver detalles",
   },
   nl: {
@@ -162,7 +165,8 @@ export const detailPageCopy = {
     aboutTitle: "Over dit traject",
     practicalTitle: "Praktische informatie",
     duration: "Duur",
-    investment: "Investering",
+    serviceInvestment: "Prijs",
+    courseInvestment: "Investering",
     detailsAction: "Bekijk details",
   },
 } satisfies Record<Locale, Record<string, string>>;
@@ -170,8 +174,8 @@ export const detailPageCopy = {
 const courseDetails: Record<Locale, string[]> = {
   pt: [
     "Na leitura sensorial existem várias maneiras de fazê-la.",
-    "Uma delas é ativar o corpo sensorial por meio de exercícios de percepção. Quando ativamos as células do corpo, a sensibilidade natural desperta novamente. É assim que você começa a sentir as energias ao seu redor. Dessa forma você entende o que está acontecendo, mesmo sem usar a visão física. O próprio corpo passa a ler a energia. Você pode ver além dos olhos, mesmo de olhos fechados.",
-    "Outra forma é a leitura sensorial eletromagnética. Acontece através de ondas enviadas por pessoas ou seres à distância, ou que se encontrem noutras dimensões. Os animais também emitem ondas de energia. Quando aprendemos a identificar a assinatura energética de um Ser, torna-se quase impossível confundirmo-nos com a sua identidade. Cada ser no universo possui uma energia única, que se consegue mover entre dimensões, das mais densas às mais subtis. É através dessa capacidade que se estabelece a comunicação entre humanos com baixa elevação vibracional e seres de dimensões mais elevadas.",
+    "Uma delas é ativar o corpo sensorial por meio de exercícios de percepção. Quando ativamos as células do corpo, a sensibilidade natural desperta novamente. É assim que você começa a sentir as energias ao seu redor. Dessa forma você entende o que está acontecendo, mesmo sem usar a visão física. O próprio corpo passa a “ler” a energia. Você pode ver além dos olhos, mesmo de olhos fechados.",
+    "Outra forma é a leitura sensorial eletromagnética. Acontece através de ondas enviadas por pessoas ou seres à distância, ou que se encontrem noutras dimensões. Os animais também emitem ondas de energia. Quando aprendemos a identificar a assinatura energética de um Ser, torna-se quase impossível confundirmo-nos com a sua identidade. Cada ser no universo possui uma energia única, que se consegue mover entre dimensões, das mais densas às mais subtis. É através dessa capacidade que se estabelece a comunicação entre humanos com baixa frequência vibracional e seres de dimensões mais elevadas.",
     "Durante os nossos encontros em grupo, vamos treinar a nossa percepção para, com o tempo, desenvolvermos a capacidade de entrar em contacto com seres de vibração mais elevada. O nosso curso não promete milagres. Aqui ensinamos um caminho natural e progressivo para alcançar esse nível de percepção com segurança, o que exige disciplina e dedicação. Cada pessoa tem o seu próprio ritmo de desenvolvimento.",
     "Faremos exercícios de movimentos guiados de energia e de percepção do campo sensório, desenvolvendo autonomia e resgatando a sensibilidade natural que nos pertence por essência.",
     "Vamos aprender também a respirar em sintonia com a essência do teu Ser, pois a respiração é uma das chaves para o despertar sensorial.",

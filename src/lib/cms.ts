@@ -554,10 +554,10 @@ function fallbackServices(locale: Locale): SiteService[] {
 
 const courseIntros: Record<string, Record<Locale, string>> = {
   "online-course": {
-    pt: "Na leitura sensorial existem várias maneiras de fazê-la. Uma delas é ativar o corpo sensorial por meio de exercícios de percepção. Quando ativamos as células do corpo, a sensibilidade natural desperta novamente.",
-    en: "Sensory reading can be developed through perception exercises that activate the sensory body and awaken natural sensitivity again.",
-    es: "La lectura sensorial puede desarrollarse mediante ejercicios de percepción que activan el cuerpo sensorial y despiertan nuevamente la sensibilidad natural.",
-    nl: "Zintuiglijke waarneming kan worden ontwikkeld via waarnemingsoefeningen die het zintuiglijke lichaam activeren en de natuurlijke gevoeligheid opnieuw wekken.",
+    pt: "Curso de desenvolvimento da percepção sensorial por meio do Movimento Guiado de Energia, promovendo o despertar gradual da sensibilidade natural e da leitura sensorial de forma segura e consciente.",
+    en: "Course on the development of sensory perception through Guided Energy Movement, gradually strengthening natural sensitivity and expanding the capacity for sensory reading.",
+    es: "Curso de desarrollo de la percepción sensorial a través del Movimiento Guiado de Energía, fortaleciendo gradualmente la sensibilidad natural y ampliando la capacidad de lectura sensorial.",
+    nl: "Cursus voor de ontwikkeling van zintuiglijke waarneming via Begeleide Energiebeweging, die de natuurlijke gevoeligheid geleidelijk versterkt en de capaciteit voor zintuiglijke waarneming uitbreidt.",
   },
   "online-course-en": {
     pt: "Curso em inglês para desenvolver a percepção sensorial, treinar a leitura energética e praticar movimentos guiados de energia com segurança e acompanhamento.",

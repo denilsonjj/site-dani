@@ -66,7 +66,7 @@ export default async function CourseDetailPage({
       backLabel={labels.backCourse}
       durationLabel={labels.duration}
       eyebrow={labels.courseEyebrow}
-      investmentLabel={labels.investment}
+      investmentLabel={labels.courseInvestment}
       locale={locale}
       paragraphs={getDetailParagraphs(course, locale)}
       practicalTitle={labels.practicalTitle}

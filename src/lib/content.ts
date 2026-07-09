@@ -375,7 +375,7 @@ const content = {
         "Oferecemos serviços online de tratamentos terapêuticos, energéticos e espirituais personalizados, que atuam em múltiplos níveis do Ser.",
       primary: "Agendar primeira consulta",
       secondary: "Conhecer as sessões",
-      note: "Atendimento online · Zoom · Europa",
+      note: "Atendimento online · Zoom",
     },
     firstVisit: {
       eyebrow: "O primeiro passo",
@@ -429,7 +429,7 @@ const content = {
       eyebrow: "Curso online",
       title: "Percepção Sensorial | Aulas em português",
       intro:
-        "Na leitura sensorial existem várias maneiras de fazê-la. Uma delas é ativar o corpo sensorial por meio de exercícios de percepção. Quando ativamos as células do corpo, a sensibilidade natural desperta novamente.",
+        "Curso de desenvolvimento da percepção sensorial por meio do Movimento Guiado de Energia, promovendo o despertar gradual da sensibilidade natural e da leitura sensorial de forma segura e consciente.",
       price: "285 €",
       duration: "6 semanas · início: 15/08/2026 · horário: 21h30 (horário de Amesterdão)",
       cta: "Quero inscrever-me",
@@ -499,7 +499,7 @@ const content = {
       description: "Online sessions guided with presence, sensitivity and respect for your moment.",
       primary: "Book your first session",
       secondary: "Explore the sessions",
-      note: "Online · Zoom · Europe",
+      note: "Online · Zoom",
     },
     firstVisit: {
       eyebrow: "The first step",
@@ -614,7 +614,7 @@ const content = {
       description: "Sesiones online guiadas con presencia, sensibilidad y respeto por tu momento.",
       primary: "Reservar primera consulta",
       secondary: "Conocer las sesiones",
-      note: "Online · Zoom · Europa",
+      note: "Online · Zoom",
     },
     firstVisit: {
       eyebrow: "El primer paso",
@@ -729,7 +729,7 @@ const content = {
       description: "Online sessies met aandacht, gevoeligheid en respect voor jouw moment.",
       primary: "Eerste consult boeken",
       secondary: "Bekijk de sessies",
-      note: "Online · Zoom · Europa",
+      note: "Online · Zoom",
     },
     firstVisit: {
       eyebrow: "De eerste stap",

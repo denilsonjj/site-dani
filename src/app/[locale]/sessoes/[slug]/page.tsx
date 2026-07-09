@@ -65,7 +65,7 @@ export default async function SessionDetailPage({
       backLabel={labels.backSession}
       durationLabel={labels.duration}
       eyebrow={labels.sessionEyebrow}
-      investmentLabel={labels.investment}
+      investmentLabel={labels.serviceInvestment}
       locale={locale}
       paragraphs={getDetailParagraphs(service, locale)}
       practicalTitle={labels.practicalTitle}
