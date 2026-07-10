@@ -677,11 +677,15 @@ function SectionEditor({
   status?: string;
 }) {
   const canUploadVideo = item.page_key === "home" && item.section_key === "hero";
+  const canUploadMedia =
+    canUploadVideo
+    || (item.page_key === "home" && /^prompt-\d+$/.test(item.section_key))
+    || (item.page_key === "about" && item.section_key === "introduction");
 
   return (
     <article className="rounded-xl border border-[#123c2d]/10 bg-white">
       <div className="flex items-center gap-3 p-4">
-        <Thumb icon={canUploadVideo ? Video : Home} src={item.image_url} />
+        <Thumb icon={canUploadVideo ? Video : Home} src={canUploadMedia ? item.image_url : null} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <strong>{sectionLabels[item.section_key] || item.section_key}</strong>
@@ -699,13 +703,13 @@ function SectionEditor({
             <Field label="Ordem na página">
               <input className={inputClass()} onChange={(event) => onUpdate({ sort_order: Number(event.target.value) || 0 })} type="number" value={item.sort_order || 0} />
             </Field>
-            <MediaField
+            {canUploadMedia ? <MediaField
               acceptVideo={canUploadVideo}
               label={canUploadVideo ? "Vídeo da abertura ou imagem" : "Foto da seção"}
               onChange={(value) => onUpdate({ image_url: value })}
               section={`${item.page_key}-${item.section_key}`}
               value={item.image_url}
-            />
+            /> : null}
           </div>
           <LocalisedInput label="Linha pequena" locale={locale} onChange={(value) => onUpdate({ eyebrow: value })} value={item.eyebrow} />
           <LocalisedInput label="Título" locale={locale} onChange={(value) => onUpdate({ title: value })} value={item.title} />

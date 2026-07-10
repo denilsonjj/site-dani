@@ -45,7 +45,6 @@ export function getHomeSectionFallbacks(locale: Locale): SiteSection[] {
       description: `${copy.firstVisit.duration}\n${copy.firstVisit.format}`,
       eyebrow: copy.firstVisit.eyebrow,
       imageAlt: copy.firstVisit.imageAlt,
-      imageUrl: "/first-visit-spiritual.webp",
       primaryCtaHref: "#contato",
       primaryCtaLabel: copy.firstVisit.action,
       title: copy.firstVisit.title,
@@ -54,7 +53,6 @@ export function getHomeSectionFallbacks(locale: Locale): SiteSection[] {
       body: aboutPageContent[locale].intro.slice(0, 2).join("\n\n"),
       eyebrow: copy.nav.about,
       imageAlt: copy.about.imageAlt,
-      imageUrl: "/dani-quem-somos.webp",
       primaryCtaHref: `/${locale}/quem-somos`,
       primaryCtaLabel: copy.about.detailsLabel,
       description: copy.about.imageCaption,
@@ -101,7 +99,6 @@ export function getHomeSectionFallbacks(locale: Locale): SiteSection[] {
       }[locale],
       eyebrow: copy.course.eyebrow,
       imageAlt: copy.nav.courses,
-      imageUrl: "/services/original-course-sensory-activation.webp",
       primaryCtaHref: `/${locale}/cursos`,
       primaryCtaLabel: copy.coursePreview.detailsLabel,
       title: {

@@ -49,6 +49,14 @@ function missingTranslations(payload: SectionPayload) {
   return missing;
 }
 
+function sectionAllowsMedia(pageKey: string, sectionKey: string) {
+  return (
+    (pageKey === "home" && sectionKey === "hero")
+    || (pageKey === "home" && /^prompt-\d+$/.test(sectionKey))
+    || (pageKey === "about" && sectionKey === "introduction")
+  );
+}
+
 export async function GET(request: Request) {
   const { error, supabase } = requireAdminRequest(request);
   if (error) return error;
@@ -82,6 +90,7 @@ export async function POST(request: Request) {
     }
   }
 
+  const allowsMedia = sectionAllowsMedia(payload.pageKey, payload.sectionKey);
   const { data, error: mutationError } = await supabase
     .from("site_sections")
     .upsert(
@@ -89,8 +98,8 @@ export async function POST(request: Request) {
         body: payload.body || {},
         description: payload.description || {},
         eyebrow: payload.eyebrow || {},
-        image_alt: payload.imageAlt || {},
-        image_url: payload.imageUrl || null,
+        image_alt: allowsMedia ? payload.imageAlt || {} : {},
+        image_url: allowsMedia ? payload.imageUrl || null : null,
         is_published: Boolean(payload.isPublished),
         page_key: payload.pageKey,
         primary_cta_href: payload.primaryCtaHref || null,

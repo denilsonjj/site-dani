@@ -1267,13 +1267,21 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     ...fallbackRows.filter((course) => !existingCourseIds.has(course.product_id)),
   ].sort((left, right) => left.sort_order - right.sort_order);
 
+  const sectionAllowsMedia = (section: SiteSectionRow) =>
+    (section.page_key === "home" && section.section_key === "hero")
+    || (section.page_key === "home" && /^prompt-\d+$/.test(section.section_key))
+    || (section.page_key === "about" && section.section_key === "introduction");
+  const sectionRows = sections.data?.length
+    ? (sections.data as SiteSectionRow[])
+    : getAdminSectionFallbackRows();
+
   return {
     blogPosts: ((blog.data || []) as BlogRow[]),
     configured: !(services.error || courses.error || blog.error),
     courses: mergedCourses,
-    sections: sections.data?.length
-      ? (sections.data as SiteSectionRow[])
-      : getAdminSectionFallbackRows(),
+    sections: sectionRows.map((section) => sectionAllowsMedia(section)
+      ? section
+      : { ...section, image_alt: null, image_url: null }),
     services: ((services.data || []) as ServiceRow[]),
   };
 }
