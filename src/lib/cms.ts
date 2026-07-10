@@ -920,20 +920,19 @@ export async function getPublishedCourses(locale: Locale): Promise<SiteService[]
   const mapped = (data as ServiceRow[]).map((row) => {
     const course = mapService(row, locale);
     const fallback = fallbackItems.find((item) => item.productId === course.productId);
-    const isManagedCourse = course.productId === "online-course" || course.productId === "online-course-en";
     const isLegacyCourse =
       course.productId === "online-course"
       && legacyCourseTitles.some((title) => course.title.toLocaleLowerCase(locale).includes(title));
 
-    return isManagedCourse && fallback
+    return isLegacyCourse && fallback
       ? {
           ...course,
           description: fallback.description,
           duration: fallback.duration,
           image: course.image || fallback.image,
-          slug: isLegacyCourse ? fallback.slug : course.slug,
+          slug: fallback.slug,
           text: fallback.text,
-          title: isLegacyCourse ? fallback.title : course.title,
+          title: fallback.title,
         }
       : course;
   });
