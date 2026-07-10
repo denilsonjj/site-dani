@@ -16,7 +16,7 @@ const pageCopy = {
     back: "← Dani Therapies",
     beforeTitle: "Antes da inscrição",
     beforeText:
-      "Veja o nome do curso, a proposta, a duração e o valor. Depois disso, a inscrição abre o formulário obrigatório antes do pagamento.",
+      "Veja o nome do curso, a proposta, a duração e o investimento. Depois disso, a inscrição abre o formulário obrigatório antes do pagamento.",
     listTitle: "Cursos disponíveis",
     listIntro: "Escolha o curso que faz sentido para o seu momento e avance para a inscrição.",
     itemLabel: "Curso",
@@ -25,7 +25,7 @@ const pageCopy = {
     back: "← Dani Therapies",
     beforeTitle: "Before Enrolment",
     beforeText:
-      "Review the course name, purpose, duration and price. After that, enrolment opens the required form before payment.",
+      "Review the course name, purpose, duration and investment. After that, enrolment opens the required form before payment.",
     listTitle: "Available Courses",
     listIntro: "Choose the course that fits your moment and continue to enrolment.",
     itemLabel: "Course",
@@ -34,7 +34,7 @@ const pageCopy = {
     back: "← Dani Therapies",
     beforeTitle: "Antes de la inscripción",
     beforeText:
-      "Consulta el nombre del curso, la propuesta, la duración y el valor. Después, la inscripción abre el formulario obligatorio antes del pago.",
+      "Consulta el nombre del curso, la propuesta, la duración y la inversión. Después, la inscripción abre el formulario obligatorio antes del pago.",
     listTitle: "Cursos disponibles",
     listIntro: "Elige el curso que encaja con tu momento y continúa con la inscripción.",
     itemLabel: "Curso",
@@ -43,7 +43,7 @@ const pageCopy = {
     back: "← Dani Therapies",
     beforeTitle: "Voor inschrijving",
     beforeText:
-      "Bekijk de naam, inhoud, duur en prijs van de cursus. Daarna opent de inschrijving het verplichte formulier vóór betaling.",
+      "Bekijk de naam, inhoud, duur en investering van de cursus. Daarna opent de inschrijving het verplichte formulier vóór betaling.",
     listTitle: "Beschikbare cursussen",
     listIntro: "Kies de cursus die past bij jouw moment en ga verder met inschrijven.",
     itemLabel: "Cursus",
@@ -64,7 +64,7 @@ export async function generateMetadata({
 
   return {
     title: "Cursos | Dani Therapies",
-    description: "Cursos online da Dani Therapies com descrição, duração, valor e inscrição.",
+    description: "Cursos online da Dani Therapies com descrição, duração, investimento e inscrição.",
   };
 }
 

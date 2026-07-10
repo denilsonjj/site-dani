@@ -549,7 +549,7 @@ const content = {
     course: {
       eyebrow: "Online course",
       title: "Sensory Perception | Lessons in English",
-      intro: "There are several ways to practise sensory reading. One is to activate the sensory body through perception exercises. When we activate the body's cells, our natural sensitivity awakens again.",
+      intro: "A course for developing sensory perception through Guided Energy Movement, gradually strengthening natural sensitivity and expanding the capacity for sensory reading.",
       price: "€384,00",
       duration: "6 weeks · starts: 21/11/2026 · time: 21:30 (Amsterdam time)",
       cta: "I want to enrol",

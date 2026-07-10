@@ -560,8 +560,8 @@ const courseIntros: Record<string, Record<Locale, string>> = {
     nl: "Cursus voor de ontwikkeling van zintuiglijke waarneming via Begeleide Energiebeweging, die de natuurlijke gevoeligheid geleidelijk versterkt en de capaciteit voor zintuiglijke waarneming uitbreidt.",
   },
   "online-course-en": {
-    pt: "Curso em inglês para desenvolver a percepção sensorial, treinar a leitura energética e praticar movimentos guiados de energia com segurança e acompanhamento.",
-    en: "There are several ways to do a sensory reading. One of them is to activate the Sensory Body through perception exercises. When we activate the body's cells, natural sensitivity awakens again.",
+    pt: "Curso de desenvolvimento da percepção sensorial através do Movimento Guiado de Energia, fortalecendo gradualmente a sensibilidade natural e ampliando a capacidade de leitura sensorial.",
+    en: "A course for developing sensory perception through Guided Energy Movement, gradually strengthening natural sensitivity and expanding the capacity for sensory reading.",
     es: "Curso en inglés para desarrollar la percepción sensorial, entrenar la lectura energética y practicar movimientos guiados de energía con seguridad y acompañamiento.",
     nl: "Engelstalige cursus om zintuiglijke waarneming te ontwikkelen, energetisch lezen te oefenen en begeleide energiebewegingen veilig te trainen.",
   },
@@ -920,19 +920,20 @@ export async function getPublishedCourses(locale: Locale): Promise<SiteService[]
   const mapped = (data as ServiceRow[]).map((row) => {
     const course = mapService(row, locale);
     const fallback = fallbackItems.find((item) => item.productId === course.productId);
+    const isManagedCourse = course.productId === "online-course" || course.productId === "online-course-en";
     const isLegacyCourse =
       course.productId === "online-course"
       && legacyCourseTitles.some((title) => course.title.toLocaleLowerCase(locale).includes(title));
 
-    return isLegacyCourse && fallback
+    return isManagedCourse && fallback
       ? {
           ...course,
           description: fallback.description,
           duration: fallback.duration,
           image: course.image || fallback.image,
-          slug: fallback.slug,
+          slug: isLegacyCourse ? fallback.slug : course.slug,
           text: fallback.text,
-          title: fallback.title,
+          title: isLegacyCourse ? fallback.title : course.title,
         }
       : course;
   });
