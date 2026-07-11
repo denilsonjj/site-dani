@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { markCheckoutSubmissionPaid, releaseCheckoutSeat } from "@/lib/cms";
+import { getCheckoutReceipt, markCheckoutSubmissionPaid, releaseCheckoutSeat } from "@/lib/cms";
+import { sendCheckoutReceiptEmail } from "@/lib/email";
 import { getStripe } from "@/lib/stripe";
 
 export async function POST(request: Request) {
@@ -32,6 +33,16 @@ export async function POST(request: Request) {
 
     if (submissionId) {
       await markCheckoutSubmissionPaid(submissionId, session.id);
+      const receipt = await getCheckoutReceipt(submissionId, session.id);
+
+      if (receipt) {
+        try {
+          const result = await sendCheckoutReceiptEmail(receipt);
+          if (result.error) console.error("Resend checkout receipt error", result.error);
+        } catch (error) {
+          console.error("Checkout receipt email failed", error);
+        }
+      }
     }
   }
 

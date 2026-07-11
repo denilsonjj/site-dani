@@ -96,7 +96,7 @@ const enServices: ServiceCopy[] = [
   {
     productId: "energy-cleansing",
     title: "Energetic & Spiritual Cleansing",
-    text: "Vibrational restoration, cleansing of heavy energy and harmonisation of the aura and subtle bodies.",
+    text: "Vibrational restoration, cleansing of dense energy and harmonisation of the aura and subtle bodies.",
     duration: "Remote session",
     price: "114.99 €",
     badge: "Restore",
@@ -136,7 +136,7 @@ const enServices: ServiceCopy[] = [
   {
     productId: "depression-support",
     title: "Depression Support Treatment",
-    text: "Intensive remote energetic support with first consultation and structured follow-up.",
+    text: "Intensive remote energetic support, including a first consultation and structured follow-up.",
     duration: "30 days",
     price: "267.99 €",
     badge: "Support",
@@ -144,7 +144,7 @@ const enServices: ServiceCopy[] = [
   {
     productId: "environment-harmonization",
     title: "Environment Harmonisation",
-    text: "Energetic cleansing and balancing for homes or spaces that feel heavy.",
+    text: "Energetic cleansing and balancing for homes or spaces that feel energetically heavy.",
     duration: "Up to 3 homes",
     price: "294 €",
     badge: "Spaces",
@@ -489,13 +489,13 @@ const content = {
     whatsapp: "Falar pelo WhatsApp",
   },
   en: {
-    metaTitle: "Energy therapies and spiritual guidance",
+    metaTitle: "Energetic therapy and spiritual guidance",
     metaDescription:
       "Online sessions for energetic care, spiritual guidance, courses and personal development with Dani Therapies.",
     nav: { about: "About", services: "Sessions", courses: "Courses", blog: "Journal", contact: "Contact", book: "Book a session" },
     hero: {
       eyebrow: "Energetic and spiritual care",
-      title: "A safe space to restore your energy and listen to your essence.",
+      title: "A safe space to restore your energy and reconnect with your essence.",
       description: "Online sessions guided with presence, sensitivity and respect for your moment.",
       primary: "Book your first session",
       secondary: "Explore the sessions",
@@ -514,7 +514,7 @@ const content = {
       imageAlt: "Dani Therapies during an energetic care session",
       imageCaption: "Healing, guidance and presence for energetic and spiritual processes.",
       title: "Sensitive work with a clear structure.",
-      body: "I am a Spiritual Noetic Healer and Consciousness Awakening Educator, working with therapeutic, spiritual and energetic care. My mission is to guide people back to their essence, restoring vital energy, aligning the subtle bodies and reconnecting each being with their deepest truth.",
+      body: "I am a Spiritual Noetic Healer and Consciousness Awakening Educator, working with therapeutic, spiritual and energetic care. My mission is to guide people back to their essence, restore vital energy, align the subtle bodies and reconnect each person with their deepest truth.",
       detailsLabel: "Read my full story",
       stats: [
         { title: "Online", text: "Sessions by video call" },
@@ -549,7 +549,7 @@ const content = {
     course: {
       eyebrow: "Online course",
       title: "Sensory Perception | Lessons in English",
-      intro: "A course for developing sensory perception through Guided Energy Movement, gradually strengthening natural sensitivity and expanding the capacity for sensory reading.",
+      intro: "A course for developing sensory perception through Guided Energetic Movement, gradually strengthening natural sensitivity and expanding the capacity for sensory reading.",
       price: "€384,00",
       duration: "6 weeks · starts: 21/11/2026 · time: 21:30 (Amsterdam time)",
       cta: "I want to enrol",
@@ -569,8 +569,8 @@ const content = {
       eyebrow: "How it works",
       title: "Less friction, more clarity",
       steps: [
-        ["01", "Choose a session or course", "Review the duration, price and details to find the most suitable path."],
-        ["02", "Share only what is needed", "Course: name, age and email. Session: direct conversation to confirm the best path."],
+        ["01", "Choose a session or course", "Review the duration, investment and details to find the most suitable path."],
+        ["02", "Share only what is needed", "Course enrolment asks only for the essential details. Sessions include the required intake before payment."],
         ["03", "Pay securely", "Complete your online payment simply and securely."],
       ],
     },

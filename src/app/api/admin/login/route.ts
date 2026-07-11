@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { setAdminSessionCookie } from "@/lib/admin-auth";
+import { setAdminSessionCookie, validateAdminPassword } from "@/lib/admin-auth";
 
 export async function POST(request: Request) {
   const formData = await request.formData().catch(() => null);
@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     return new NextResponse(null, { headers: { Location: "/admin?error=config" }, status: 303 });
   }
 
-  if (password !== token) {
+  if (!(await validateAdminPassword(password))) {
     return new NextResponse(null, { headers: { Location: "/admin?error=login" }, status: 303 });
   }
 

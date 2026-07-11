@@ -8,11 +8,13 @@ import {
   EyeOff,
   FileText,
   Home,
+  KeyRound,
   LayoutDashboard,
   ListChecks,
   Pencil,
   Plus,
   Save,
+  ShieldCheck,
   UploadCloud,
   Video,
 } from "lucide-react";
@@ -26,7 +28,7 @@ type AdminDashboardProps = {
 };
 
 type LocaleKey = "pt" | "en" | "es" | "nl";
-type TabKey = "overview" | "pages" | "sessions" | "courses" | "blog";
+type TabKey = "overview" | "pages" | "sessions" | "courses" | "blog" | "settings";
 type LocalisedValue = Record<string, string> | null;
 type StatusState = Record<string, string>;
 
@@ -35,6 +37,13 @@ const localeLabels: Record<LocaleKey, string> = {
   en: "Inglês",
   es: "Espanhol",
   nl: "Holandês",
+};
+
+const localeFlags: Record<LocaleKey, string> = {
+  pt: "/flag-pt.svg",
+  en: "/flag-en.svg",
+  es: "/flag-es.svg",
+  nl: "/flag-nl.svg",
 };
 
 const pageLabels: Record<string, string> = {
@@ -63,6 +72,10 @@ const sectionLabels: Record<string, string> = {
   "prompt-5": "Carrossel 5",
   "prompt-6": "Carrossel 6",
   prompts: "Título do carrossel",
+  "partner-1": "Parceiro 1",
+  "partner-2": "Parceiro 2",
+  "partner-3": "Parceiro 3",
+  partners: "Empresas parceiras",
   sessions: "Prévia das sessões",
   work: "Continuação Quem Somos",
 };
@@ -73,6 +86,7 @@ const tabs: Array<{ icon: ComponentType<{ size?: number }>; key: TabKey; label: 
   { icon: ListChecks, key: "sessions", label: "Sessões" },
   { icon: BookOpenText, key: "courses", label: "Curso" },
   { icon: FileText, key: "blog", label: "Blog" },
+  { icon: KeyRound, key: "settings", label: "Segurança" },
 ];
 
 function localised(value: LocalisedValue, locale: LocaleKey = "pt") {
@@ -262,16 +276,30 @@ function Field({ children, label }: { children: ReactNode; label: string }) {
 
 function LocaleSelector({ locale, onChange }: { locale: LocaleKey; onChange: (locale: LocaleKey) => void }) {
   return (
-    <label className="flex items-center gap-3 text-sm font-bold">
-      Idioma
-      <select className={inputClass()} onChange={(event) => onChange(event.target.value as LocaleKey)} value={locale}>
-        {Object.entries(localeLabels).map(([key, label]) => (
-          <option key={key} value={key}>
-            {label}
-          </option>
+    <div className="grid gap-2">
+      <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#617268]">Idioma editado agora</p>
+      <div className="flex flex-wrap gap-2">
+        {(Object.keys(localeLabels) as LocaleKey[]).map((key) => (
+          <button
+            aria-pressed={locale === key}
+            className={
+              locale === key
+                ? "inline-flex min-h-12 min-w-[8.75rem] flex-1 items-center justify-center gap-2 rounded-xl bg-[#123c2d] px-4 text-sm font-bold text-white shadow-sm sm:flex-none"
+                : "inline-flex min-h-12 min-w-[8.75rem] flex-1 items-center justify-center gap-2 rounded-xl border border-[#123c2d]/12 bg-white px-4 text-sm font-bold text-[#40564d] transition hover:bg-[#edf2ed] sm:flex-none"
+            }
+            key={key}
+            onClick={() => onChange(key)}
+            type="button"
+          >
+            <Image alt="" aria-hidden="true" height={18} src={localeFlags[key]} width={24} />
+            {localeLabels[key]}
+          </button>
         ))}
-      </select>
-    </label>
+      </div>
+      <p className="text-xs leading-5 text-[#617268]">
+        Ao trocar a bandeira, os campos abaixo mostram e salvam o texto daquele idioma.
+      </p>
+    </div>
   );
 }
 
@@ -396,6 +424,99 @@ function OverviewCard({
         </div>
       </div>
     </article>
+  );
+}
+
+function SecurityPanel() {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [nextPassword, setNextPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [pending, setPending] = useState(false);
+  const [message, setMessage] = useState("");
+
+  async function submitPasswordChange() {
+    setPending(true);
+    setMessage("Salvando nova senha...");
+
+    const response = await fetch("/api/admin/password", {
+      body: JSON.stringify({ confirmPassword, currentPassword, nextPassword }),
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
+    });
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      setMessage(result.error || "Não foi possível alterar a senha.");
+      setPending(false);
+      return;
+    }
+
+    setCurrentPassword("");
+    setNextPassword("");
+    setConfirmPassword("");
+    setMessage("Senha alterada com segurança.");
+    setPending(false);
+  }
+
+  return (
+    <Panel>
+      <PanelHeader
+        description="A senha fica protegida no Supabase. Use esta área quando a Dani quiser trocar o acesso ao painel."
+        title="Segurança do painel"
+      />
+      <div className="grid gap-6 p-5 sm:p-6 lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="rounded-2xl bg-[#f7f4ef] p-5">
+          <ShieldCheck className="text-[#C9A227]" size={30} strokeWidth={1.6} />
+          <h3 className="mt-5 text-xl font-bold">Trocar senha</h3>
+          <p className="mt-3 text-sm leading-6 text-[#617268]">
+            A senha antiga do ambiente continua como fallback técnico. A senha criada aqui passa a ser usada no login do painel.
+          </p>
+        </div>
+        <div className="grid gap-4">
+          <Field label="Senha atual">
+            <input
+              autoComplete="current-password"
+              className={inputClass()}
+              onChange={(event) => setCurrentPassword(event.target.value)}
+              type="password"
+              value={currentPassword}
+            />
+          </Field>
+          <Field label="Nova senha">
+            <input
+              autoComplete="new-password"
+              className={inputClass()}
+              minLength={8}
+              onChange={(event) => setNextPassword(event.target.value)}
+              type="password"
+              value={nextPassword}
+            />
+          </Field>
+          <Field label="Confirmar nova senha">
+            <input
+              autoComplete="new-password"
+              className={inputClass()}
+              minLength={8}
+              onChange={(event) => setConfirmPassword(event.target.value)}
+              type="password"
+              value={confirmPassword}
+            />
+          </Field>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <button
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#123c2d] px-5 text-sm font-bold text-white disabled:opacity-50"
+              disabled={pending}
+              onClick={submitPasswordChange}
+              type="button"
+            >
+              <KeyRound size={16} />
+              Alterar senha
+            </button>
+            {message ? <p className="text-sm font-bold text-[#617268]">{message}</p> : null}
+          </div>
+        </div>
+      </div>
+    </Panel>
   );
 }
 
@@ -657,6 +778,8 @@ export function AdminDashboard({ blogPosts, courses, sections, services }: Admin
           status={status}
         />
       ) : null}
+
+      {activeTab === "settings" ? <SecurityPanel /> : null}
     </div>
   );
 }
@@ -680,6 +803,7 @@ function SectionEditor({
   const canUploadMedia =
     canUploadVideo
     || (item.page_key === "home" && /^prompt-\d+$/.test(item.section_key))
+    || (item.page_key === "home" && /^partner-\d+$/.test(item.section_key))
     || (item.page_key === "about" && item.section_key === "introduction");
 
   return (

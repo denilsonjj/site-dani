@@ -115,6 +115,29 @@ export function getHomeSectionFallbacks(locale: Locale): SiteSection[] {
       primaryCtaLabel: copy.blogPreview.allLabel,
       title: copy.blogPreview.title,
     }),
+    section("home", "partners", {
+      body: {
+        pt: "Conheça empresas e contactos recomendados pela Dani Therapies.",
+        en: "Discover businesses and contacts recommended by Dani Therapies.",
+        es: "Descubre empresas y contactos recomendados por Dani Therapies.",
+        nl: "Ontdek bedrijven en contactgegevens die Dani Therapies aanbeveelt.",
+      }[locale],
+      eyebrow: {
+        pt: "Parceiros",
+        en: "Partners",
+        es: "Colaboradores",
+        nl: "Partners",
+      }[locale],
+      title: {
+        pt: "Empresas parceiras",
+        en: "Partner companies",
+        es: "Empresas colaboradoras",
+        nl: "Partnerbedrijven",
+      }[locale],
+    }),
+    ...[1, 2, 3].map((index) =>
+      section("home", `partner-${index}`, {}),
+    ),
     section("home", "contact", {
       body: copy.contact.body,
       eyebrow: copy.contact.eyebrow,

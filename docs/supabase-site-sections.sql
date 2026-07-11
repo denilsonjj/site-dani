@@ -3,6 +3,15 @@
 
 create extension if not exists pgcrypto;
 
+create table if not exists public.admin_settings (
+  key text primary key,
+  value text not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.admin_settings enable row level security;
+
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql
@@ -12,6 +21,11 @@ begin
   return new;
 end;
 $$;
+
+drop trigger if exists set_admin_settings_updated_at on public.admin_settings;
+create trigger set_admin_settings_updated_at
+before update on public.admin_settings
+for each row execute function public.set_updated_at();
 
 create table if not exists public.site_sections (
   id uuid primary key default gen_random_uuid(),
@@ -66,6 +80,30 @@ drop policy if exists "Public site media is readable" on storage.objects;
 create policy "Public site media is readable"
 on storage.objects for select
 using (bucket_id = 'site-media');
+
+insert into public.site_sections (
+  page_key,
+  section_key,
+  eyebrow,
+  title,
+  body,
+  is_published,
+  sort_order
+)
+values
+  (
+    'home',
+    'partners',
+    '{"pt":"Parceiros","en":"Partners","es":"Colaboradores","nl":"Partners"}'::jsonb,
+    '{"pt":"Empresas parceiras","en":"Partner companies","es":"Empresas colaboradoras","nl":"Partnerbedrijven"}'::jsonb,
+    '{"pt":"Conheça empresas e contactos recomendados pela Dani Therapies.","en":"Discover businesses and contacts recommended by Dani Therapies.","es":"Descubre empresas y contactos recomendados por Dani Therapies.","nl":"Ontdek bedrijven en contactgegevens die Dani Therapies aanbeveelt."}'::jsonb,
+    true,
+    70
+  ),
+  ('home', 'partner-1', '{}'::jsonb, '{}'::jsonb, '{}'::jsonb, true, 71),
+  ('home', 'partner-2', '{}'::jsonb, '{}'::jsonb, '{}'::jsonb, true, 72),
+  ('home', 'partner-3', '{}'::jsonb, '{}'::jsonb, '{}'::jsonb, true, 73)
+on conflict (page_key, section_key) do nothing;
 
 -- Escrita e exclusão ficam restritas à service role usada pelas APIs protegidas
 -- do painel. Não crie políticas públicas de INSERT, UPDATE ou DELETE neste bucket.

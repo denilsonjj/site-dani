@@ -1,6 +1,6 @@
 ﻿import { blogPosts as fallbackBlogPosts } from "./blog";
 import { getProduct } from "./catalog";
-import { getContent, getServiceTranslation, type Locale } from "./content";
+import { getContent, getServiceTranslation, locales, type Locale } from "./content";
 import {
   getSupabaseAdminClient,
   getSupabasePublicClient,
@@ -145,6 +145,19 @@ export type CheckoutProduct = {
   seatsReserved?: number;
   serviceId?: string;
   stripePriceEnv: string;
+};
+
+export type CheckoutReceipt = {
+  customerEmail: string;
+  customerName: string;
+  duration: string;
+  locale: Locale;
+  payload: Record<string, unknown>;
+  price: string;
+  productName: string;
+  productId: string;
+  submissionId: string;
+  stripeCheckoutSessionId: string;
 };
 
 export type IntakeField = {
@@ -555,13 +568,13 @@ function fallbackServices(locale: Locale): SiteService[] {
 const courseIntros: Record<string, Record<Locale, string>> = {
   "online-course": {
     pt: "Curso de desenvolvimento da percepção sensorial por meio do Movimento Guiado de Energia, promovendo o despertar gradual da sensibilidade natural e da leitura sensorial de forma segura e consciente.",
-    en: "Course on the development of sensory perception through Guided Energy Movement, gradually strengthening natural sensitivity and expanding the capacity for sensory reading.",
+    en: "A sensory perception development course through Guided Energetic Movement, gradually strengthening natural sensitivity and expanding the capacity for sensory reading.",
     es: "Curso de desarrollo de la percepción sensorial a través del Movimiento Guiado de Energía, fortaleciendo gradualmente la sensibilidad natural y ampliando la capacidad de lectura sensorial.",
     nl: "Cursus voor de ontwikkeling van zintuiglijke waarneming via Begeleide Energiebeweging, die de natuurlijke gevoeligheid geleidelijk versterkt en de capaciteit voor zintuiglijke waarneming uitbreidt.",
   },
   "online-course-en": {
     pt: "Curso de desenvolvimento da percepção sensorial através do Movimento Guiado de Energia, fortalecendo gradualmente a sensibilidade natural e ampliando a capacidade de leitura sensorial.",
-    en: "A course for developing sensory perception through Guided Energy Movement, gradually strengthening natural sensitivity and expanding the capacity for sensory reading.",
+    en: "A sensory perception development course through Guided Energetic Movement, gradually strengthening natural sensitivity and expanding the capacity for sensory reading.",
     es: "Curso en inglés para desarrollar la percepción sensorial, entrenar la lectura energética y practicar movimientos guiados de energía con seguridad y acompañamiento.",
     nl: "Engelstalige cursus om zintuiglijke waarneming te ontwikkelen, energetisch lezen te oefenen en begeleide energiebewegingen veilig te trainen.",
   },
@@ -1207,6 +1220,40 @@ export async function markCheckoutSubmissionPaid(id: string, stripeCheckoutSessi
       })
       .eq("id", id);
   }
+}
+
+export async function getCheckoutReceipt(submissionId: string, stripeCheckoutSessionId: string): Promise<CheckoutReceipt | null> {
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) return null;
+
+  const { data: submission, error } = await supabase
+    .from("checkout_intake_submissions")
+    .select("id, service_id, product_id, locale, customer_name, customer_email, payload, stripe_checkout_session_id")
+    .eq("id", submissionId)
+    .maybeSingle();
+
+  if (error || !submission) return null;
+
+  const locale = locales.includes(submission.locale as Locale) ? submission.locale as Locale : "pt";
+  const { data: service } = await supabase
+    .from("content_services")
+    .select("product_id, title, duration, price_label")
+    .eq(submission.service_id ? "id" : "product_id", submission.service_id || submission.product_id)
+    .maybeSingle();
+  const translation = getServiceTranslation(submission.product_id, locale);
+
+  return {
+    customerEmail: submission.customer_email || "",
+    customerName: submission.customer_name || "",
+    duration: localise(service?.duration, locale, translation?.duration || ""),
+    locale,
+    payload: (submission.payload || {}) as Record<string, unknown>,
+    price: localise(service?.price_label, locale, translation?.price || ""),
+    productId: submission.product_id,
+    productName: localise(service?.title, locale, translation?.title || submission.product_id),
+    submissionId: submission.id,
+    stripeCheckoutSessionId: submission.stripe_checkout_session_id || stripeCheckoutSessionId,
+  };
 }
 
 export async function getAdminOverview(): Promise<AdminOverview> {

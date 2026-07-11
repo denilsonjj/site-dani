@@ -53,6 +53,7 @@ function sectionAllowsMedia(pageKey: string, sectionKey: string) {
   return (
     (pageKey === "home" && sectionKey === "hero")
     || (pageKey === "home" && /^prompt-\d+$/.test(sectionKey))
+    || (pageKey === "home" && /^partner-\d+$/.test(sectionKey))
     || (pageKey === "about" && sectionKey === "introduction")
   );
 }

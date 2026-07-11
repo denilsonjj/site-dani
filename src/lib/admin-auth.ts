@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHmac, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { getSupabaseAdminClient } from "./supabase/server";
 
 export const adminSessionCookie = "dani_admin_session";
 const adminSessionMaxAgeSeconds = 60 * 60 * 8;
+const adminPasswordSettingKey = "admin_password_hash";
 
 function getAdminSecret() {
   return process.env.ADMIN_ACCESS_TOKEN || "";
@@ -18,6 +19,20 @@ function safeEqual(left: string, right: string) {
   const leftBuffer = Buffer.from(left);
   const rightBuffer = Buffer.from(right);
   return leftBuffer.length === rightBuffer.length && timingSafeEqual(leftBuffer, rightBuffer);
+}
+
+function hashPassword(password: string) {
+  const salt = randomBytes(16).toString("hex");
+  const hash = scryptSync(password, salt, 64).toString("hex");
+  return `scrypt:${salt}:${hash}`;
+}
+
+function verifyPassword(password: string, storedHash: string) {
+  const [kind, salt, hash] = storedHash.split(":");
+  if (kind !== "scrypt" || !salt || !hash) return false;
+
+  const attempt = scryptSync(password, salt, 64).toString("hex");
+  return safeEqual(attempt, hash);
 }
 
 function readCookie(cookieHeader: string | null, name: string) {
@@ -53,6 +68,43 @@ export function validateAdminSession(value?: string | null) {
 export async function isAdminAuthenticated() {
   const cookieStore = await cookies();
   return validateAdminSession(cookieStore.get(adminSessionCookie)?.value);
+}
+
+export async function validateAdminPassword(password: string) {
+  const supabase = getSupabaseAdminClient();
+
+  if (supabase) {
+    const { data } = await supabase
+      .from("admin_settings")
+      .select("value")
+      .eq("key", adminPasswordSettingKey)
+      .maybeSingle();
+
+    if (typeof data?.value === "string" && data.value) {
+      return verifyPassword(password, data.value);
+    }
+  }
+
+  const token = getAdminSecret();
+  return Boolean(token && password === token);
+}
+
+export async function updateAdminPassword(password: string) {
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) return { error: "Supabase service role não configurado." };
+
+  const { error } = await supabase
+    .from("admin_settings")
+    .upsert(
+      {
+        key: adminPasswordSettingKey,
+        updated_at: new Date().toISOString(),
+        value: hashPassword(password),
+      },
+      { onConflict: "key" },
+    );
+
+  return { error: error?.message || null };
 }
 
 export function setAdminSessionCookie(response: NextResponse) {
