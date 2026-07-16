@@ -186,11 +186,11 @@ const listingCopy: Record<Locale, {
     sessionsTitle: "Sessões disponíveis",
   },
   en: {
-    blogBody: "Content about energetic care, spirituality and preparation for sessions.",
+    blogBody: "Reflections on energetic care, spirituality and how to prepare for a session.",
     blogTitle: "Dani Therapies Blog",
-    coursesBody: "Choose the training that suits your moment and review every detail before enrolling.",
+    coursesBody: "Choose the course that feels aligned with your moment and review every detail before enrolling.",
     coursesTitle: "Available courses",
-    sessionsBody: "Explore all available services, durations and prices.",
+    sessionsBody: "Explore all available sessions, durations and prices.",
     sessionsTitle: "Available sessions",
   },
   es: {
@@ -202,11 +202,11 @@ const listingCopy: Record<Locale, {
     sessionsTitle: "Sesiones disponibles",
   },
   nl: {
-    blogBody: "Inhoud over energetische zorg, spiritualiteit en voorbereiding op sessies.",
+    blogBody: "Reflecties over energetische begeleiding, spiritualiteit en voorbereiding op een sessie.",
     blogTitle: "Dani Therapies Blog",
-    coursesBody: "Kies de opleiding die bij jouw moment past en bekijk alle details voordat je je inschrijft.",
+    coursesBody: "Kies de cursus die aansluit bij jouw moment en bekijk alle details voordat je je inschrijft.",
     coursesTitle: "Beschikbare cursussen",
-    sessionsBody: "Bekijk alle beschikbare behandelingen, duur en prijzen.",
+    sessionsBody: "Bekijk alle beschikbare sessies, duur en prijzen.",
     sessionsTitle: "Beschikbare sessies",
   },
 };
@@ -276,4 +276,29 @@ export function getAdminSectionFallbackRows(): SiteSectionRow[] {
       title: localised("title"),
     };
   });
+}
+
+function sectionRowKey(row: Pick<SiteSectionRow, "page_key" | "section_key">) {
+  return `${row.page_key}:${row.section_key}`;
+}
+
+export function mergeAdminSectionRows(rows: SiteSectionRow[]) {
+  const fallbackRows = getAdminSectionFallbackRows();
+  const dbRowsByKey = new Map(rows.map((row) => [sectionRowKey(row), row]));
+  const usedKeys = new Set<string>();
+
+  const merged = fallbackRows.map((fallback) => {
+    const key = sectionRowKey(fallback);
+    const row = dbRowsByKey.get(key);
+    if (row) {
+      usedKeys.add(key);
+      return row;
+    }
+    return fallback;
+  });
+
+  return [
+    ...merged,
+    ...rows.filter((row) => !usedKeys.has(sectionRowKey(row))),
+  ];
 }

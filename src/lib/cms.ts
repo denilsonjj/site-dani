@@ -7,7 +7,7 @@ import {
   hasSupabaseAdminConfig,
   hasSupabasePublicConfig,
 } from "./supabase/server";
-import { getAdminSectionFallbackRows } from "./site-sections";
+import { mergeAdminSectionRows } from "./site-sections";
 
 type LocalisedValue = Record<string, string> | null;
 
@@ -1317,10 +1317,9 @@ export async function getAdminOverview(): Promise<AdminOverview> {
   const sectionAllowsMedia = (section: SiteSectionRow) =>
     (section.page_key === "home" && section.section_key === "hero")
     || (section.page_key === "home" && /^prompt-\d+$/.test(section.section_key))
+    || (section.page_key === "home" && /^partner-\d+$/.test(section.section_key))
     || (section.page_key === "about" && section.section_key === "introduction");
-  const sectionRows = sections.data?.length
-    ? (sections.data as SiteSectionRow[])
-    : getAdminSectionFallbackRows();
+  const sectionRows = mergeAdminSectionRows((sections.data || []) as SiteSectionRow[]);
 
   return {
     blogPosts: ((blog.data || []) as BlogRow[]),
