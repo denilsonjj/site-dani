@@ -19,6 +19,8 @@ import {
   Video,
 } from "lucide-react";
 import type { BlogRow, ServiceRow, SiteSectionRow } from "@/lib/cms";
+import { formatPrice, moneyInputValue, parseMoneyInput } from "@/lib/currency";
+import { getServiceImage } from "@/lib/service-visuals";
 
 type AdminDashboardProps = {
   blogPosts: BlogRow[];
@@ -943,17 +945,19 @@ function ServiceEditor({
   type: "session" | "course";
 }) {
   const title = localised(item.title, locale);
+  const formattedPrice = formatPrice(item.amount_cents, item.currency, locale, localised(item.price_label, locale));
+  const [priceInput, setPriceInput] = useState(() => moneyInputValue(item.amount_cents));
 
   return (
     <article className="rounded-xl border border-[#123c2d]/10 bg-[#fbfaf7]">
       <div className="flex items-center gap-3 p-4">
-        <Thumb icon={type === "course" ? BookOpenText : ListChecks} src={item.image_url} />
+        <Thumb icon={type === "course" ? BookOpenText : ListChecks} src={getServiceImage(item.product_id, item.image_url || undefined)} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <strong className="truncate">{title || "Sem nome"}</strong>
             <StatusBadge active={item.is_published} />
           </div>
-          <p className="mt-1 text-sm text-[#617268]">{localised(item.price_label) || localised(item.duration) || "Sem preço"}</p>
+          <p className="mt-1 text-sm text-[#617268]">{formattedPrice || localised(item.duration) || "Sem preço"}</p>
           {status ? <p className="mt-1 text-xs font-bold text-[#6f8378]">{status}</p> : null}
         </div>
         <VisibilityButton active={item.is_published} disabled={pending} onClick={() => onSave(!item.is_published)} />
@@ -965,8 +969,20 @@ function ServiceEditor({
             <Field label="Ordem">
               <input className={inputClass()} onChange={(event) => onUpdate({ sort_order: Number(event.target.value) || 0 })} type="number" value={item.sort_order || 0} />
             </Field>
-            <Field label="Valor em centavos para controle">
-              <input className={inputClass()} onChange={(event) => onUpdate({ amount_cents: event.target.value === "" ? null : Number(event.target.value) })} placeholder="Ex: 11499" type="number" value={item.amount_cents ?? ""} />
+            <Field label="Valor em euros">
+              <input
+                className={inputClass()}
+                inputMode="decimal"
+                onBlur={() => {
+                  const amountCents = parseMoneyInput(priceInput);
+                  setPriceInput(moneyInputValue(amountCents));
+                  onUpdate({ amount_cents: amountCents });
+                }}
+                onChange={(event) => setPriceInput(event.target.value)}
+                placeholder="Ex.: 114,99"
+                type="text"
+                value={priceInput}
+              />
             </Field>
             <Field label="Limite de vagas">
               <input className={inputClass()} onChange={(event) => onUpdate({ capacity_limit: event.target.value === "" ? null : Number(event.target.value) })} placeholder="Sem limite" type="number" value={item.capacity_limit ?? ""} />
@@ -974,7 +990,10 @@ function ServiceEditor({
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <MediaField label={type === "course" ? "Imagem do curso" : "Foto da sessão"} onChange={(value) => onUpdate({ image_url: value })} section={`${type}-${item.product_id}`} value={item.image_url} />
-            <LocalisedInput label="Preço mostrado no site" locale={locale} onChange={(value) => onUpdate({ price_label: value })} value={item.price_label} />
+            <div className="rounded-xl border border-[#123c2d]/10 bg-[#f8f5ec] px-4 py-3 text-sm leading-6 text-[#52675e]">
+              <strong className="block text-[#123c2d]">Apresentação do valor</strong>
+              <span>O símbolo da moeda adapta-se automaticamente ao idioma: {formattedPrice || "defina o valor ao lado"}.</span>
+            </div>
           </div>
           <LocalisedInput label="Nome" locale={locale} onChange={(value) => {
             const nextSlug = item.slug.startsWith(`${type}-`) ? slugify(localised(value, "pt")) || item.slug : item.slug;

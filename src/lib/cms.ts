@@ -1,6 +1,7 @@
 ﻿import { blogPosts as fallbackBlogPosts } from "./blog";
 import { getProduct } from "./catalog";
 import { getContent, getServiceTranslation, locales, type Locale } from "./content";
+import { formatPrice } from "./currency";
 import {
   getSupabaseAdminClient,
   getSupabasePublicClient,
@@ -269,7 +270,12 @@ function mapService(row: ServiceRow, locale: Locale): SiteService {
       : normalisedCourseDuration,
     id: row.id,
     image: row.image_url || undefined,
-    price: localise(row.price_label, locale, translated?.price),
+    price: formatPrice(
+      row.amount_cents,
+      row.currency,
+      locale,
+      localise(row.price_label, locale, translated?.price),
+    ),
     productId: row.product_id,
     requiresIntake: row.requires_intake,
     requiresPolicyAcceptance: row.requires_policy_acceptance,
