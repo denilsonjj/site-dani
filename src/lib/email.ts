@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import type { CheckoutReceipt } from "./cms";
 import type { Locale } from "./content";
+import { safeTimeZone } from "./scheduling";
 import { siteConfig } from "./site";
 
 let resendClient: Resend | null = null;
@@ -23,6 +24,7 @@ function escapeHtml(value: string) {
 
 const receiptCopy: Record<Locale, {
   appointment: string;
+  appointmentAmsterdam: string;
   confirmed: string;
   details: string;
   duration: string;
@@ -37,7 +39,8 @@ const receiptCopy: Record<Locale, {
   thanks: string;
 }> = {
   pt: {
-    appointment: "Data do atendimento",
+    appointment: "Data e horário do atendimento",
+    appointmentAmsterdam: "Horário em Amesterdão",
     confirmed: "Pagamento confirmado",
     details: "Detalhes da compra",
     duration: "Duração",
@@ -52,7 +55,8 @@ const receiptCopy: Record<Locale, {
     thanks: "Obrigada pela confiança.",
   },
   en: {
-    appointment: "Session date",
+    appointment: "Session date and time",
+    appointmentAmsterdam: "Amsterdam time",
     confirmed: "Payment confirmed",
     details: "Purchase details",
     duration: "Duration",
@@ -67,7 +71,8 @@ const receiptCopy: Record<Locale, {
     thanks: "Thank you for your trust.",
   },
   es: {
-    appointment: "Fecha de la sesión",
+    appointment: "Fecha y hora de la sesión",
+    appointmentAmsterdam: "Hora de Ámsterdam",
     confirmed: "Pago confirmado",
     details: "Detalles de la compra",
     duration: "Duración",
@@ -82,7 +87,8 @@ const receiptCopy: Record<Locale, {
     thanks: "Gracias por tu confianza.",
   },
   nl: {
-    appointment: "Datum van de sessie",
+    appointment: "Datum en tijd van de sessie",
+    appointmentAmsterdam: "Tijd in Amsterdam",
     confirmed: "Betaling bevestigd",
     details: "Aankoopgegevens",
     duration: "Duur",
@@ -103,9 +109,24 @@ function buildReceiptHtml(receipt: CheckoutReceipt) {
   const product = escapeHtml(receipt.productName);
   const customerName = escapeHtml(receipt.customerName);
   const appointmentDate = String(receipt.payload.appointment_date || "");
-  const formattedAppointmentDate = appointmentDate
-    ? new Intl.DateTimeFormat({ pt: "pt-PT", en: "en-GB", es: "es-ES", nl: "nl-NL" }[receipt.locale], { dateStyle: "long" })
-      .format(new Date(`${appointmentDate}T12:00:00Z`))
+  const appointmentStart = String(receipt.payload.appointment_start || "");
+  const customerTimeZone = safeTimeZone(String(receipt.payload.appointment_time_zone || ""));
+  const localeTag = { pt: "pt-PT", en: "en-US", es: "es-ES", nl: "nl-NL" }[receipt.locale];
+  const formattedAppointmentDate = appointmentStart
+    ? new Intl.DateTimeFormat(localeTag, {
+        dateStyle: "long",
+        timeStyle: "short",
+        timeZone: customerTimeZone,
+      }).format(new Date(appointmentStart))
+    : appointmentDate
+      ? new Intl.DateTimeFormat(localeTag, { dateStyle: "long" }).format(new Date(`${appointmentDate}T12:00:00Z`))
+      : "";
+  const formattedAmsterdamDate = appointmentStart && customerTimeZone !== "Europe/Amsterdam"
+    ? new Intl.DateTimeFormat(localeTag, {
+        dateStyle: "long",
+        timeStyle: "short",
+        timeZone: "Europe/Amsterdam",
+      }).format(new Date(appointmentStart))
     : "";
 
   return `<!doctype html>
@@ -138,6 +159,10 @@ function buildReceiptHtml(receipt: CheckoutReceipt) {
                   ${formattedAppointmentDate ? `<tr>
                     <td style="padding:14px 0;border-top:1px solid #eee6d8;color:#617268;">${copy.appointment}</td>
                     <td style="padding:14px 0;border-top:1px solid #eee6d8;text-align:right;font-weight:700;">${escapeHtml(formattedAppointmentDate)}</td>
+                  </tr>` : ""}
+                  ${formattedAmsterdamDate ? `<tr>
+                    <td style="padding:14px 0;border-top:1px solid #eee6d8;color:#617268;">${copy.appointmentAmsterdam}</td>
+                    <td style="padding:14px 0;border-top:1px solid #eee6d8;text-align:right;font-weight:700;">${escapeHtml(formattedAmsterdamDate)}</td>
                   </tr>` : ""}
                   <tr>
                     <td style="padding:14px 0;border-top:1px solid #eee6d8;color:#617268;">${copy.price}</td>

@@ -5,8 +5,6 @@ import { useMemo, useState, type ComponentType, type ReactNode } from "react";
 import {
   BookOpenText,
   CalendarDays,
-  ChevronLeft,
-  ChevronRight,
   Eye,
   EyeOff,
   FileText,
@@ -20,21 +18,23 @@ import {
   ShieldCheck,
   UploadCloud,
   Video,
-  X,
 } from "lucide-react";
+import { AdminScheduleEditor } from "@/components/admin-schedule-editor";
 import type { BlogRow, ServiceRow, SiteSectionRow } from "@/lib/cms";
 import { formatPrice, moneyInputValue, parseMoneyInput } from "@/lib/currency";
+import type { BookingSchedule } from "@/lib/scheduling";
 import { getServiceImage } from "@/lib/service-visuals";
 
 type AdminDashboardProps = {
   blogPosts: BlogRow[];
+  bookingSchedule: BookingSchedule;
   courses: ServiceRow[];
   sections: SiteSectionRow[];
   services: ServiceRow[];
 };
 
 type LocaleKey = "pt" | "en" | "es" | "nl";
-type TabKey = "overview" | "pages" | "sessions" | "courses" | "blog" | "settings";
+type TabKey = "overview" | "pages" | "sessions" | "schedule" | "courses" | "blog" | "settings";
 type LocalisedValue = Record<string, string> | null;
 type StatusState = Record<string, string>;
 
@@ -90,6 +90,7 @@ const tabs: Array<{ icon: ComponentType<{ size?: number }>; key: TabKey; label: 
   { icon: LayoutDashboard, key: "overview", label: "Visão geral" },
   { icon: Home, key: "pages", label: "Páginas" },
   { icon: ListChecks, key: "sessions", label: "Sessões" },
+  { icon: CalendarDays, key: "schedule", label: "Agenda" },
   { icon: BookOpenText, key: "courses", label: "Curso" },
   { icon: FileText, key: "blog", label: "Blog" },
   { icon: KeyRound, key: "settings", label: "Segurança" },
@@ -527,7 +528,7 @@ function SecurityPanel() {
   );
 }
 
-export function AdminDashboard({ blogPosts, courses, sections, services }: AdminDashboardProps) {
+export function AdminDashboard({ blogPosts, bookingSchedule, courses, sections, services }: AdminDashboardProps) {
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
   const [serviceItems, setServiceItems] = useState(services);
   const [courseItems, setCourseItems] = useState(courses);
@@ -756,6 +757,10 @@ export function AdminDashboard({ blogPosts, courses, sections, services }: Admin
         />
       ) : null}
 
+      {activeTab === "schedule" ? (
+        <AdminScheduleEditor initialSchedule={bookingSchedule} services={serviceItems} />
+      ) : null}
+
       {activeTab === "courses" ? (
         <ServiceListEditor
           actionLabel="Novo curso"
@@ -933,144 +938,6 @@ function ServiceListEditor({
   );
 }
 
-function AvailabilityEditor({
-  dates,
-  onChange,
-}: {
-  dates: string[];
-  onChange: (dates: string[]) => void;
-}) {
-  const now = new Date();
-  const currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const [visibleMonth, setVisibleMonth] = useState(currentMonth);
-  const [selectedDates, setSelectedDates] = useState<string[]>([]);
-  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-  const monthLabel = new Intl.DateTimeFormat("pt-PT", { month: "long", year: "numeric" }).format(visibleMonth);
-  const firstWeekday = (new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1).getDay() + 6) % 7;
-  const daysInMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + 1, 0).getDate();
-  const calendarDays = Array.from({ length: firstWeekday + daysInMonth }, (_, index) => {
-    if (index < firstWeekday) return null;
-    const day = index - firstWeekday + 1;
-    return `${visibleMonth.getFullYear()}-${String(visibleMonth.getMonth() + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-  });
-  const canGoBack = visibleMonth > currentMonth;
-
-  function toggleDate(date: string) {
-    if (date < today || dates.includes(date)) return;
-    setSelectedDates((current) => current.includes(date)
-      ? current.filter((item) => item !== date)
-      : [...current, date].sort());
-  }
-
-  function addDates() {
-    if (!selectedDates.length) return;
-    onChange(Array.from(new Set([...dates, ...selectedDates])).sort());
-    setSelectedDates([]);
-  }
-
-  function moveMonth(offset: number) {
-    setVisibleMonth((month) => new Date(month.getFullYear(), month.getMonth() + offset, 1));
-  }
-
-  return (
-    <div className="rounded-2xl border border-[#123c2d]/10 bg-[#f8f5ec] p-4 sm:p-5">
-      <div className="flex items-start gap-3">
-        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#123c2d] text-white">
-          <CalendarDays size={19} />
-        </span>
-        <div>
-          <strong className="block text-[#123c2d]">Datas disponíveis para agendamento</strong>
-          <p className="mt-1 text-sm leading-6 text-[#617268]">Selecione vários dias no calendário e adicione todos de uma só vez.</p>
-        </div>
-      </div>
-
-      <div className="mt-5 max-w-md rounded-2xl border border-[#123c2d]/10 bg-white p-3 sm:p-4">
-        <div className="flex items-center justify-between gap-3">
-          <button
-            aria-label="Mês anterior"
-            className="grid h-11 w-11 place-items-center rounded-xl border border-[#123c2d]/10 text-[#123c2d] transition hover:bg-[#edf2ed] disabled:opacity-30"
-            disabled={!canGoBack}
-            onClick={() => moveMonth(-1)}
-            type="button"
-          >
-            <ChevronLeft size={19} />
-          </button>
-          <strong className="capitalize text-[#123c2d]">{monthLabel}</strong>
-          <button
-            aria-label="Próximo mês"
-            className="grid h-11 w-11 place-items-center rounded-xl border border-[#123c2d]/10 text-[#123c2d] transition hover:bg-[#edf2ed]"
-            onClick={() => moveMonth(1)}
-            type="button"
-          >
-            <ChevronRight size={19} />
-          </button>
-        </div>
-        <div className="mt-4 grid grid-cols-7 gap-1 text-center text-xs font-bold uppercase text-[#799a81]">
-          {["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"].map((day) => <span className="py-2" key={day}>{day}</span>)}
-        </div>
-        <div className="grid grid-cols-7 gap-1">
-          {calendarDays.map((date, index) => date ? (
-            <button
-              aria-label={`Selecionar ${date}`}
-              aria-pressed={selectedDates.includes(date) || dates.includes(date)}
-              className={
-                dates.includes(date)
-                  ? "aspect-square rounded-xl bg-[#C9A227]/25 text-sm font-bold text-[#705b16]"
-                  : selectedDates.includes(date)
-                    ? "aspect-square rounded-xl bg-[#123c2d] text-sm font-bold text-white shadow-sm"
-                    : date < today
-                      ? "aspect-square cursor-not-allowed rounded-xl text-sm text-[#aeb9b2]"
-                      : "aspect-square rounded-xl text-sm font-bold text-[#40564d] transition hover:bg-[#edf2ed]"
-              }
-              disabled={date < today || dates.includes(date)}
-              key={date}
-              onClick={() => toggleDate(date)}
-              type="button"
-            >
-              {Number(date.slice(-2))}
-            </button>
-          ) : <span aria-hidden="true" key={`empty-${index}`} />)}
-        </div>
-        <div className="mt-4 flex items-center gap-3 text-xs text-[#617268]">
-          <span className="h-3 w-3 rounded-full bg-[#123c2d]" /> Selecionada
-          <span className="h-3 w-3 rounded-full bg-[#C9A227]/40" /> Já adicionada
-        </div>
-      </div>
-
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <button
-          className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#123c2d] px-5 text-sm font-bold text-white disabled:opacity-50"
-          disabled={!selectedDates.length}
-          onClick={addDates}
-          type="button"
-        >
-          Adicionar datas{selectedDates.length ? ` (${selectedDates.length})` : ""}
-        </button>
-        {selectedDates.length ? <span className="text-sm text-[#617268]">Clique novamente num dia para desmarcar.</span> : null}
-      </div>
-      {dates.length ? (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {dates.map((date) => (
-            <span className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[#123c2d]/12 bg-white px-3 text-sm font-bold text-[#40564d]" key={date}>
-              {new Intl.DateTimeFormat("pt-PT", { dateStyle: "medium" }).format(new Date(`${date}T12:00:00Z`))}
-              <button
-                aria-label={`Remover ${date}`}
-                className="grid h-7 w-7 place-items-center rounded-full text-[#984539] transition hover:bg-[#f4e5e2]"
-                onClick={() => onChange(dates.filter((item) => item !== date))}
-                type="button"
-              >
-                <X size={15} />
-              </button>
-            </span>
-          ))}
-        </div>
-      ) : (
-        <p className="mt-4 text-sm text-[#617268]">Nenhuma data definida. O cliente continuará a combinar o dia diretamente com a Dani.</p>
-      )}
-    </div>
-  );
-}
-
 function ServiceEditor({
   item,
   locale,
@@ -1139,12 +1006,6 @@ function ServiceEditor({
               <span>O símbolo da moeda adapta-se automaticamente ao idioma: {formattedPrice || "defina o valor ao lado"}.</span>
             </div>
           </div>
-          {type === "session" ? (
-            <AvailabilityEditor
-              dates={item.available_dates || []}
-              onChange={(available_dates) => onUpdate({ available_dates })}
-            />
-          ) : null}
           <LocalisedInput label="Nome" locale={locale} onChange={(value) => {
             const nextSlug = item.slug.startsWith(`${type}-`) ? slugify(localised(value, "pt")) || item.slug : item.slug;
             onUpdate({ slug: nextSlug, title: value });

@@ -3,6 +3,14 @@ import { getProduct } from "./catalog";
 import { getContent, getServiceTranslation, locales, type Locale } from "./content";
 import { formatPrice } from "./currency";
 import {
+  bookingScheduleSettingKey,
+  createDefaultBookingSchedule,
+  getAppointmentSlots,
+  parseBookingSchedule,
+  type AppointmentSlot,
+  type BookingSchedule,
+} from "./scheduling";
+import {
   getSupabaseAdminClient,
   getSupabasePublicClient,
   hasSupabaseAdminConfig,
@@ -135,6 +143,7 @@ export type SiteBlogPost = {
 };
 
 export type CheckoutProduct = {
+  appointmentSlots: AppointmentSlot[];
   availableDates: string[];
   amountCents?: number | null;
   capacityLimit?: number | null;
@@ -144,6 +153,7 @@ export type CheckoutProduct = {
   productId: string;
   requiresIntake: boolean;
   requiresPolicyAcceptance: boolean;
+  scheduleEnabled: boolean;
   remainingSeats?: number | null;
   seatsReserved?: number;
   serviceId?: string;
@@ -181,6 +191,7 @@ export type LegalDocument = {
 
 export type AdminOverview = {
   blogPosts: BlogRow[];
+  bookingSchedule: BookingSchedule;
   configured: boolean;
   courses: ServiceRow[];
   sections: SiteSectionRow[];
@@ -1015,7 +1026,7 @@ export async function getPublishedBlogPost(slug: string, locale: Locale): Promis
   return mapBlogPost(data as BlogRow, locale);
 }
 
-export async function getCheckoutProduct(productId: string, locale: Locale): Promise<CheckoutProduct | null> {
+export async function getCheckoutProduct(productId: string, locale: Locale, clientTimeZone?: string): Promise<CheckoutProduct | null> {
   const supabase = getSupabaseAdminClient() || getSupabasePublicClient();
 
   if (supabase) {
@@ -1043,13 +1054,27 @@ export async function getCheckoutProduct(productId: string, locale: Locale): Pro
         | "title"
       >;
       const fields = adaptCourseIntakeFields(await getIntakeFields(service.id, locale), locale, service.product_id);
-      const availableDates = service.product_id.startsWith("online-course") ? [] : await getAvailableDates(service.product_id);
-      const dateField = appointmentDateField(availableDates, locale);
+      const isCourse = service.product_id.startsWith("online-course");
+      const availableDates = isCourse ? [] : await getAvailableDates(service.product_id);
+      const schedule = isCourse ? createDefaultBookingSchedule() : await getBookingSchedule();
+      const appointmentSlots = schedule.enabled
+        ? getAppointmentSlots({
+            booked: await getBookedAppointments(),
+            clientTimeZone,
+            locale,
+            productId: service.product_id,
+            schedule,
+          })
+        : [];
+      const dateField = schedule.enabled
+        ? appointmentSlotField(appointmentSlots, locale, clientTimeZone)
+        : appointmentDateField(availableDates, locale);
       const supplements = fallbackIntakeFields(locale, service.product_id).filter(
         (field) => field.key === "field_reading_preview" && !fields.some((current) => current.key === field.key),
       );
 
       return {
+        appointmentSlots,
         availableDates,
         capacityLimit: service.capacity_limit ?? null,
         amountCents: service.amount_cents ?? null,
@@ -1057,8 +1082,9 @@ export async function getCheckoutProduct(productId: string, locale: Locale): Pro
         intakeFields: [...fields, ...supplements, ...(dateField ? [dateField] : [])],
         name: localise(service.title, locale, productId),
         productId: service.product_id,
-        requiresIntake: service.requires_intake || availableDates.length > 0,
+        requiresIntake: service.requires_intake || availableDates.length > 0 || schedule.enabled,
         requiresPolicyAcceptance: service.requires_policy_acceptance,
+        scheduleEnabled: schedule.enabled,
         remainingSeats:
           service.capacity_limit === null || service.capacity_limit === undefined
             ? null
@@ -1075,6 +1101,7 @@ export async function getCheckoutProduct(productId: string, locale: Locale): Pro
   if (!staticProduct && !fallbackProduct) return null;
 
   return {
+    appointmentSlots: [],
     availableDates: [],
     capacityLimit: fallbackProduct?.capacityLimit ?? null,
     amountCents: fallbackProduct?.amountCents ?? null,
@@ -1084,6 +1111,7 @@ export async function getCheckoutProduct(productId: string, locale: Locale): Pro
     productId,
     requiresIntake: Boolean(fallbackProduct?.requiresIntake),
     requiresPolicyAcceptance: fallbackProduct?.requiresPolicyAcceptance ?? true,
+    scheduleEnabled: false,
     remainingSeats: fallbackProduct?.remainingSeats ?? null,
     seatsReserved: fallbackProduct?.seatsReserved || 0,
     stripePriceEnv: fallbackProduct?.stripePriceEnv || staticProduct?.stripePriceEnv || "",
@@ -1136,6 +1164,9 @@ export async function getLegalDocument(key: string, locale: Locale): Promise<Leg
 }
 
 export async function saveCheckoutSubmission(input: {
+  appointmentEnd?: string;
+  appointmentStart?: string;
+  customerTimeZone?: string;
   customerEmail?: string;
   customerName?: string;
   locale: Locale;
@@ -1147,26 +1178,50 @@ export async function saveCheckoutSubmission(input: {
   stripeCheckoutSessionId?: string;
 }) {
   const supabase = getSupabaseAdminClient();
-  if (!supabase) return null;
+  if (!supabase) return { appointmentConflict: false, error: "Supabase não configurado.", id: null };
 
-  const { data, error } = await supabase
+  const submissionRow = {
+    appointment_end: input.appointmentEnd || null,
+    appointment_start: input.appointmentStart || null,
+    cancellation_policy_accepted_at: input.policyAccepted ? new Date().toISOString() : null,
+    customer_email: input.customerEmail || null,
+    customer_name: input.customerName || null,
+    customer_time_zone: input.customerTimeZone || null,
+    locale: input.locale,
+    payload: input.payload,
+    product_id: input.productId,
+    service_id: input.serviceId || null,
+    status: input.status,
+    stripe_checkout_session_id: input.stripeCheckoutSessionId || null,
+  };
+  let { data, error } = await supabase
     .from("checkout_intake_submissions")
-    .insert({
-      cancellation_policy_accepted_at: input.policyAccepted ? new Date().toISOString() : null,
-      customer_email: input.customerEmail || null,
-      customer_name: input.customerName || null,
-      locale: input.locale,
-      payload: input.payload,
-      product_id: input.productId,
-      service_id: input.serviceId || null,
-      status: input.status,
-      stripe_checkout_session_id: input.stripeCheckoutSessionId || null,
-    })
+    .insert(submissionRow)
     .select("id")
     .single();
 
-  if (error) return null;
-  return data as { id: string };
+  if (error?.code === "PGRST204" && !input.appointmentStart) {
+    const legacyRow: Record<string, unknown> = { ...submissionRow };
+    delete legacyRow.appointment_end;
+    delete legacyRow.appointment_start;
+    delete legacyRow.customer_time_zone;
+    const legacyResult = await supabase
+      .from("checkout_intake_submissions")
+      .insert(legacyRow)
+      .select("id")
+      .single();
+    data = legacyResult.data;
+    error = legacyResult.error;
+  }
+
+  if (error || !data) {
+    return {
+      appointmentConflict: error?.code === "23P01" || error?.code === "23505",
+      error: error?.message || "A submissão não foi guardada.",
+      id: null,
+    };
+  }
+  return { appointmentConflict: false, error: null, id: String(data.id) };
 }
 
 export async function markCheckoutSubmissionStarted(id: string, stripeCheckoutSessionId: string) {
@@ -1212,6 +1267,12 @@ export async function releaseCheckoutSeat(submissionId: string) {
   await supabase.rpc("release_checkout_seat", {
     target_submission_id: submissionId,
   });
+
+  await supabase
+    .from("checkout_intake_submissions")
+    .update({ status: "cancelled" })
+    .eq("id", submissionId)
+    .neq("status", "paid");
 }
 
 export async function markCheckoutSubmissionPaid(id: string, stripeCheckoutSessionId: string) {
@@ -1264,6 +1325,36 @@ async function getAvailableDates(productId: string) {
   return parseAvailableDates(data?.value).filter((date) => date >= today);
 }
 
+export async function getBookingSchedule() {
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) return createDefaultBookingSchedule();
+
+  const { data } = await supabase
+    .from("admin_settings")
+    .select("value")
+    .eq("key", bookingScheduleSettingKey)
+    .maybeSingle();
+
+  return parseBookingSchedule(data?.value);
+}
+
+async function getBookedAppointments() {
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from("checkout_intake_submissions")
+    .select("appointment_start, appointment_end")
+    .in("status", ["created", "checkout_started", "paid"])
+    .not("appointment_start", "is", null)
+    .not("appointment_end", "is", null);
+
+  if (error || !data) return [];
+  return data.flatMap((row) => row.appointment_start && row.appointment_end
+    ? [{ end: String(row.appointment_end), start: String(row.appointment_start) }]
+    : []);
+}
+
 const appointmentDateCopy: Record<Locale, { helpText: string; label: string }> = {
   pt: {
     helpText: "Escolha uma das datas disponibilizadas pela Dani para este atendimento.",
@@ -1302,6 +1393,38 @@ function appointmentDateField(dates: string[], locale: Locale): IntakeField | nu
       label: new Intl.DateTimeFormat(dateLocales[locale], { dateStyle: "long" }).format(new Date(`${date}T12:00:00Z`)),
       value: date,
     })),
+    required: true,
+  };
+}
+
+const appointmentSlotCopy: Record<Locale, { helpText: (timeZone: string) => string; label: string }> = {
+  pt: {
+    helpText: (timeZone) => `Os horários são apresentados automaticamente no seu fuso: ${timeZone}.`,
+    label: "Data e horário do atendimento",
+  },
+  en: {
+    helpText: (timeZone) => `Times are automatically shown in your time zone: ${timeZone}.`,
+    label: "Session date and time",
+  },
+  es: {
+    helpText: (timeZone) => `Los horarios se muestran automáticamente en tu zona horaria: ${timeZone}.`,
+    label: "Fecha y hora de la sesión",
+  },
+  nl: {
+    helpText: (timeZone) => `De tijden worden automatisch weergegeven in jouw tijdzone: ${timeZone}.`,
+    label: "Datum en tijd van de sessie",
+  },
+};
+
+function appointmentSlotField(slots: AppointmentSlot[], locale: Locale, clientTimeZone?: string): IntakeField | null {
+  if (!slots.length) return null;
+  const timeZone = clientTimeZone || "Europe/Amsterdam";
+  return {
+    fieldType: "select",
+    helpText: appointmentSlotCopy[locale].helpText(timeZone),
+    key: "appointment_start",
+    label: appointmentSlotCopy[locale].label,
+    options: slots.map((slot) => ({ label: slot.label, value: slot.start })),
     required: true,
   };
 }
@@ -1350,6 +1473,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
   if (!supabase || !hasSupabaseAdminConfig()) {
     return {
       blogPosts: [],
+      bookingSchedule: createDefaultBookingSchedule(),
       configured: false,
       courses: [],
       sections: [],
@@ -1357,7 +1481,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     };
   }
 
-  const [services, courses, blog, sections, availability] = await Promise.all([
+  const [services, courses, blog, sections, availability, bookingSchedule] = await Promise.all([
     supabase
       .from("content_services")
       .select("*")
@@ -1381,6 +1505,11 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       .from("admin_settings")
       .select("key, value")
       .like("key", "availability:%"),
+    supabase
+      .from("admin_settings")
+      .select("value")
+      .eq("key", bookingScheduleSettingKey)
+      .maybeSingle(),
   ]);
 
   const availabilityByProduct = new Map(
@@ -1423,6 +1552,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
 
   return {
     blogPosts: ((blog.data || []) as BlogRow[]),
+    bookingSchedule: parseBookingSchedule(bookingSchedule.data?.value),
     configured: !(services.error || courses.error || blog.error || availability.error),
     courses: mergedCourses,
     sections: sectionRows.map((section) => sectionAllowsMedia(section)

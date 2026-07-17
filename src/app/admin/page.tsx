@@ -83,6 +83,7 @@ export default async function AdminPage() {
         <section className="mt-8">
           <AdminDashboard
             blogPosts={overview.blogPosts}
+            bookingSchedule={overview.bookingSchedule}
             courses={overview.courses}
             sections={overview.sections}
             services={overview.services}

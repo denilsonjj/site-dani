@@ -117,8 +117,9 @@ export function CheckoutButton({ children, disabled = false, locale, productId }
     : "/legal/termos-conduta-curso-percepcao-sensorial.pdf";
 
   async function requestCheckout(body: Record<string, unknown>) {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const response = await fetch("/api/checkout", {
-      body: JSON.stringify(body),
+      body: JSON.stringify({ ...body, timeZone }),
       headers: { "Content-Type": "application/json" },
       method: "POST",
     });
