@@ -9,6 +9,7 @@ type RequiredField = {
   helpText?: string;
   key: string;
   label: string;
+  options?: Array<string | { label?: string; value?: string }>;
   type: "text" | "email" | "number" | "date" | "textarea" | "checkbox" | "select";
 };
 
@@ -227,6 +228,11 @@ export function CheckoutButton({ children, disabled = false, locale, productId }
                   required
                 >
                   <option value="">{copy.optionPlaceholder}</option>
+                  {(field.options || []).map((option) => {
+                    const value = typeof option === "string" ? option : String(option.value || option.label || "");
+                    const label = typeof option === "string" ? option : String(option.label || option.value || "");
+                    return <option key={value} value={value}>{label}</option>;
+                  })}
                 </select>
               ) : (
                 <input

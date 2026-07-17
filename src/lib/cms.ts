@@ -46,6 +46,7 @@ export type SiteSection = {
 };
 
 export type ServiceRow = {
+  available_dates?: string[];
   amount_cents: number | null;
   badge: LocalisedValue;
   capacity_limit?: number | null;
@@ -134,6 +135,7 @@ export type SiteBlogPost = {
 };
 
 export type CheckoutProduct = {
+  availableDates: string[];
   amountCents?: number | null;
   capacityLimit?: number | null;
   currency?: string;
@@ -1041,18 +1043,21 @@ export async function getCheckoutProduct(productId: string, locale: Locale): Pro
         | "title"
       >;
       const fields = adaptCourseIntakeFields(await getIntakeFields(service.id, locale), locale, service.product_id);
+      const availableDates = service.product_id.startsWith("online-course") ? [] : await getAvailableDates(service.product_id);
+      const dateField = appointmentDateField(availableDates, locale);
       const supplements = fallbackIntakeFields(locale, service.product_id).filter(
         (field) => field.key === "field_reading_preview" && !fields.some((current) => current.key === field.key),
       );
 
       return {
+        availableDates,
         capacityLimit: service.capacity_limit ?? null,
         amountCents: service.amount_cents ?? null,
         currency: service.currency || "EUR",
-        intakeFields: [...fields, ...supplements],
+        intakeFields: [...fields, ...supplements, ...(dateField ? [dateField] : [])],
         name: localise(service.title, locale, productId),
         productId: service.product_id,
-        requiresIntake: service.requires_intake,
+        requiresIntake: service.requires_intake || availableDates.length > 0,
         requiresPolicyAcceptance: service.requires_policy_acceptance,
         remainingSeats:
           service.capacity_limit === null || service.capacity_limit === undefined
@@ -1070,6 +1075,7 @@ export async function getCheckoutProduct(productId: string, locale: Locale): Pro
   if (!staticProduct && !fallbackProduct) return null;
 
   return {
+    availableDates: [],
     capacityLimit: fallbackProduct?.capacityLimit ?? null,
     amountCents: fallbackProduct?.amountCents ?? null,
     currency: fallbackProduct?.currency || "EUR",
@@ -1228,6 +1234,78 @@ export async function markCheckoutSubmissionPaid(id: string, stripeCheckoutSessi
   }
 }
 
+const availabilityKey = (productId: string) => `availability:${productId}`;
+
+function parseAvailableDates(value: unknown) {
+  if (typeof value !== "string") return [];
+
+  try {
+    const dates = JSON.parse(value);
+    if (!Array.isArray(dates)) return [];
+    return dates
+      .filter((date): date is string => typeof date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(date))
+      .sort();
+  } catch {
+    return [];
+  }
+}
+
+async function getAvailableDates(productId: string) {
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) return [];
+
+  const { data } = await supabase
+    .from("admin_settings")
+    .select("value")
+    .eq("key", availabilityKey(productId))
+    .maybeSingle();
+
+  const today = new Date().toISOString().slice(0, 10);
+  return parseAvailableDates(data?.value).filter((date) => date >= today);
+}
+
+const appointmentDateCopy: Record<Locale, { helpText: string; label: string }> = {
+  pt: {
+    helpText: "Escolha uma das datas disponibilizadas pela Dani para este atendimento.",
+    label: "Data pretendida para o atendimento",
+  },
+  en: {
+    helpText: "Choose one of the dates Dani has made available for this session.",
+    label: "Preferred session date",
+  },
+  es: {
+    helpText: "Elige una de las fechas que Dani ha habilitado para esta sesión.",
+    label: "Fecha preferida para la sesión",
+  },
+  nl: {
+    helpText: "Kies een van de data waarop Dani beschikbaar is voor deze sessie.",
+    label: "Gewenste datum voor de sessie",
+  },
+};
+
+const dateLocales: Record<Locale, string> = {
+  pt: "pt-PT",
+  en: "en-GB",
+  es: "es-ES",
+  nl: "nl-NL",
+};
+
+function appointmentDateField(dates: string[], locale: Locale): IntakeField | null {
+  if (!dates.length) return null;
+
+  return {
+    fieldType: "select",
+    helpText: appointmentDateCopy[locale].helpText,
+    key: "appointment_date",
+    label: appointmentDateCopy[locale].label,
+    options: dates.map((date) => ({
+      label: new Intl.DateTimeFormat(dateLocales[locale], { dateStyle: "long" }).format(new Date(`${date}T12:00:00Z`)),
+      value: date,
+    })),
+    required: true,
+  };
+}
+
 export async function getCheckoutReceipt(submissionId: string, stripeCheckoutSessionId: string): Promise<CheckoutReceipt | null> {
   const supabase = getSupabaseAdminClient();
   if (!supabase) return null;
@@ -1243,7 +1321,7 @@ export async function getCheckoutReceipt(submissionId: string, stripeCheckoutSes
   const locale = locales.includes(submission.locale as Locale) ? submission.locale as Locale : "pt";
   const { data: service } = await supabase
     .from("content_services")
-    .select("product_id, title, duration, price_label")
+    .select("product_id, title, duration, price_label, amount_cents, currency")
     .eq(submission.service_id ? "id" : "product_id", submission.service_id || submission.product_id)
     .maybeSingle();
   const translation = getServiceTranslation(submission.product_id, locale);
@@ -1254,7 +1332,12 @@ export async function getCheckoutReceipt(submissionId: string, stripeCheckoutSes
     duration: localise(service?.duration, locale, translation?.duration || ""),
     locale,
     payload: (submission.payload || {}) as Record<string, unknown>,
-    price: localise(service?.price_label, locale, translation?.price || ""),
+    price: formatPrice(
+      service?.amount_cents,
+      service?.currency,
+      locale,
+      localise(service?.price_label, locale, translation?.price || ""),
+    ),
     productId: submission.product_id,
     productName: localise(service?.title, locale, translation?.title || submission.product_id),
     submissionId: submission.id,
@@ -1274,7 +1357,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     };
   }
 
-  const [services, courses, blog, sections] = await Promise.all([
+  const [services, courses, blog, sections, availability] = await Promise.all([
     supabase
       .from("content_services")
       .select("*")
@@ -1294,7 +1377,18 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       .select("*")
       .order("page_key", { ascending: true })
       .order("sort_order", { ascending: true }),
+    supabase
+      .from("admin_settings")
+      .select("key, value")
+      .like("key", "availability:%"),
   ]);
+
+  const availabilityByProduct = new Map(
+    (availability.data || []).map((row) => [
+      String(row.key).replace(/^availability:/, ""),
+      parseAvailableDates(row.value),
+    ]),
+  );
 
   const fallbackRows = fallbackCourseRows();
   const courseRows = ((courses.data || []) as ServiceRow[]).map((course) => {
@@ -1329,12 +1423,15 @@ export async function getAdminOverview(): Promise<AdminOverview> {
 
   return {
     blogPosts: ((blog.data || []) as BlogRow[]),
-    configured: !(services.error || courses.error || blog.error),
+    configured: !(services.error || courses.error || blog.error || availability.error),
     courses: mergedCourses,
     sections: sectionRows.map((section) => sectionAllowsMedia(section)
       ? section
       : { ...section, image_alt: null, image_url: null }),
-    services: ((services.data || []) as ServiceRow[]),
+    services: ((services.data || []) as ServiceRow[]).map((service) => ({
+      ...service,
+      available_dates: availabilityByProduct.get(service.product_id) || [],
+    })),
   };
 }
 

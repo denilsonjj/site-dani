@@ -5,6 +5,7 @@ import {
   releaseCheckoutSeat,
   reserveCheckoutSeat,
   saveCheckoutSubmission,
+  type IntakeField,
 } from "@/lib/cms";
 import { locales, type Locale } from "@/lib/content";
 import { siteConfig } from "@/lib/site";
@@ -30,6 +31,23 @@ function normaliseLocale(locale?: string): Locale {
   return "pt";
 }
 
+function requiredField(field: IntakeField) {
+  return {
+    helpText: field.helpText,
+    key: field.key,
+    label: field.label,
+    options: field.options,
+    type: field.fieldType,
+  };
+}
+
+const invalidDateCopy: Record<Locale, string> = {
+  pt: "Selecione uma das datas disponíveis para este atendimento.",
+  en: "Please choose one of the available dates for this session.",
+  es: "Selecciona una de las fechas disponibles para esta sesión.",
+  nl: "Kies een van de beschikbare data voor deze sessie.",
+};
+
 export async function POST(request: Request) {
   const payload = (await request.json().catch(() => null)) as CheckoutPayload | null;
   const locale = normaliseLocale(payload?.locale);
@@ -47,6 +65,7 @@ export async function POST(request: Request) {
   };
   const customerName = payload.name || String(intakePayload.full_name || intakePayload.name || "");
   const customerEmail = payload.email || String(intakePayload.email || "");
+  const appointmentDate = String(intakePayload.appointment_date || "");
   const missingRequiredFields = product.intakeFields
     .filter((field) => field.required)
     .filter((field) => {
@@ -59,12 +78,18 @@ export async function POST(request: Request) {
       {
         error: "Este serviço precisa de formulário obrigatório antes do pagamento.",
         policyRequired: product.requiresPolicyAcceptance,
-        requiredFields: missingRequiredFields.map((field) => ({
-          helpText: field.helpText,
-          key: field.key,
-          label: field.label,
-          type: field.fieldType,
-        })),
+        requiredFields: missingRequiredFields.map(requiredField),
+      },
+      { status: 422 },
+    );
+  }
+
+  if (product.availableDates.length && !product.availableDates.includes(appointmentDate)) {
+    return NextResponse.json(
+      {
+        error: invalidDateCopy[locale],
+        policyRequired: product.requiresPolicyAcceptance,
+        requiredFields: product.intakeFields.map(requiredField),
       },
       { status: 422 },
     );
@@ -75,12 +100,7 @@ export async function POST(request: Request) {
       {
         error: "Para continuar, é necessário aceitar o Termo de Conduta e a Política de Cancelamento.",
         policyRequired: true,
-        requiredFields: product.intakeFields.map((field) => ({
-          helpText: field.helpText,
-          key: field.key,
-          label: field.label,
-          type: field.fieldType,
-        })),
+        requiredFields: product.intakeFields.map(requiredField),
       },
       { status: 422 },
     );
@@ -90,7 +110,7 @@ export async function POST(request: Request) {
   const message = encodeURIComponent(
     `Ola, tenho interesse em ${product.name}.${customerName ? ` Nome: ${customerName}.` : ""}${
       payload.age ? ` Idade: ${payload.age}.` : ""
-    }${customerEmail ? ` E-mail: ${customerEmail}.` : ""}`,
+    }${customerEmail ? ` E-mail: ${customerEmail}.` : ""}${appointmentDate ? ` Data: ${appointmentDate}.` : ""}`,
   );
 
   if (!process.env.STRIPE_SECRET_KEY || (!priceId && !product.amountCents)) {
@@ -158,6 +178,7 @@ export async function POST(request: Request) {
       line_items: [lineItem],
       metadata: {
         age: payload.age || "",
+        appointmentDate,
         locale,
         name: customerName || "",
         productId: payload.productId,

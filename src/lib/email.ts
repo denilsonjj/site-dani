@@ -22,6 +22,7 @@ function escapeHtml(value: string) {
 }
 
 const receiptCopy: Record<Locale, {
+  appointment: string;
   confirmed: string;
   details: string;
   duration: string;
@@ -36,6 +37,7 @@ const receiptCopy: Record<Locale, {
   thanks: string;
 }> = {
   pt: {
+    appointment: "Data do atendimento",
     confirmed: "Pagamento confirmado",
     details: "Detalhes da compra",
     duration: "Duração",
@@ -50,6 +52,7 @@ const receiptCopy: Record<Locale, {
     thanks: "Obrigada pela confiança.",
   },
   en: {
+    appointment: "Session date",
     confirmed: "Payment confirmed",
     details: "Purchase details",
     duration: "Duration",
@@ -64,6 +67,7 @@ const receiptCopy: Record<Locale, {
     thanks: "Thank you for your trust.",
   },
   es: {
+    appointment: "Fecha de la sesión",
     confirmed: "Pago confirmado",
     details: "Detalles de la compra",
     duration: "Duración",
@@ -78,6 +82,7 @@ const receiptCopy: Record<Locale, {
     thanks: "Gracias por tu confianza.",
   },
   nl: {
+    appointment: "Datum van de sessie",
     confirmed: "Betaling bevestigd",
     details: "Aankoopgegevens",
     duration: "Duur",
@@ -97,6 +102,11 @@ function buildReceiptHtml(receipt: CheckoutReceipt) {
   const copy = receiptCopy[receipt.locale];
   const product = escapeHtml(receipt.productName);
   const customerName = escapeHtml(receipt.customerName);
+  const appointmentDate = String(receipt.payload.appointment_date || "");
+  const formattedAppointmentDate = appointmentDate
+    ? new Intl.DateTimeFormat({ pt: "pt-PT", en: "en-GB", es: "es-ES", nl: "nl-NL" }[receipt.locale], { dateStyle: "long" })
+      .format(new Date(`${appointmentDate}T12:00:00Z`))
+    : "";
 
   return `<!doctype html>
 <html lang="${receipt.locale}">
@@ -125,6 +135,10 @@ function buildReceiptHtml(receipt: CheckoutReceipt) {
                     <td style="padding:14px 0;border-top:1px solid #eee6d8;color:#617268;">${copy.duration}</td>
                     <td style="padding:14px 0;border-top:1px solid #eee6d8;text-align:right;font-weight:700;">${escapeHtml(receipt.duration || "-")}</td>
                   </tr>
+                  ${formattedAppointmentDate ? `<tr>
+                    <td style="padding:14px 0;border-top:1px solid #eee6d8;color:#617268;">${copy.appointment}</td>
+                    <td style="padding:14px 0;border-top:1px solid #eee6d8;text-align:right;font-weight:700;">${escapeHtml(formattedAppointmentDate)}</td>
+                  </tr>` : ""}
                   <tr>
                     <td style="padding:14px 0;border-top:1px solid #eee6d8;color:#617268;">${copy.price}</td>
                     <td style="padding:14px 0;border-top:1px solid #eee6d8;text-align:right;font-weight:700;color:#C9A227;">${escapeHtml(receipt.price || "-")}</td>

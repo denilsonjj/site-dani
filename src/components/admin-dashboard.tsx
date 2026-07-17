@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useMemo, useState, type ComponentType, type ReactNode } from "react";
 import {
   BookOpenText,
+  CalendarDays,
   Eye,
   EyeOff,
   FileText,
@@ -17,6 +18,7 @@ import {
   ShieldCheck,
   UploadCloud,
   Video,
+  X,
 } from "lucide-react";
 import type { BlogRow, ServiceRow, SiteSectionRow } from "@/lib/cms";
 import { formatPrice, moneyInputValue, parseMoneyInput } from "@/lib/currency";
@@ -117,6 +119,7 @@ function textareaClass(minHeight = "min-h-28") {
 
 function servicePayload(item: ServiceRow, isPublished = item.is_published) {
   return {
+    availableDates: item.available_dates || [],
     amountCents: item.amount_cents,
     badge: item.badge || {},
     capacityLimit: item.capacity_limit ?? null,
@@ -612,6 +615,7 @@ export function AdminDashboard({ blogPosts, courses, sections, services }: Admin
     const id = makeDraftId(type);
     const title = type === "session" ? "Nova sessão" : "Novo curso";
     const draft: ServiceRow = {
+      available_dates: [],
       amount_cents: null,
       badge: { pt: "Rascunho" },
       capacity_limit: null,
@@ -927,6 +931,73 @@ function ServiceListEditor({
   );
 }
 
+function AvailabilityEditor({
+  dates,
+  onChange,
+}: {
+  dates: string[];
+  onChange: (dates: string[]) => void;
+}) {
+  const [selectedDate, setSelectedDate] = useState("");
+  const today = new Date().toISOString().slice(0, 10);
+
+  function addDate() {
+    if (!selectedDate || selectedDate < today || dates.includes(selectedDate)) return;
+    onChange([...dates, selectedDate].sort());
+    setSelectedDate("");
+  }
+
+  return (
+    <div className="rounded-2xl border border-[#123c2d]/10 bg-[#f8f5ec] p-4 sm:p-5">
+      <div className="flex items-start gap-3">
+        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#123c2d] text-white">
+          <CalendarDays size={19} />
+        </span>
+        <div>
+          <strong className="block text-[#123c2d]">Datas disponíveis para agendamento</strong>
+          <p className="mt-1 text-sm leading-6 text-[#617268]">Adicione apenas os dias em que este atendimento pode ser realizado.</p>
+        </div>
+      </div>
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+        <input
+          className={`${inputClass()} min-w-0 flex-1`}
+          min={today}
+          onChange={(event) => setSelectedDate(event.target.value)}
+          type="date"
+          value={selectedDate}
+        />
+        <button
+          className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#123c2d] px-5 text-sm font-bold text-white disabled:opacity-50"
+          disabled={!selectedDate || selectedDate < today || dates.includes(selectedDate)}
+          onClick={addDate}
+          type="button"
+        >
+          Adicionar data
+        </button>
+      </div>
+      {dates.length ? (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {dates.map((date) => (
+            <span className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[#123c2d]/12 bg-white px-3 text-sm font-bold text-[#40564d]" key={date}>
+              {new Intl.DateTimeFormat("pt-PT", { dateStyle: "medium" }).format(new Date(`${date}T12:00:00Z`))}
+              <button
+                aria-label={`Remover ${date}`}
+                className="grid h-7 w-7 place-items-center rounded-full text-[#984539] transition hover:bg-[#f4e5e2]"
+                onClick={() => onChange(dates.filter((item) => item !== date))}
+                type="button"
+              >
+                <X size={15} />
+              </button>
+            </span>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-4 text-sm text-[#617268]">Nenhuma data definida. O cliente continuará a combinar o dia diretamente com a Dani.</p>
+      )}
+    </div>
+  );
+}
+
 function ServiceEditor({
   item,
   locale,
@@ -995,6 +1066,12 @@ function ServiceEditor({
               <span>O símbolo da moeda adapta-se automaticamente ao idioma: {formattedPrice || "defina o valor ao lado"}.</span>
             </div>
           </div>
+          {type === "session" ? (
+            <AvailabilityEditor
+              dates={item.available_dates || []}
+              onChange={(available_dates) => onUpdate({ available_dates })}
+            />
+          ) : null}
           <LocalisedInput label="Nome" locale={locale} onChange={(value) => {
             const nextSlug = item.slug.startsWith(`${type}-`) ? slugify(localised(value, "pt")) || item.slug : item.slug;
             onUpdate({ slug: nextSlug, title: value });

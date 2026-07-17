@@ -4,6 +4,7 @@ import { requireAdminRequest } from "@/lib/admin-auth";
 import { findMissingTranslations } from "@/lib/admin-content-validation";
 
 type ServicePayload = {
+  availableDates?: string[];
   amountCents?: number;
   badge?: Record<string, string>;
   capacityLimit?: number | null;
@@ -70,6 +71,10 @@ export async function POST(request: Request) {
     }
   }
 
+  const availableDates = Array.from(new Set((payload.availableDates || [])
+    .filter((date) => /^\d{4}-\d{2}-\d{2}$/.test(date))))
+    .sort();
+
   const { data, error: mutationError } = await supabase
     .from("content_services")
     .upsert(
@@ -102,6 +107,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: mutationError.message }, { status: 500 });
   }
 
+  if ((payload.category || "session") === "session") {
+    const { error: availabilityError } = await supabase
+      .from("admin_settings")
+      .upsert(
+        {
+          key: `availability:${payload.productId}`,
+          value: JSON.stringify(availableDates),
+        },
+        { onConflict: "key" },
+      );
+
+    if (availabilityError) {
+      return NextResponse.json({ error: availabilityError.message }, { status: 500 });
+    }
+  }
+
   const listPath = payload.category === "course" ? "cursos" : "sessoes";
   for (const locale of ["pt", "en", "es", "nl"]) {
     revalidatePath(`/${locale}`);
@@ -109,5 +130,5 @@ export async function POST(request: Request) {
     revalidatePath(`/${locale}/${listPath}/${payload.slug}`);
   }
 
-  return NextResponse.json({ item: data });
+  return NextResponse.json({ item: { ...data, available_dates: availableDates } });
 }
