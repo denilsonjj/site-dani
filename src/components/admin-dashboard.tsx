@@ -5,6 +5,8 @@ import { useMemo, useState, type ComponentType, type ReactNode } from "react";
 import {
   BookOpenText,
   CalendarDays,
+  ChevronLeft,
+  ChevronRight,
   Eye,
   EyeOff,
   FileText,
@@ -938,13 +940,36 @@ function AvailabilityEditor({
   dates: string[];
   onChange: (dates: string[]) => void;
 }) {
-  const [selectedDate, setSelectedDate] = useState("");
-  const today = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const [visibleMonth, setVisibleMonth] = useState(currentMonth);
+  const [selectedDates, setSelectedDates] = useState<string[]>([]);
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const monthLabel = new Intl.DateTimeFormat("pt-PT", { month: "long", year: "numeric" }).format(visibleMonth);
+  const firstWeekday = (new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1).getDay() + 6) % 7;
+  const daysInMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + 1, 0).getDate();
+  const calendarDays = Array.from({ length: firstWeekday + daysInMonth }, (_, index) => {
+    if (index < firstWeekday) return null;
+    const day = index - firstWeekday + 1;
+    return `${visibleMonth.getFullYear()}-${String(visibleMonth.getMonth() + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  });
+  const canGoBack = visibleMonth > currentMonth;
 
-  function addDate() {
-    if (!selectedDate || selectedDate < today || dates.includes(selectedDate)) return;
-    onChange([...dates, selectedDate].sort());
-    setSelectedDate("");
+  function toggleDate(date: string) {
+    if (date < today || dates.includes(date)) return;
+    setSelectedDates((current) => current.includes(date)
+      ? current.filter((item) => item !== date)
+      : [...current, date].sort());
+  }
+
+  function addDates() {
+    if (!selectedDates.length) return;
+    onChange(Array.from(new Set([...dates, ...selectedDates])).sort());
+    setSelectedDates([]);
+  }
+
+  function moveMonth(offset: number) {
+    setVisibleMonth((month) => new Date(month.getFullYear(), month.getMonth() + offset, 1));
   }
 
   return (
@@ -955,25 +980,73 @@ function AvailabilityEditor({
         </span>
         <div>
           <strong className="block text-[#123c2d]">Datas disponíveis para agendamento</strong>
-          <p className="mt-1 text-sm leading-6 text-[#617268]">Adicione apenas os dias em que este atendimento pode ser realizado.</p>
+          <p className="mt-1 text-sm leading-6 text-[#617268]">Selecione vários dias no calendário e adicione todos de uma só vez.</p>
         </div>
       </div>
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-        <input
-          className={`${inputClass()} min-w-0 flex-1`}
-          min={today}
-          onChange={(event) => setSelectedDate(event.target.value)}
-          type="date"
-          value={selectedDate}
-        />
+
+      <div className="mt-5 max-w-md rounded-2xl border border-[#123c2d]/10 bg-white p-3 sm:p-4">
+        <div className="flex items-center justify-between gap-3">
+          <button
+            aria-label="Mês anterior"
+            className="grid h-11 w-11 place-items-center rounded-xl border border-[#123c2d]/10 text-[#123c2d] transition hover:bg-[#edf2ed] disabled:opacity-30"
+            disabled={!canGoBack}
+            onClick={() => moveMonth(-1)}
+            type="button"
+          >
+            <ChevronLeft size={19} />
+          </button>
+          <strong className="capitalize text-[#123c2d]">{monthLabel}</strong>
+          <button
+            aria-label="Próximo mês"
+            className="grid h-11 w-11 place-items-center rounded-xl border border-[#123c2d]/10 text-[#123c2d] transition hover:bg-[#edf2ed]"
+            onClick={() => moveMonth(1)}
+            type="button"
+          >
+            <ChevronRight size={19} />
+          </button>
+        </div>
+        <div className="mt-4 grid grid-cols-7 gap-1 text-center text-xs font-bold uppercase text-[#799a81]">
+          {["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"].map((day) => <span className="py-2" key={day}>{day}</span>)}
+        </div>
+        <div className="grid grid-cols-7 gap-1">
+          {calendarDays.map((date, index) => date ? (
+            <button
+              aria-label={`Selecionar ${date}`}
+              aria-pressed={selectedDates.includes(date) || dates.includes(date)}
+              className={
+                dates.includes(date)
+                  ? "aspect-square rounded-xl bg-[#C9A227]/25 text-sm font-bold text-[#705b16]"
+                  : selectedDates.includes(date)
+                    ? "aspect-square rounded-xl bg-[#123c2d] text-sm font-bold text-white shadow-sm"
+                    : date < today
+                      ? "aspect-square cursor-not-allowed rounded-xl text-sm text-[#aeb9b2]"
+                      : "aspect-square rounded-xl text-sm font-bold text-[#40564d] transition hover:bg-[#edf2ed]"
+              }
+              disabled={date < today || dates.includes(date)}
+              key={date}
+              onClick={() => toggleDate(date)}
+              type="button"
+            >
+              {Number(date.slice(-2))}
+            </button>
+          ) : <span aria-hidden="true" key={`empty-${index}`} />)}
+        </div>
+        <div className="mt-4 flex items-center gap-3 text-xs text-[#617268]">
+          <span className="h-3 w-3 rounded-full bg-[#123c2d]" /> Selecionada
+          <span className="h-3 w-3 rounded-full bg-[#C9A227]/40" /> Já adicionada
+        </div>
+      </div>
+
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
         <button
           className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#123c2d] px-5 text-sm font-bold text-white disabled:opacity-50"
-          disabled={!selectedDate || selectedDate < today || dates.includes(selectedDate)}
-          onClick={addDate}
+          disabled={!selectedDates.length}
+          onClick={addDates}
           type="button"
         >
-          Adicionar data
+          Adicionar datas{selectedDates.length ? ` (${selectedDates.length})` : ""}
         </button>
+        {selectedDates.length ? <span className="text-sm text-[#617268]">Clique novamente num dia para desmarcar.</span> : null}
       </div>
       {dates.length ? (
         <div className="mt-4 flex flex-wrap gap-2">
