@@ -316,6 +316,11 @@ export function AdminScheduleEditor({ initialSchedule, services }: Props) {
               <p className="text-sm leading-6 text-[#617268]">Estas datas e horários serão usados por todas as sessões sem uma agenda própria.</p>
             </div>
           </div>
+          {schedule.enabled && !schedule.dates.length ? (
+            <p className="mb-4 rounded-xl border border-[#C9A227]/45 bg-[#fff9e8] p-4 text-sm leading-6 text-[#705b16]">
+              A agenda está ativa, mas ainda não há datas na agenda principal. Adicione e guarde pelo menos uma data para que os clientes vejam horários disponíveis.
+            </p>
+          ) : null}
           <DateAvailabilityEditor
             dates={schedule.dates}
             defaultEnd={schedule.defaultEnd}
@@ -341,12 +346,13 @@ export function AdminScheduleEditor({ initialSchedule, services }: Props) {
                       Duração em minutos
                       <input
                         className={inputClass}
-                        min="15"
-                        onChange={(event) => updateService(service.product_id, { durationMinutes: Number(event.target.value) || 60 })}
+                        min="0"
+                        onChange={(event) => updateService(service.product_id, { durationMinutes: Number(event.target.value) || 0 })}
                         step="15"
                         type="number"
                         value={settings.durationMinutes}
                       />
+                      <span className="font-medium text-[#799a81]">Use 0 para atendimentos remotos sem agendamento.</span>
                     </label>
                     <label className="flex min-h-11 items-center gap-2 rounded-xl border border-[#123c2d]/10 bg-white px-3 text-sm font-bold">
                       <input

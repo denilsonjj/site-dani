@@ -6,6 +6,7 @@ import {
   bookingScheduleSettingKey,
   createDefaultBookingSchedule,
   getAppointmentSlots,
+  getServiceDuration,
   parseBookingSchedule,
   type AppointmentSlot,
   type BookingSchedule,
@@ -1057,7 +1058,8 @@ export async function getCheckoutProduct(productId: string, locale: Locale, clie
       const isCourse = service.product_id.startsWith("online-course");
       const availableDates = isCourse ? [] : await getAvailableDates(service.product_id);
       const schedule = isCourse ? createDefaultBookingSchedule() : await getBookingSchedule();
-      const appointmentSlots = schedule.enabled
+      const requiresAppointment = schedule.enabled && getServiceDuration(schedule, service.product_id) > 0;
+      const appointmentSlots = requiresAppointment
         ? getAppointmentSlots({
             booked: await getBookedAppointments(),
             clientTimeZone,
@@ -1066,7 +1068,7 @@ export async function getCheckoutProduct(productId: string, locale: Locale, clie
             schedule,
           })
         : [];
-      const dateField = schedule.enabled
+      const dateField = requiresAppointment
         ? appointmentSlotField(appointmentSlots, locale, clientTimeZone)
         : appointmentDateField(availableDates, locale);
       const supplements = fallbackIntakeFields(locale, service.product_id).filter(
@@ -1082,9 +1084,9 @@ export async function getCheckoutProduct(productId: string, locale: Locale, clie
         intakeFields: [...fields, ...supplements, ...(dateField ? [dateField] : [])],
         name: localise(service.title, locale, productId),
         productId: service.product_id,
-        requiresIntake: service.requires_intake || availableDates.length > 0 || schedule.enabled,
+        requiresIntake: service.requires_intake || availableDates.length > 0 || requiresAppointment,
         requiresPolicyAcceptance: service.requires_policy_acceptance,
-        scheduleEnabled: schedule.enabled,
+        scheduleEnabled: requiresAppointment,
         remainingSeats:
           service.capacity_limit === null || service.capacity_limit === undefined
             ? null

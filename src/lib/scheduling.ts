@@ -115,7 +115,9 @@ export function normaliseBookingSchedule(value: unknown): BookingSchedule {
     const item = service as Partial<ServiceSchedule>;
     result[productId] = {
       dates: normaliseDays(item.dates, defaultStart, safeEnd),
-      durationMinutes: Math.min(Math.max(Number(item.durationMinutes) || 60, 15), 480),
+      durationMinutes: Number.isFinite(Number(item.durationMinutes))
+        ? Math.min(Math.max(Number(item.durationMinutes), 0), 480)
+        : 60,
       useCustomAvailability: Boolean(item.useCustomAvailability),
     };
     return result;
@@ -191,7 +193,7 @@ function overlaps(leftStart: Date, leftEnd: Date, rightStart: Date, rightEnd: Da
 }
 
 export function getServiceDuration(schedule: BookingSchedule, productId: string) {
-  return schedule.services[productId]?.durationMinutes || 60;
+  return schedule.services[productId]?.durationMinutes ?? 60;
 }
 
 export function getAppointmentSlots({
@@ -214,6 +216,7 @@ export function getAppointmentSlots({
   const service = schedule.services[productId];
   const dates = service?.useCustomAvailability ? service.dates : schedule.dates;
   const durationMinutes = getServiceDuration(schedule, productId);
+  if (durationMinutes === 0) return [];
   const displayTimeZone = safeTimeZone(clientTimeZone);
   const bookedRanges = booked.flatMap((item) => {
     const start = new Date(item.start);
