@@ -1,5 +1,6 @@
 import type { SiteService } from "./cms";
 import type { Locale } from "./content";
+import translatedSessionDetails from "./session-details-translations.json";
 
 type AboutPageContent = {
   back: string;
@@ -337,6 +338,14 @@ const sessionDetailsPt: Record<string, string[]> = {
   ],
 };
 
+const sessionDetailsTranslations = translatedSessionDetails as Record<Exclude<Locale, "pt">, Record<string, string[]>>;
+
+function getSessionDetailFallback(productId: string, locale: Locale) {
+  return locale === "pt"
+    ? sessionDetailsPt[productId]
+    : sessionDetailsTranslations[locale]?.[productId];
+}
+
 const guidedHealingRecordingDetails: Record<Locale, string[]> = {
   pt: [
     "A gravação da sessão pode ser adquirida à parte e ficará disponível durante 3 meses.",
@@ -379,16 +388,14 @@ function splitDescription(description: string) {
 
 export function getDetailParagraphs(service: SiteService, locale: Locale) {
   const cmsDescription = service.description.trim();
-  if (service.productId === "online-course-en") return courseDetails.en;
-  if (service.productId === "online-course") return courseDetails.pt;
+  if (service.productId.startsWith("online-course")) return courseDetails[locale];
   const hasCompleteCmsDescription = cmsDescription.length >= 600 || cmsDescription.includes("\n\n");
+  const translatedFallback = getSessionDetailFallback(service.productId, locale);
 
   if (service.productId === "guided-healing-movement") {
     const baseParagraphs = hasCompleteCmsDescription
       ? splitDescription(cmsDescription)
-      : locale === "pt"
-        ? sessionDetailsPt[service.productId]
-        : splitDescription(cmsDescription || service.text);
+      : translatedFallback || splitDescription(cmsDescription || service.text);
     const recordingMarker = { pt: "gravação", en: "recording", es: "grabación", nl: "opname" }[locale];
     return baseParagraphs.some((paragraph) => paragraph.toLocaleLowerCase(locale).includes(recordingMarker))
       ? baseParagraphs
@@ -397,11 +404,10 @@ export function getDetailParagraphs(service: SiteService, locale: Locale) {
 
   const baseParagraphs = hasCompleteCmsDescription
     ? splitDescription(cmsDescription)
-    : locale === "pt" && sessionDetailsPt[service.productId]
-      ? sessionDetailsPt[service.productId]
-      : splitDescription(cmsDescription || service.text);
+    : translatedFallback || splitDescription(cmsDescription || service.text);
 
   if (!earlyInterventionServices.has(service.productId)) return baseParagraphs;
+  if (translatedFallback?.length && baseParagraphs.length >= translatedFallback.length) return baseParagraphs;
 
   const paragraphs = locale === "pt"
     ? baseParagraphs.map((paragraph) =>

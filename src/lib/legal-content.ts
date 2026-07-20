@@ -1,3 +1,6 @@
+import legalTranslations from "./legal-translations.json";
+import type { Locale } from "./content";
+
 export type LegalDocumentKey = "cookies" | "privacy" | "terms";
 
 type LegalSection = {
@@ -206,3 +209,8 @@ export const legalDocuments: Record<LegalDocumentKey, LegalDocument> = {
     ],
   },
 };
+
+export function getLegalDocument(key: LegalDocumentKey, locale: Locale): LegalDocument {
+  if (locale === "pt") return legalDocuments[key];
+  return (legalTranslations as Record<Exclude<Locale, "pt">, Record<LegalDocumentKey, LegalDocument>>)[locale][key];
+}

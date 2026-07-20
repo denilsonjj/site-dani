@@ -1,7 +1,8 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { locales, type Locale } from "@/lib/content";
-import { legalDocuments, type LegalDocumentKey } from "@/lib/legal-content";
+import { getLegalDocument, type LegalDocumentKey } from "@/lib/legal-content";
 
 const legalPages = {
   "politica-de-cookies": "cookies",
@@ -13,6 +14,20 @@ export function generateStaticParams() {
   return locales.flatMap((locale) =>
     Object.keys(legalPages).map((legal) => ({ legal, locale })),
   );
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ legal: string; locale: string }>;
+}): Promise<Metadata> {
+  const { legal, locale: rawLocale } = await params;
+  if (!locales.includes(rawLocale as Locale) || !(legal in legalPages)) return {};
+
+  const locale = rawLocale as Locale;
+  const key = legalPages[legal as keyof typeof legalPages] as LegalDocumentKey;
+  const document = getLegalDocument(key, locale);
+  return { title: document.title, description: document.introduction[0] };
 }
 
 export default async function LegalPage({
@@ -28,7 +43,7 @@ export default async function LegalPage({
 
   const locale = rawLocale as Locale;
   const key = legalPages[legal as keyof typeof legalPages] as LegalDocumentKey;
-  const document = legalDocuments[key];
+  const document = getLegalDocument(key, locale);
 
   return (
     <main className="min-h-screen bg-[#f8f5ec] px-5 py-16 text-[#123c2d]">
