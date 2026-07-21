@@ -59,7 +59,7 @@ export default async function SessionDetailPage({
 
   return (
     <CatalogDetail
-      aboutTitle={labels.aboutTitle}
+      aboutTitle={service.detailHeading || labels.aboutTitle}
       actionLabel={copy.services.action}
       backHref={`/${locale}/sessoes`}
       backLabel={labels.backSession}

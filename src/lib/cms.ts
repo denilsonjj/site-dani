@@ -62,6 +62,7 @@ export type ServiceRow = {
   category: "session" | "course";
   currency: string;
   description: LocalisedValue;
+  detail_intro?: LocalisedValue;
   duration: LocalisedValue;
   id: string;
   image_url: string | null;
@@ -75,6 +76,7 @@ export type ServiceRow = {
   slug: string;
   sort_order: number;
   stripe_price_env: string | null;
+  subtitle?: LocalisedValue;
   summary: LocalisedValue;
   title: LocalisedValue;
 };
@@ -116,6 +118,8 @@ export type SiteService = {
   category: "session" | "course";
   currency: string;
   description: string;
+  detailHeading?: string;
+  detailIntro?: string;
   duration: string;
   id?: string;
   image?: string;
@@ -279,6 +283,8 @@ function mapService(row: ServiceRow, locale: Locale): SiteService {
     category: row.category,
     currency: row.currency,
     description: localise(row.description, locale, translated?.text),
+    detailHeading: localise(row.subtitle, locale),
+    detailIntro: localise(row.detail_intro, locale),
     duration: legacyThirtyDayServices.has(row.product_id) && legacyFifteenDayLabels.has(storedDuration)
       ? thirtyDayLabels[locale]
       : normalisedCourseDuration,

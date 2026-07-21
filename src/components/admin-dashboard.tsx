@@ -129,6 +129,7 @@ function servicePayload(item: ServiceRow, isPublished = item.is_published) {
     category: item.category,
     currency: item.currency || "EUR",
     description: item.description || {},
+    detailIntro: item.detail_intro || {},
     duration: item.duration || {},
     imageUrl: item.image_url || "",
     isPublished,
@@ -139,6 +140,7 @@ function servicePayload(item: ServiceRow, isPublished = item.is_published) {
     slug: item.slug,
     sortOrder: item.sort_order || 0,
     stripePriceEnv: item.stripe_price_env || "",
+    subtitle: item.subtitle || {},
     summary: item.summary || {},
     title: item.title || {},
   };
@@ -625,6 +627,7 @@ export function AdminDashboard({ blogPosts, bookingSchedule, courses, sections, 
       category: type,
       currency: "EUR",
       description: { pt: "" },
+      detail_intro: { pt: "" },
       duration: { pt: "" },
       id,
       image_url: null,
@@ -638,6 +641,7 @@ export function AdminDashboard({ blogPosts, bookingSchedule, courses, sections, 
       slug: id,
       sort_order: type === "session" ? serviceItems.length + 1 : courseItems.length + 1,
       stripe_price_env: "",
+      subtitle: { pt: "" },
       summary: { pt: "" },
       title: { pt: title },
     };
@@ -1011,6 +1015,10 @@ function ServiceEditor({
             onUpdate({ slug: nextSlug, title: value });
           }} value={item.title} />
           <LocalisedInput label="Resumo curto" locale={locale} onChange={(value) => onUpdate({ summary: value })} textarea value={item.summary} />
+          <div className="grid gap-4 rounded-xl border border-[#C9A227]/25 bg-[#f8f5ec] p-4 md:grid-cols-2">
+            <LocalisedInput label="Título da explicação" locale={locale} onChange={(value) => onUpdate({ subtitle: value })} value={item.subtitle || null} />
+            <LocalisedInput label="Frase de introdução" locale={locale} onChange={(value) => onUpdate({ detail_intro: value })} textarea value={item.detail_intro || null} />
+          </div>
           <LocalisedInput label="Descrição completa" locale={locale} onChange={(value) => onUpdate({ description: value })} textarea value={item.description} />
           <div className="grid gap-4 md:grid-cols-2">
             <LocalisedInput label="Duração" locale={locale} onChange={(value) => onUpdate({ duration: value })} value={item.duration} />

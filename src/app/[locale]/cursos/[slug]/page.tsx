@@ -60,7 +60,7 @@ export default async function CourseDetailPage({
 
   return (
     <CatalogDetail
-      aboutTitle={labels.aboutTitle}
+      aboutTitle={course.detailHeading || labels.aboutTitle}
       actionLabel={copy.course.cta}
       backHref={`/${locale}/cursos`}
       backLabel={labels.backCourse}

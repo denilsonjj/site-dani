@@ -11,6 +11,7 @@ type ServicePayload = {
   category?: "session" | "course";
   currency?: string;
   description?: Record<string, string>;
+  detailIntro?: Record<string, string>;
   duration?: Record<string, string>;
   imageUrl?: string;
   isPublished?: boolean;
@@ -21,6 +22,7 @@ type ServicePayload = {
   slug?: string;
   sortOrder?: number;
   stripePriceEnv?: string;
+  subtitle?: Record<string, string>;
   summary?: Record<string, string>;
   title?: Record<string, string>;
 };
@@ -58,9 +60,11 @@ export async function POST(request: Request) {
     const missing = findMissingTranslations({
       badge: payload.badge,
       description: payload.description,
+      detailIntro: payload.detailIntro,
       duration: payload.duration,
       priceLabel: payload.priceLabel,
       summary: payload.summary,
+      subtitle: payload.subtitle,
       title: payload.title,
     });
     if (missing.length) {
@@ -85,6 +89,7 @@ export async function POST(request: Request) {
         category: payload.category || "session",
         currency: payload.currency || "EUR",
         description: payload.description || payload.summary || {},
+        detail_intro: payload.detailIntro || {},
         duration: payload.duration || {},
         image_url: payload.imageUrl || null,
         is_published: Boolean(payload.isPublished),
@@ -95,6 +100,7 @@ export async function POST(request: Request) {
         slug: payload.slug,
         sort_order: payload.sortOrder || 0,
         stripe_price_env: payload.stripePriceEnv || null,
+        subtitle: payload.subtitle || {},
         summary: payload.summary,
         title: payload.title,
       },

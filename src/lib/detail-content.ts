@@ -386,9 +386,16 @@ function splitDescription(description: string) {
     .filter(Boolean);
 }
 
+function applyDetailIntro(paragraphs: string[], service: SiteService) {
+  const intro = service.detailIntro?.trim();
+  return intro ? [intro, ...paragraphs.slice(1)] : paragraphs;
+}
+
 export function getDetailParagraphs(service: SiteService, locale: Locale) {
   const cmsDescription = service.description.trim();
-  if (service.productId.startsWith("online-course")) return courseDetails[locale];
+  if (service.productId.startsWith("online-course")) {
+    return applyDetailIntro(courseDetails[locale], service);
+  }
   const hasCompleteCmsDescription = cmsDescription.length >= 600 || cmsDescription.includes("\n\n");
   const translatedFallback = getSessionDetailFallback(service.productId, locale);
 
@@ -397,17 +404,20 @@ export function getDetailParagraphs(service: SiteService, locale: Locale) {
       ? splitDescription(cmsDescription)
       : translatedFallback || splitDescription(cmsDescription || service.text);
     const recordingMarker = { pt: "gravação", en: "recording", es: "grabación", nl: "opname" }[locale];
-    return baseParagraphs.some((paragraph) => paragraph.toLocaleLowerCase(locale).includes(recordingMarker))
+    const paragraphs = baseParagraphs.some((paragraph) => paragraph.toLocaleLowerCase(locale).includes(recordingMarker))
       ? baseParagraphs
       : [...baseParagraphs, ...guidedHealingRecordingDetails[locale]];
+    return applyDetailIntro(paragraphs, service);
   }
 
   const baseParagraphs = hasCompleteCmsDescription
     ? splitDescription(cmsDescription)
     : translatedFallback || splitDescription(cmsDescription || service.text);
 
-  if (!earlyInterventionServices.has(service.productId)) return baseParagraphs;
-  if (translatedFallback?.length && baseParagraphs.length >= translatedFallback.length) return baseParagraphs;
+  if (!earlyInterventionServices.has(service.productId)) return applyDetailIntro(baseParagraphs, service);
+  if (translatedFallback?.length && baseParagraphs.length >= translatedFallback.length) {
+    return applyDetailIntro(baseParagraphs, service);
+  }
 
   const paragraphs = locale === "pt"
     ? baseParagraphs.map((paragraph) =>
@@ -416,9 +426,10 @@ export function getDetailParagraphs(service: SiteService, locale: Locale) {
     : baseParagraphs;
   const detail = earlyInterventionDetails[locale];
 
-  return paragraphs.some((paragraph) => paragraph.toLocaleLowerCase(locale).includes(detail.toLocaleLowerCase(locale)))
+  const completedParagraphs = paragraphs.some((paragraph) => paragraph.toLocaleLowerCase(locale).includes(detail.toLocaleLowerCase(locale)))
     ? paragraphs
     : [...paragraphs, detail];
+  return applyDetailIntro(completedParagraphs, service);
 }
 
 export function getFallbackDetailText(productId: string) {

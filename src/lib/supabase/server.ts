@@ -6,7 +6,7 @@ let adminClient: SupabaseClient | null = null;
 function publicFetch(input: RequestInfo | URL, init?: RequestInit) {
   const timeout = AbortSignal.timeout(5000);
   const signal = init?.signal ? AbortSignal.any([init.signal, timeout]) : timeout;
-  return fetch(input, { ...init, signal });
+  return fetch(input, { ...init, cache: "no-store", signal });
 }
 
 export function hasSupabasePublicConfig() {

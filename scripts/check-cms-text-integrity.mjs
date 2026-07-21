@@ -9,7 +9,7 @@ const requiredLocales = ["pt", "en", "es", "nl"];
 
 const tables = [
   {
-    columns: ["title", "summary", "description", "duration", "price_label", "badge"],
+    columns: ["title", "subtitle", "summary", "detail_intro", "description", "duration", "price_label", "badge"],
     identifiers: ["id", "slug", "product_id"],
     name: "content_services",
     requireTranslations: true,
