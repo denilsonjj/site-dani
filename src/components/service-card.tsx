@@ -4,7 +4,6 @@ import { HeartHandshake, MoonStar, ShieldCheck, Sparkles } from "lucide-react";
 import { CheckoutButton } from "@/components/checkout-button";
 import type { SiteService } from "@/lib/cms";
 import type { Locale } from "@/lib/content";
-import { getServiceImage } from "@/lib/service-visuals";
 
 type ServiceCardProps = {
   actionLabel: string;
@@ -60,13 +59,13 @@ export function ServiceCard({ actionLabel, anchor = true, detailsLabel, index, l
         : layout === "vertical"
           ? "relative h-72 overflow-hidden bg-[#123c2d] sm:h-96"
           : "relative h-44 overflow-hidden bg-[#123c2d]"}>
-        <Image
+        {service.image ? <Image
           alt=""
           className="object-cover transition-transform duration-1000 ease-out hover:scale-[1.04]"
           fill
           sizes="(min-width: 1280px) 25vw, (min-width: 768px) 50vw, 100vw"
-          src={getServiceImage(service.productId, service.image)}
-        />
+          src={service.image}
+        /> : null}
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(9,39,29,0.08)_0%,rgba(9,39,29,0.52)_100%)]" />
         <span className="absolute left-5 top-5 rounded-full border border-white/20 bg-white/18 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-white backdrop-blur-md">
           {service.badge}

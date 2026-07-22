@@ -9,7 +9,6 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getPublishedCourses, getPublishedSiteSections } from "@/lib/cms";
 import { getContent, locales, type Locale } from "@/lib/content";
-import { getListingSectionFallbacks } from "@/lib/site-sections";
 
 const pageCopy = {
   pt: {
@@ -61,10 +60,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale: rawLocale } = await params;
   if (!locales.includes(rawLocale as Locale)) return {};
+  const locale = rawLocale as Locale;
+  const hero = (await getPublishedSiteSections("courses", locale)).hero;
+  if (!hero) return {};
 
   return {
-    title: "Cursos | Dani Therapies",
-    description: "Cursos online da Dani Therapies com descrição, duração, investimento e inscrição.",
+    title: `${hero.title} | Dani Therapies`,
+    description: hero.body,
   };
 }
 
@@ -81,24 +83,11 @@ export default async function CoursesPage({
   const labels = pageCopy[locale];
   const [courses, sections] = await Promise.all([
     getPublishedCourses(locale),
-    getPublishedSiteSections("courses", locale, getListingSectionFallbacks("courses", locale)),
+    getPublishedSiteSections("courses", locale),
   ]);
   const hero = sections.hero;
-  const primaryCourse = courses[0];
-  const courseList = courses.length
-    ? courses
-    : [
-        {
-          description: copy.course.intro,
-          duration: copy.course.duration,
-          image: "/services/original-course-sensory-activation.webp",
-          price: copy.course.price,
-          productId: "online-course",
-          slug: "ativacao-sensorial-classes-em-portugues",
-          text: copy.course.intro,
-          title: copy.course.title,
-        },
-      ];
+  if (!hero) notFound();
+  const courseList = courses;
 
   return (
     <main className="min-h-screen bg-[#f8f5ec] text-[#123c2d]">
@@ -119,7 +108,7 @@ export default async function CoursesPage({
                 {hero.title}
               </h1>
               <p className="mt-7 max-w-xl leading-8 text-white/68">
-                {hero.body || primaryCourse?.description || primaryCourse?.text || copy.course.intro}
+                {hero.body}
               </p>
             </div>
             <div className="rounded-[2rem] border border-white/12 bg-white/[0.06] p-6 shadow-2xl shadow-black/10">
@@ -154,13 +143,13 @@ export default async function CoursesPage({
                 key={course.productId}
               >
                 <div className="relative min-h-72 bg-[#123c2d] lg:min-h-full">
-                  <Image
+                  {course.image ? <Image
                     alt={course.title}
                     className="object-cover"
                     fill
                     sizes="(min-width: 1024px) 28vw, 100vw"
-                    src={course.image || "/services/original-course-sensory-activation.webp"}
-                  />
+                    src={course.image}
+                  /> : null}
                 </div>
                 <div className="p-7 sm:p-9">
                   <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#799a81]">

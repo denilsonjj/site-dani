@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { getPublishedBlogPosts, getPublishedSiteSections } from "@/lib/cms";
 import { locales, type Locale } from "@/lib/content";
-import { getListingSectionFallbacks } from "@/lib/site-sections";
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -18,11 +17,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale: rawLocale } = await params;
   if (!locales.includes(rawLocale as Locale)) return {};
+  const locale = rawLocale as Locale;
+  const hero = (await getPublishedSiteSections("blog", locale)).hero;
+  if (!hero) return {};
 
   return {
-    title: "Blog | Dani Therapies",
-    description:
-      "Blog sobre cuidado energético, espiritualidade, primeiras consultas e harmonização de ambientes.",
+    title: `${hero.title} | Dani Therapies`,
+    description: hero.body,
   };
 }
 
@@ -37,9 +38,10 @@ export default async function BlogPage({
   const locale = rawLocale as Locale;
   const [blogPosts, sections] = await Promise.all([
     getPublishedBlogPosts(locale),
-    getPublishedSiteSections("blog", locale, getListingSectionFallbacks("blog", locale)),
+    getPublishedSiteSections("blog", locale),
   ]);
   const hero = sections.hero;
+  if (!hero) notFound();
 
   return (
     <main className="min-h-screen bg-[#f8f5ec] text-[#123c2d]">
@@ -68,14 +70,14 @@ export default async function BlogPage({
                 className="overflow-hidden rounded-[2rem] border border-[#123c2d]/10 bg-white shadow-[0_20px_60px_rgba(19,35,29,0.08)]"
                 key={post.slug}
               >
-                <div className="relative h-56">
-                  <Image
+                <div className="relative h-56 bg-[#123c2d]">
+                  {post.image ? <Image
                     alt=""
                     className="object-cover"
                     fill
                     sizes="(min-width: 768px) 33vw, 100vw"
                     src={post.image}
-                  />
+                  /> : null}
                 </div>
                 <div className="p-7">
                   <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#799a81]">

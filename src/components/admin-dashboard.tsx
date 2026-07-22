@@ -23,7 +23,6 @@ import { AdminScheduleEditor } from "@/components/admin-schedule-editor";
 import type { BlogRow, ServiceRow, SiteSectionRow } from "@/lib/cms";
 import { formatPrice, moneyInputValue, parseMoneyInput } from "@/lib/currency";
 import type { BookingSchedule } from "@/lib/scheduling";
-import { getServiceImage } from "@/lib/service-visuals";
 
 type AdminDashboardProps = {
   blogPosts: BlogRow[];
@@ -97,7 +96,7 @@ const tabs: Array<{ icon: ComponentType<{ size?: number }>; key: TabKey; label: 
 ];
 
 function localised(value: LocalisedValue, locale: LocaleKey = "pt") {
-  return value?.[locale] || value?.pt || value?.en || value?.es || value?.nl || "";
+  return value?.[locale] ?? "";
 }
 
 function setLocalised(value: LocalisedValue, locale: LocaleKey, next: string) {
@@ -966,7 +965,7 @@ function ServiceEditor({
   return (
     <article className="rounded-xl border border-[#123c2d]/10 bg-[#fbfaf7]">
       <div className="flex items-center gap-3 p-4">
-        <Thumb icon={type === "course" ? BookOpenText : ListChecks} src={getServiceImage(item.product_id, item.image_url || undefined)} />
+        <Thumb icon={type === "course" ? BookOpenText : ListChecks} src={item.image_url || undefined} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <strong className="truncate">{title || "Sem nome"}</strong>

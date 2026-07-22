@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { requireAdminRequest } from "@/lib/admin-auth";
-import { mergeAdminSectionRows } from "@/lib/site-sections";
 import type { SiteSectionRow } from "@/lib/cms";
 
 const localeKeys = ["pt", "en", "es", "nl"] as const;
@@ -54,6 +53,7 @@ function missingTranslations(payload: SectionPayload) {
 function sectionAllowsMedia(pageKey: string, sectionKey: string) {
   return (
     (pageKey === "home" && sectionKey === "hero")
+    || (pageKey === "home" && sectionKey === "course")
     || (pageKey === "home" && /^prompt-\d+$/.test(sectionKey))
     || (pageKey === "home" && /^partner-\d+$/.test(sectionKey))
     || (pageKey === "about" && sectionKey === "introduction")
@@ -71,7 +71,7 @@ export async function GET(request: Request) {
     .order("sort_order", { ascending: true });
 
   if (queryError) return NextResponse.json({ error: queryError.message }, { status: 500 });
-  return NextResponse.json({ items: mergeAdminSectionRows((data || []) as SiteSectionRow[]) });
+  return NextResponse.json({ items: (data || []) as SiteSectionRow[] });
 }
 
 export async function POST(request: Request) {

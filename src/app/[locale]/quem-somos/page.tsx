@@ -8,14 +8,13 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getPublishedSiteSections } from "@/lib/cms";
 import { getContent, locales, type Locale } from "@/lib/content";
-import { aboutPageContent } from "@/lib/detail-content";
-import { getAboutSectionFallbacks, splitParagraphs } from "@/lib/site-sections";
+import { splitParagraphs } from "@/lib/site-sections";
 
-const legacyIntroductionDescriptions: Partial<Record<Locale, string[]>> = {
-  pt: [
-    "Não prometo milagres! Mas ofereço qualidade de vida.",
-    "Não prometo milagres. Mas ofereço qualidade de vida.",
-  ],
+const backLabels: Record<Locale, string> = {
+  pt: "Voltar à página inicial",
+  en: "Back to the home page",
+  es: "Volver a la página principal",
+  nl: "Terug naar de homepage",
 };
 
 export function generateStaticParams() {
@@ -31,10 +30,12 @@ export async function generateMetadata({
   if (!locales.includes(rawLocale as Locale)) return {};
 
   const locale = rawLocale as Locale;
-  const page = aboutPageContent[locale];
+  const sections = await getPublishedSiteSections("about", locale);
+  const introduction = sections.introduction;
+  if (!introduction) return {};
   return {
-    title: `${page.eyebrow} | Dani Therapies`,
-    description: page.intro[0],
+    title: `${introduction.eyebrow || introduction.title} | Dani Therapies`,
+    description: splitParagraphs(introduction.body)[0] || introduction.description,
     alternates: {
       canonical: `/${locale}/quem-somos`,
       languages: {
@@ -57,13 +58,10 @@ export default async function AboutPage({
 
   const locale = rawLocale as Locale;
   const copy = getContent(locale);
-  const page = aboutPageContent[locale];
-  const sections = await getPublishedSiteSections("about", locale, getAboutSectionFallbacks(locale));
-  const storedIntroduction = sections.introduction;
-  const introduction = legacyIntroductionDescriptions[locale]?.includes(storedIntroduction.description.trim())
-    ? { ...storedIntroduction, description: page.quote }
-    : storedIntroduction;
+  const sections = await getPublishedSiteSections("about", locale);
+  const introduction = sections.introduction;
   const work = sections.work;
+  if (!introduction || !work) notFound();
 
   return (
     <main className="min-h-screen bg-[#f8f5ec] text-[#123c2d]">
@@ -74,28 +72,28 @@ export default async function AboutPage({
         <div className="mx-auto max-w-7xl">
           <Link className="inline-flex items-center gap-2 text-sm font-bold text-[#C9A227] transition hover:text-[#C9A227]" href={`/${locale}`}>
             <ArrowLeft aria-hidden="true" size={17} />
-            {page.back}
+            {backLabels[locale]}
           </Link>
 
           <div className="mt-12 grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]" data-reveal>
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#C9A227]">Dani Therapies</p>
+              {introduction.eyebrow ? <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#C9A227]">{introduction.eyebrow}</p> : null}
               <h1 className="display mt-4 text-5xl font-semibold leading-tight sm:text-7xl">{introduction.title}</h1>
               <p className="mt-6 max-w-3xl text-xl font-semibold leading-8 text-[#C9A227]">{introduction.description}</p>
               <div className="mt-10 grid gap-5 text-base leading-8 text-white/70 sm:text-lg">
                 {splitParagraphs(introduction.body).map((paragraph, index) => <p key={`about-intro-${index}`}>{paragraph}</p>)}
               </div>
             </div>
-            <div className="mx-auto w-full max-w-md overflow-hidden rounded-[2rem] bg-[#f8f5ec] shadow-[0_26px_80px_rgba(0,0,0,0.22)]">
+            {introduction.imageUrl ? <div className="mx-auto w-full max-w-md overflow-hidden rounded-[2rem] bg-[#f8f5ec] shadow-[0_26px_80px_rgba(0,0,0,0.22)]">
               <Image
                 alt={introduction.imageAlt}
                 className="h-auto w-full object-cover"
                 height={1200}
                 priority
-                src={introduction.imageUrl || "/dani-quem-somos.webp"}
+                src={introduction.imageUrl}
                 width={900}
               />
-            </div>
+            </div> : null}
           </div>
         </div>
       </section>
@@ -103,7 +101,7 @@ export default async function AboutPage({
       <section className="px-5 py-16 sm:py-24">
         <div className="mx-auto max-w-6xl rounded-[2rem] border border-[#123c2d]/10 bg-white p-7 shadow-[0_22px_70px_rgba(19,35,29,0.08)] sm:p-10 lg:p-12" data-reveal>
             <div className="mb-9 flex flex-wrap items-center gap-5 border-b border-[#123c2d]/10 pb-8">
-              <h2 className="display text-4xl font-semibold leading-tight sm:text-5xl">{page.eyebrow}</h2>
+              <h2 className="display text-4xl font-semibold leading-tight sm:text-5xl">{work.title}</h2>
               <div className="flex h-20 w-32 items-center justify-center rounded-2xl bg-[#123c2d] p-3 sm:h-24 sm:w-40">
                 <Image
                   alt="Dani Therapies"
@@ -117,13 +115,13 @@ export default async function AboutPage({
             <div className="grid gap-6 text-base leading-8 text-[#52675e] sm:text-lg">
               {splitParagraphs(work.body).map((paragraph, index) => <p key={`about-services-${index}`}>{paragraph}</p>)}
             </div>
-            <Link
+            {work.primaryCtaHref && work.primaryCtaLabel ? <Link
               className="mt-9 inline-flex min-h-13 items-center justify-center gap-2 rounded-full bg-[#123c2d] px-6 font-bold text-white transition hover:bg-[#1f5742]"
               href={work.primaryCtaHref}
             >
               {work.primaryCtaLabel}
               <ArrowRight aria-hidden="true" size={17} />
-            </Link>
+            </Link> : null}
         </div>
       </section>
 

@@ -24,19 +24,18 @@ export async function generateMetadata({
   if (!locales.includes(rawLocale as Locale)) return {};
 
   const locale = rawLocale as Locale;
-  const copy = getContent(locale);
   const courses = await getPublishedCourses(locale);
   const course = courses.find((item) => (item.slug || item.productId) === slug);
   if (!course) return {};
 
   return {
     title: `${course.title} | Dani Therapies`,
-    description: course.description || course.text || copy.course.intro,
+    description: course.description || course.text,
     alternates: { canonical: `/${locale}/cursos/${slug}` },
     openGraph: {
       title: course.title,
-      description: course.description || course.text || copy.course.intro,
-      images: [course.image || "/services/original-course-sensory-activation.webp"],
+      description: course.description || course.text,
+      images: course.image ? [course.image] : undefined,
       type: "website",
     },
   };
@@ -60,7 +59,7 @@ export default async function CourseDetailPage({
 
   return (
     <CatalogDetail
-      aboutTitle={course.detailHeading || labels.aboutTitle}
+      aboutTitle={course.detailHeading || ""}
       actionLabel={copy.course.cta}
       backHref={`/${locale}/cursos`}
       backLabel={labels.backCourse}
@@ -68,7 +67,7 @@ export default async function CourseDetailPage({
       eyebrow={labels.courseEyebrow}
       investmentLabel={labels.courseInvestment}
       locale={locale}
-      paragraphs={getDetailParagraphs(course, locale)}
+      paragraphs={getDetailParagraphs(course)}
       practicalTitle={labels.practicalTitle}
       service={course}
     />

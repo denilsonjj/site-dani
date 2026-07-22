@@ -7,7 +7,6 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import type { SiteService } from "@/lib/cms";
 import { getContent, type Locale } from "@/lib/content";
-import { getServiceImage } from "@/lib/service-visuals";
 
 type CatalogDetailProps = {
   aboutTitle: string;
@@ -63,14 +62,14 @@ export function CatalogDetail({
             </div>
 
             <div className="relative min-h-[22rem] overflow-hidden rounded-[2rem] border border-white/12 bg-white/[0.06] shadow-2xl shadow-black/20 sm:min-h-[30rem]">
-              <Image
+              {service.image ? <Image
                 alt={service.title}
                 className="object-cover"
                 fill
                 priority
                 sizes="(min-width: 1024px) 42vw, 100vw"
-                src={getServiceImage(service.productId, service.image)}
-              />
+                src={service.image}
+              /> : null}
               <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_45%,rgba(7,28,21,0.72)_100%)]" />
               <span className="absolute bottom-6 left-6 rounded-full border border-white/20 bg-[#0b2a20]/68 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white backdrop-blur-md">
                 {service.badge}

@@ -59,7 +59,7 @@ export default async function SessionDetailPage({
 
   return (
     <CatalogDetail
-      aboutTitle={service.detailHeading || labels.aboutTitle}
+      aboutTitle={service.detailHeading || ""}
       actionLabel={copy.services.action}
       backHref={`/${locale}/sessoes`}
       backLabel={labels.backSession}
@@ -67,7 +67,7 @@ export default async function SessionDetailPage({
       eyebrow={labels.sessionEyebrow}
       investmentLabel={labels.serviceInvestment}
       locale={locale}
-      paragraphs={getDetailParagraphs(service, locale)}
+      paragraphs={getDetailParagraphs(service)}
       practicalTitle={labels.practicalTitle}
       service={service}
     />

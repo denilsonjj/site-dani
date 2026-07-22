@@ -20,7 +20,6 @@ import { SiteHeader } from "@/components/site-header";
 import { getPublishedBlogPosts, getPublishedCourses, getPublishedServices, getPublishedSiteSections } from "@/lib/cms";
 import { getContent, locales, type Locale } from "@/lib/content";
 import { siteConfig } from "@/lib/site";
-import { getHomeSectionFallbacks } from "@/lib/site-sections";
 
 const whatsappUrl = `https://wa.me/${siteConfig.whatsapp}`;
 
@@ -41,11 +40,13 @@ export async function generateMetadata({
   if (!locales.includes(rawLocale as Locale)) return {};
 
   const locale = rawLocale as Locale;
-  const copy = getContent(locale);
+  const sections = await getPublishedSiteSections("home", locale);
+  const hero = sections.hero;
+  if (!hero) return {};
 
   return {
-    title: copy.metaTitle,
-    description: copy.metaDescription,
+    title: `${hero.title} | Dani Therapies`,
+    description: hero.description,
     alternates: {
       canonical: `/${locale}`,
       languages: {
@@ -57,9 +58,9 @@ export async function generateMetadata({
       },
     },
     openGraph: {
-      title: copy.metaTitle,
-      description: copy.metaDescription,
-      images: ["/aurora-hero.webp"],
+      title: hero.title,
+      description: hero.description,
+      images: hero.imageUrl ? [hero.imageUrl] : undefined,
       locale,
       type: "website",
     },
@@ -80,34 +81,14 @@ export default async function LocalizedHome({
     getPublishedServices(locale),
     getPublishedBlogPosts(locale),
     getPublishedCourses(locale),
-    getPublishedSiteSections("home", locale, getHomeSectionFallbacks(locale)),
+    getPublishedSiteSections("home", locale),
   ]);
   const servicePreview = services.slice(0, 4);
   const blogPreview = blogPosts.slice(0, 3);
   const hero = sections.hero;
   const firstVisit = sections["first-visit"];
   const promptsHeader = sections.prompts;
-  const promptImages = [
-    "/gallery/prompt-singing-bowls.webp",
-    "/gallery/prompt-waterfall.webp",
-    "/gallery/prompt-horse.webp",
-    "/gallery/prompt-pet.avif",
-    "/gallery/prompt-crystal.webp",
-    "/gallery/prompt-amethyst.webp",
-  ];
-  const legacyPromptImages = new Set([
-    "/gallery/prompt-crystal.webp",
-    "/gallery/prompt-waterfall.webp",
-    "/gallery/prompt-pet.avif",
-  ]);
-  const prompts = Array.from({ length: 6 }, (_, index) => {
-    const section = sections[`prompt-${index + 1}`];
-    const title = copy.prompts[index];
-    const imageUrl = !section.imageUrl || legacyPromptImages.has(section.imageUrl)
-      ? promptImages[index]
-      : section.imageUrl;
-    return { ...section, imageAlt: title, imageUrl, title };
-  });
+  const prompts = Array.from({ length: 6 }, (_, index) => sections[`prompt-${index + 1}`]).filter(Boolean);
   const servicesSection = sections.sessions;
   const courseSection = sections.course;
   const blogSection = sections.blog;
@@ -120,37 +101,18 @@ export default async function LocalizedHome({
       [section.title, section.body, section.description, section.imageUrl, section.primaryCtaHref, section.primaryCtaLabel]
         .some((value) => value.trim()),
     );
-  const legacyCourseTitles = new Set([
-    "ativação sensorial",
-    "ativacao sensorial",
-    "perceção sensorial",
-    "percepção sensorial",
-    "sensory perception",
-    "percepción sensorial",
-    "zintuiglijke waarneming",
-  ]);
+  if (!hero || !firstVisit || !promptsHeader || !servicesSection || !courseSection || !blogSection || !contactSection) {
+    notFound();
+  }
+  const featuredCourseImage = courseSection.imageUrl || courses[0]?.image || "";
   const featuredCourseLabel = {
     pt: "Curso em destaque",
     en: "Featured course",
     es: "Curso destacado",
     nl: "Uitgelichte cursus",
   }[locale];
-  const coursesPreviewTitle = legacyCourseTitles.has(courseSection.title.toLocaleLowerCase(locale))
-    ? {
-        pt: "Conheça os nossos cursos online",
-        en: "Explore our online courses",
-        es: "Conoce nuestros cursos online",
-        nl: "Ontdek onze online cursussen",
-      }[locale]
-    : courseSection.title;
-  const coursesPreviewBody = legacyCourseTitles.has(courseSection.title.toLocaleLowerCase(locale))
-    ? {
-        pt: "Encontre os cursos online disponíveis e escolha entre as turmas em português e em inglês.",
-        en: "Explore the available online courses and choose between the Portuguese and English classes.",
-        es: "Conoce los cursos online disponibles y elige entre las clases en portugués o en inglés.",
-        nl: "Bekijk de beschikbare online cursussen en kies tussen lessen in het Portugees of Engels.",
-      }[locale]
-    : courseSection.body;
+  const coursesPreviewTitle = courseSection.title;
+  const coursesPreviewBody = courseSection.body;
   const coursesPreviewCount = {
     pt: `${courses.length} cursos disponíveis`,
     en: `${courses.length} available courses`,
@@ -178,9 +140,9 @@ export default async function LocalizedHome({
             defaultSrc={hero.imageUrl}
             poster="/aurora-hero.webp"
           />
-        ) : (
+        ) : hero.imageUrl ? (
           <Image alt={hero.imageAlt} className="object-cover" fill priority sizes="100vw" src={hero.imageUrl} />
-        )}
+        ) : null}
         <div aria-hidden="true" className="hero-video-scrim absolute inset-0" />
 
         <div className="hero-content relative z-10 mx-auto flex min-h-[720px] max-w-7xl items-center px-5 py-20 lg:px-8">
@@ -360,14 +322,14 @@ export default async function LocalizedHome({
             data-reveal
             style={{ "--reveal-delay": "120ms" } as RevealStyle}
           >
-            <div className="relative h-72 sm:h-80">
-              <Image
-                alt={copy.course.title}
+            <div className="relative h-72 bg-[#123c2d] sm:h-80">
+              {featuredCourseImage ? <Image
+                alt={courseSection.imageAlt || courses[0]?.title || ""}
                 className="object-cover"
                 fill
                 sizes="(min-width: 1024px) 55vw, 100vw"
-                src="/services/original-course-sensory-activation.webp"
-              />
+                src={featuredCourseImage}
+              /> : null}
               <div className="absolute inset-0 bg-gradient-to-t from-[#0d3024]/70 via-transparent to-transparent" />
             </div>
             <div className="p-6 sm:p-8">
@@ -453,7 +415,7 @@ export default async function LocalizedHome({
         </div>
       </section>
 
-      {partnerCards.length ? (
+      {partnerCards.length && partnersSection ? (
         <section className="bg-[#f8f5ec] px-5 py-24 sm:py-32" id="parceiros">
           <div className="mx-auto max-w-7xl">
             <div className="mx-auto max-w-4xl text-center" data-reveal>

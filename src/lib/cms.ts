@@ -1,6 +1,4 @@
-﻿import { blogPosts as fallbackBlogPosts } from "./blog";
-import { getProduct } from "./catalog";
-import { getContent, getServiceTranslation, locales, type Locale } from "./content";
+import { locales, type Locale } from "./content";
 import { formatPrice } from "./currency";
 import {
   bookingScheduleSettingKey,
@@ -17,7 +15,6 @@ import {
   hasSupabaseAdminConfig,
   hasSupabasePublicConfig,
 } from "./supabase/server";
-import { mergeAdminSectionRows } from "./site-sections";
 
 type LocalisedValue = Record<string, string> | null;
 
@@ -203,98 +200,37 @@ export type AdminOverview = {
   services: ServiceRow[];
 };
 
-function localise(value: LocalisedValue | undefined, locale: Locale, fallback = "") {
-  if (!value) return fallback;
-  return value[locale] || fallback || value.pt || value.en || value.es || value.nl || "";
+function localiseStored(value: LocalisedValue | undefined, locale: Locale) {
+  return value?.[locale] ?? "";
 }
 
-function asLocaleRecord(value: LocalisedValue | undefined, fallback: Record<Locale, string>): Record<Locale, string> {
+function asStoredLocaleRecord(value: LocalisedValue | undefined): Record<Locale, string> {
   return {
-    pt: value?.pt || fallback.pt,
-    en: value?.en || value?.pt || fallback.en,
-    es: value?.es || value?.pt || fallback.es,
-    nl: value?.nl || value?.pt || fallback.nl,
+    pt: value?.pt ?? "",
+    en: value?.en ?? "",
+    es: value?.es ?? "",
+    nl: value?.nl ?? "",
   };
 }
 
-const legacyThirtyDayServices = new Set(["depression-support", "migraine-support"]);
-const legacyFifteenDayLabels = new Set(["15 dias", "15 days", "15 días", "15 dagen"]);
-const thirtyDayLabels: Record<Locale, string> = {
-  pt: "30 dias",
-  en: "30 days",
-  es: "30 días",
-  nl: "30 dagen",
-};
-
-const courseTitles: Record<Locale, string> = {
-  pt: "Percepção Sensorial | Aulas em português",
-  en: "Sensory Perception | Lessons in Portuguese",
-  es: "Percepción Sensorial | Clases en portugués",
-  nl: "Zintuiglijke Waarneming | Lessen in het Portugees",
-};
-
-const englishCourseTitles: Record<Locale, string> = {
-  pt: "Sensory Perception | Lessons in English",
-  en: "Sensory Perception | Lessons in English",
-  es: "Sensory Perception | Lessons in English",
-  nl: "Sensory Perception | Lessons in English",
-};
-
-const legacyCourseTitles = [
-  "ativação sensorial",
-  "ativacao sensorial",
-  "perceção sensorial",
-  "percepcao sensorial",
-  "sensory activation",
-  "sensory perception",
-  "activación sensorial",
-  "percepción sensorial",
-  "sensorische activering",
-];
-
 function mapService(row: ServiceRow, locale: Locale): SiteService {
-  const translated = getServiceTranslation(locale, row.product_id);
-  const storedDuration = localise(row.duration, locale, translated?.duration);
-  const storedTitle = localise(row.title, locale, translated?.title);
-  const normalisedCourseDuration = row.product_id === "online-course" && !/21h30|21:30/.test(storedDuration)
-    ? {
-        pt: "6 semanas · início: 15/08/2026 · horário: 21h30 (horário de Amesterdão)",
-        en: "6 weeks · starts: 15/08/2026 · time: 21:30 (Amsterdam time)",
-        es: "6 semanas · inicio: 15/08/2026 · horario: 21:30 (hora de Ámsterdam)",
-        nl: "6 weken · start: 15/08/2026 · tijd: 21:30 (Amsterdamse tijd)",
-      }[locale]
-    : row.product_id === "online-course-en" && !/21h30|21:30/.test(storedDuration)
-      ? {
-          pt: "6 semanas · início: 21/11/2026 · horário: 21h30 (horário de Amesterdão)",
-          en: "6 weeks · starts: 21/11/2026 · time: 21:30 (Amsterdam time)",
-          es: "6 semanas · inicio: 21/11/2026 · horario: 21:30 (hora de Ámsterdam)",
-          nl: "6 weken · start: 21/11/2026 · tijd: 21:30 (Amsterdamse tijd)",
-        }[locale]
-      : storedDuration;
-  const slug = row.product_id === "online-course" && row.slug.includes("ativacao-sensorial")
-    ? "percepcao-sensorial-aulas-em-portugues"
-    : row.product_id === "online-course-en" && !row.slug
-      ? "sensory-perception-lessons-in-english"
-      : row.slug;
   return {
     amountCents: row.amount_cents ?? undefined,
-    badge: localise(row.badge, locale, translated?.badge),
+    badge: localiseStored(row.badge, locale),
     capacityLimit: row.capacity_limit ?? null,
     category: row.category,
     currency: row.currency,
-    description: localise(row.description, locale, translated?.text),
-    detailHeading: localise(row.subtitle, locale),
-    detailIntro: localise(row.detail_intro, locale),
-    duration: legacyThirtyDayServices.has(row.product_id) && legacyFifteenDayLabels.has(storedDuration)
-      ? thirtyDayLabels[locale]
-      : normalisedCourseDuration,
+    description: localiseStored(row.description, locale),
+    detailHeading: localiseStored(row.subtitle, locale),
+    detailIntro: localiseStored(row.detail_intro, locale),
+    duration: localiseStored(row.duration, locale),
     id: row.id,
     image: row.image_url || undefined,
     price: formatPrice(
       row.amount_cents,
       row.currency,
       locale,
-      localise(row.price_label, locale, translated?.price),
+      localiseStored(row.price_label, locale),
     ),
     productId: row.product_id,
     requiresIntake: row.requires_intake,
@@ -305,435 +241,36 @@ function mapService(row: ServiceRow, locale: Locale): SiteService {
         : Math.max(row.capacity_limit - (row.seats_reserved || 0), 0),
     seatsPaid: row.seats_paid || 0,
     seatsReserved: row.seats_reserved || 0,
-    slug,
+    slug: row.slug,
     stripePriceEnv: row.stripe_price_env || undefined,
-    text: localise(row.summary, locale, translated?.text),
-    title: row.product_id === "online-course-en"
-      ? (storedTitle || englishCourseTitles[locale])
-      : row.product_id === "online-course" && legacyCourseTitles.some((title) => storedTitle.toLocaleLowerCase(locale).includes(title))
-        ? courseTitles[locale]
-        : storedTitle,
+    text: localiseStored(row.summary, locale),
+    title: localiseStored(row.title, locale),
   };
-}
-
-const fallbackSessionSeed: Array<Omit<SiteService, "category" | "currency" | "requiresPolicyAcceptance">> = [
-  {
-    amountCents: 6900,
-    badge: "Novos clientes",
-    description: "Consulta online indispensável para novos clientes, com recolha de informações, dúvidas e plano personalizado.",
-    duration: "1 hora · online via Zoom",
-    image: "/services/original-first-consultation.webp",
-    price: "69 €",
-    productId: "first-consultation",
-    requiresIntake: true,
-    slug: "primeira-consulta-online",
-    stripePriceEnv: "STRIPE_PRICE_FIRST_CONSULTATION",
-    text: "Encontro inicial para compreender a sua situação e definir um plano personalizado.",
-    title: "Primeira Consulta Online",
-  },
-  {
-    amountCents: 15099,
-    badge: "Pacote inicial",
-    description: "Consulta inicial com restauração vibracional e limpeza energética completa.",
-    duration: "Consulta + tratamento",
-    image: "/services/original-energy-cleansing-initial.webp",
-    price: "150,99 €",
-    productId: "energy-cleansing-initial",
-    requiresIntake: true,
-    slug: "limpeza-energetica-espiritual-consulta",
-    stripePriceEnv: "STRIPE_PRICE_ENERGY_CLEANSING_INITIAL",
-    text: "Opção indicada para quem inicia o trabalho e precisa de avaliação antes da limpeza.",
-    title: "Limpeza Energética Espiritual + Primeira Consulta",
-  },
-  {
-    amountCents: 11499,
-    badge: "Restauro",
-    description: "Sessão à distância para limpeza de cargas, equilíbrio dos corpos sutis e restauração energética.",
-    duration: "Sessão à distância",
-    image: "/services/original-energy-cleansing.webp",
-    price: "114,99 €",
-    productId: "energy-cleansing",
-    requiresIntake: true,
-    slug: "limpeza-energetica-espiritual",
-    stripePriceEnv: "STRIPE_PRICE_ENERGY_CLEANSING",
-    text: "Restauração vibracional, limpeza de cargas e harmonização da aura.",
-    title: "Limpeza Energética Espiritual",
-  },
-  {
-    amountCents: 11499,
-    badge: "Ambientes",
-    description: "Atendimento à distância para harmonizar um ambiente e suavizar cargas densas.",
-    duration: "1 ambiente",
-    image: "/services/original-environment-harmonization.webp",
-    price: "114,99 €",
-    productId: "environment-harmonization",
-    requiresIntake: true,
-    slug: "harmonizacao-de-ambiente",
-    stripePriceEnv: "STRIPE_PRICE_ENVIRONMENT_HARMONIZATION",
-    text: "Limpeza e equilíbrio energético para residências ou espaços carregados.",
-    title: "Harmonização de Ambiente",
-  },
-  {
-    amountCents: 29400,
-    badge: "Pacote",
-    description: "Harmonização energética à distância para até três residências.",
-    duration: "Até 3 residências",
-    image: "/services/original-environment-harmonization.webp",
-    price: "294 €",
-    productId: "environment-harmonization-3-homes",
-    requiresIntake: true,
-    slug: "harmonizacao-de-ambientes-3-residencias",
-    stripePriceEnv: "STRIPE_PRICE_ENVIRONMENT_HARMONIZATION_3_HOMES",
-    text: "Pacote para até três residências ou espaços que precisam de equilíbrio.",
-    title: "Harmonização de Ambientes · 3 Residências",
-  },
-  {
-    amountCents: 10599,
-    badge: "Orientação",
-    description: "Sessão online para leitura de tarô e leitura de campo energético.",
-    duration: "1 hora",
-    image: "/services/original-tarot-field-reading.webp",
-    price: "105,99 €",
-    productId: "tarot-field-reading",
-    requiresIntake: true,
-    slug: "tarot-leitura-de-campo-1h",
-    stripePriceEnv: "STRIPE_PRICE_TAROT_FIELD_READING",
-    text: "Leitura para questões específicas com orientação espiritual online.",
-    title: "Tarô e Leitura de Campo",
-  },
-  {
-    amountCents: 19599,
-    badge: "Estendida",
-    description: "Formato ampliado para quem precisa de mais tempo de leitura e integração.",
-    duration: "2 horas",
-    image: "/services/original-tarot-field-reading.webp",
-    price: "195,99 €",
-    productId: "tarot-field-reading-2h",
-    requiresIntake: true,
-    slug: "tarot-leitura-de-campo-2h",
-    stripePriceEnv: "STRIPE_PRICE_TAROT_FIELD_READING_2H",
-    text: "Leitura estendida para perguntas mais profundas e campo energético.",
-    title: "Tarô e Leitura de Campo · 2 horas",
-  },
-  {
-    amountCents: 10590,
-    badge: "Chakras",
-    description: "Sessão à distância para harmonização, desbloqueio e restauração dos sete chakras principais.",
-    duration: "À distância",
-    image: "/services/original-chakra-restoration.webp",
-    price: "105,90 €",
-    productId: "chakra-unblocking",
-    requiresIntake: true,
-    slug: "desbloqueio-dos-7-chakras",
-    stripePriceEnv: "STRIPE_PRICE_CHAKRA_UNBLOCKING",
-    text: "Cuidado focado no equilíbrio dos centros energéticos.",
-    title: "Desbloqueio dos 7 Chakras",
-  },
-  {
-    amountCents: 26799,
-    badge: "Apoio",
-    description: "Tratamento à distância com primeira consulta, orientação e cuidado energético estruturado.",
-    duration: "30 dias",
-    image: "/services/original-depression-support.webp",
-    price: "267,99 €",
-    productId: "depression-support",
-    requiresIntake: true,
-    slug: "tratamento-para-depressao-consulta",
-    stripePriceEnv: "STRIPE_PRICE_DEPRESSION_SUPPORT",
-    text: "Apoio energético intensivo com consulta e acompanhamento inicial.",
-    title: "Tratamento para Depressão + Consulta",
-  },
-  {
-    amountCents: 69000,
-    badge: "Contínuo",
-    description: "Plano contínuo de três meses para suporte energético em processos emocionais prolongados.",
-    duration: "3 meses contínuos",
-    image: "/services/original-depression-support.webp",
-    price: "690 €",
-    productId: "depression-support-3-months",
-    requiresIntake: true,
-    slug: "tratamento-para-depressao-3-meses",
-    stripePriceEnv: "STRIPE_PRICE_DEPRESSION_SUPPORT_3_MONTHS",
-    text: "Acompanhamento energético contínuo durante três meses.",
-    title: "Tratamento para Depressão · 3 meses",
-  },
-  {
-    amountCents: 26799,
-    badge: "Apoio",
-    description: "Atendimento à distância com consulta inicial e plano de apoio energético para enxaqueca crônica.",
-    duration: "30 dias",
-    image: "/services/original-energy-cleansing.webp",
-    price: "267,99 €",
-    productId: "migraine-support",
-    requiresIntake: true,
-    slug: "tratamento-enxaqueca-cronica-consulta",
-    stripePriceEnv: "STRIPE_PRICE_MIGRAINE_SUPPORT",
-    text: "Apoio energético com consulta para casos de enxaqueca crônica.",
-    title: "Tratamento Enxaqueca Crônica + Consulta",
-  },
-  {
-    amountCents: 69000,
-    badge: "Contínuo",
-    description: "Plano de três meses para apoio energético contínuo em processos de enxaqueca crônica.",
-    duration: "3 meses contínuos",
-    image: "/services/original-energy-cleansing.webp",
-    price: "690 €",
-    productId: "migraine-support-3-months",
-    requiresIntake: true,
-    slug: "tratamento-enxaqueca-cronica-3-meses",
-    stripePriceEnv: "STRIPE_PRICE_MIGRAINE_SUPPORT_3_MONTHS",
-    text: "Acompanhamento energético contínuo para enxaqueca crônica.",
-    title: "Tratamento Enxaqueca Crônica · 3 meses",
-  },
-  {
-    amountCents: 15099,
-    badge: "Transição",
-    description: "Atendimento sensível para apoio espiritual e energético em momentos de fase terminal e transição.",
-    duration: "Consulta + apoio",
-    image: "/services/original-first-consultation.webp",
-    price: "150,99 €",
-    productId: "terminal-transition-support",
-    requiresIntake: true,
-    slug: "apoio-fase-terminal-transicao",
-    stripePriceEnv: "STRIPE_PRICE_TERMINAL_TRANSITION_SUPPORT",
-    text: "Acolhimento energético em processos delicados de transição.",
-    title: "Apoio Fase Terminal e Transição + Consulta",
-  },
-  {
-    amountCents: 11499,
-    badge: "Cura guiada",
-    description: "Sessão online de 1 hora. Recomenda-se sala privada, fones de ouvido, água em copo de vidro e, opcionalmente, Selenita branca e Turmalina negra.",
-    duration: "1 hora",
-    image: "/dani-profile-healing.webp",
-    price: "114,99 €",
-    productId: "guided-healing-movement",
-    requiresIntake: true,
-    slug: "movimento-de-cura-guiada",
-    stripePriceEnv: "STRIPE_PRICE_GUIDED_HEALING_MOVEMENT",
-    text: "Sessão guiada de cura energética com formulário obrigatório no checkout.",
-    title: "Movimento de Cura Guiada com Equipe Seriana",
-  },
-  {
-    amountCents: 10599,
-    badge: "Clareza",
-    description: "Atendimento à distância voltado para confusão mental, peso emocional e recentramento.",
-    duration: "1 hora",
-    image: "/services/original-tarot-field-reading.webp",
-    price: "105,99 €",
-    productId: "mental-relief",
-    requiresIntake: true,
-    slug: "alivio-mental-imediato",
-    stripePriceEnv: "STRIPE_PRICE_MENTAL_RELIEF",
-    text: "Sessão para clareza, leveza mental e organização energética.",
-    title: "Alívio Mental Imediato e Confusão Mental",
-  },
-  {
-    amountCents: 20499,
-    badge: "Intensivo",
-    description: "Atendimento intensivo de duas horas para processos densos, traumas, bloqueios e movimentos de libertação energética.",
-    duration: "2 horas",
-    image: "/services/original-trauma-intensive.webp",
-    price: "204,99 €",
-    productId: "trauma-intensive",
-    requiresIntake: true,
-    slug: "sessao-intensiva-traumas-bloqueios",
-    stripePriceEnv: "STRIPE_PRICE_TRAUMA_INTENSIVE",
-    text: "Sessão profunda para padrões, bloqueios emocionais e libertações.",
-    title: "Sessão Intensiva: Traumas, Bloqueios, Banimentos e Libertações",
-  },
-  {
-    amountCents: 55599,
-    badge: "Pacote",
-    description: "Pacote para acompanhamento mais profundo em três sessões intensivas de duas horas.",
-    duration: "3 sessões · 2 horas cada",
-    image: "/services/original-trauma-intensive.webp",
-    price: "555,99 €",
-    productId: "trauma-intensive-3",
-    requiresIntake: true,
-    slug: "tres-sessoes-intensivas-traumas-bloqueios",
-    stripePriceEnv: "STRIPE_PRICE_TRAUMA_INTENSIVE_3",
-    text: "Pacote de três sessões intensivas de duas horas.",
-    title: "3 Sessões Intensivas: Traumas, Bloqueios e Libertações",
-  },
-  {
-    amountCents: 99699,
-    badge: "Acompanhamento",
-    description: "Plano ampliado para processos extensos, com seis sessões intensivas de duas horas cada.",
-    duration: "6 sessões · 2 horas cada",
-    image: "/services/original-trauma-intensive.webp",
-    price: "996,99 €",
-    productId: "trauma-intensive-6",
-    requiresIntake: true,
-    slug: "seis-sessoes-intensivas-traumas-bloqueios",
-    stripePriceEnv: "STRIPE_PRICE_TRAUMA_INTENSIVE_6",
-    text: "Plano completo de seis sessões intensivas de duas horas.",
-    title: "6 Sessões Intensivas: Traumas, Bloqueios e Libertações",
-  },
-];
-
-function fallbackServices(locale: Locale): SiteService[] {
-  if (locale === "pt") {
-    return fallbackSessionSeed.map((service) => ({
-      ...service,
-      category: "session",
-      currency: "EUR",
-      requiresPolicyAcceptance: true,
-    }));
-  }
-
-  return getContent(locale).services.items.map((service) => ({
-    ...service,
-    category: "session",
-    currency: "EUR",
-    description: service.text,
-    requiresIntake: true,
-    requiresPolicyAcceptance: true,
-  }));
-}
-
-const courseIntros: Record<string, Record<Locale, string>> = {
-  "online-course": {
-    pt: "Curso de desenvolvimento da percepção sensorial por meio do Movimento Guiado de Energia, promovendo o despertar gradual da sensibilidade natural e da leitura sensorial de forma segura e consciente.",
-    en: "A sensory perception development course through Guided Energetic Movement, gradually strengthening natural sensitivity and expanding the capacity for sensory reading.",
-    es: "Curso de desarrollo de la percepción sensorial a través del Movimiento Guiado de Energía, fortaleciendo gradualmente la sensibilidad natural y ampliando la capacidad de lectura sensorial.",
-    nl: "Cursus voor de ontwikkeling van zintuiglijke waarneming via Begeleide Energiebeweging, die de natuurlijke gevoeligheid geleidelijk versterkt en de capaciteit voor zintuiglijke waarneming uitbreidt.",
-  },
-  "online-course-en": {
-    pt: "Curso de desenvolvimento da percepção sensorial através do Movimento Guiado de Energia, fortalecendo gradualmente a sensibilidade natural e ampliando a capacidade de leitura sensorial.",
-    en: "A sensory perception development course through Guided Energetic Movement, gradually strengthening natural sensitivity and expanding the capacity for sensory reading.",
-    es: "Curso en inglés para desarrollar la percepción sensorial, entrenar la lectura energética y practicar movimientos guiados de energía con seguridad y acompañamiento.",
-    nl: "Engelstalige cursus om zintuiglijke waarneming te ontwikkelen, energetisch lezen te oefenen en begeleide energiebewegingen veilig te trainen.",
-  },
-};
-
-const courseDurations: Record<string, Record<Locale, string>> = {
-  "online-course": {
-    pt: "6 semanas · início: 15/08/2026 · horário: 21h30 (horário de Amesterdão)",
-    en: "6 weeks · starts: 15/08/2026 · time: 21:30 (Amsterdam time)",
-    es: "6 semanas · inicio: 15/08/2026 · horario: 21:30 (hora de Ámsterdam)",
-    nl: "6 weken · start: 15/08/2026 · tijd: 21:30 (Amsterdamse tijd)",
-  },
-  "online-course-en": {
-    pt: "6 semanas · início: 21/11/2026 · horário: 21h30 (horário de Amesterdão)",
-    en: "6 weeks · starts: 21/11/2026 · time: 21:30 (Amsterdam time)",
-    es: "6 semanas · inicio: 21/11/2026 · horario: 21:30 (hora de Ámsterdam)",
-    nl: "6 weken · start: 21/11/2026 · tijd: 21:30 (Amsterdamse tijd)",
-  },
-};
-
-const fallbackCourseConfig = [
-  {
-    amountCents: 28500,
-    badge: {
-      pt: "Aulas em português",
-      en: "Lessons in Portuguese",
-      es: "Clases en portugués",
-      nl: "Lessen in het Portugees",
-    },
-    image: "/services/original-course-sensory-activation.webp",
-    price: "285 €",
-    productId: "online-course",
-    slug: "percepcao-sensorial-aulas-em-portugues",
-    stripePriceEnv: "STRIPE_PRICE_ONLINE_COURSE",
-    titles: courseTitles,
-  },
-  {
-    amountCents: 38400,
-    badge: {
-      pt: "Aulas em inglês",
-      en: "Lessons in English",
-      es: "Clases en inglés",
-      nl: "Lessen in het Engels",
-    },
-    image: "/services/course-sensory-perception-english.webp",
-    price: "€384,00",
-    productId: "online-course-en",
-    slug: "sensory-perception-lessons-in-english",
-    stripePriceEnv: "STRIPE_PRICE_ONLINE_COURSE_EN",
-    titles: englishCourseTitles,
-  },
-] as const;
-
-function fallbackCourses(locale: Locale): SiteService[] {
-  return fallbackCourseConfig.map((course) => ({
-    amountCents: course.amountCents,
-    badge: course.badge[locale],
-    category: "course",
-    currency: "EUR",
-    description: courseIntros[course.productId][locale],
-    duration: courseDurations[course.productId][locale],
-    image: course.image,
-    price: course.price,
-    productId: course.productId,
-    requiresIntake: true,
-    requiresPolicyAcceptance: true,
-    slug: course.slug,
-    stripePriceEnv: course.stripePriceEnv,
-    text: courseIntros[course.productId][locale],
-    title: course.titles[locale],
-  }));
-}
-
-function fallbackCourseRows(): ServiceRow[] {
-  return fallbackCourseConfig.map((course, index) => {
-    const localised = (values: Record<Locale, string>) => ({
-      en: values.en,
-      es: values.es,
-      nl: values.nl,
-      pt: values.pt,
-    });
-
-    return {
-      amount_cents: course.amountCents,
-      badge: localised(course.badge),
-      capacity_limit: null,
-      category: "course",
-      currency: "EUR",
-      description: localised(courseIntros[course.productId]),
-      duration: localised(courseDurations[course.productId]),
-      id: `fallback-${course.productId}`,
-      image_url: course.image,
-      is_published: true,
-      price_label: { en: course.price, es: course.price, nl: course.price, pt: course.price },
-      product_id: course.productId,
-      requires_intake: true,
-      requires_policy_acceptance: true,
-      seats_paid: 0,
-      seats_reserved: 0,
-      slug: course.slug,
-      sort_order: index + 1,
-      stripe_price_env: course.stripePriceEnv,
-      summary: localised(courseIntros[course.productId]),
-      title: localised(course.titles),
-    };
-  });
 }
 
 function mapSiteSection(row: SiteSectionRow, locale: Locale): SiteSection {
   return {
-    body: localise(row.body, locale),
-    description: localise(row.description, locale),
-    eyebrow: localise(row.eyebrow, locale),
-    imageAlt: localise(row.image_alt, locale),
+    body: localiseStored(row.body, locale),
+    description: localiseStored(row.description, locale),
+    eyebrow: localiseStored(row.eyebrow, locale),
+    imageAlt: localiseStored(row.image_alt, locale),
     imageUrl: row.image_url || "",
     pageKey: row.page_key,
     primaryCtaHref: row.primary_cta_href || "",
-    primaryCtaLabel: localise(row.primary_cta_label, locale),
+    primaryCtaLabel: localiseStored(row.primary_cta_label, locale),
     sectionKey: row.section_key,
     secondaryCtaHref: row.secondary_cta_href || "",
-    secondaryCtaLabel: localise(row.secondary_cta_label, locale),
-    title: localise(row.title, locale),
+    secondaryCtaLabel: localiseStored(row.secondary_cta_label, locale),
+    title: localiseStored(row.title, locale),
   };
 }
 
 export async function getPublishedSiteSections(
   pageKey: string,
   locale: Locale,
-  fallbacks: SiteSection[],
 ): Promise<Record<string, SiteSection>> {
-  const fallbackMap = Object.fromEntries(fallbacks.map((section) => [section.sectionKey, section]));
   const supabase = getSupabasePublicClient();
-  if (!supabase) return fallbackMap;
+  if (!supabase) return {};
 
   const { data, error } = await supabase
     .from("site_sections")
@@ -742,179 +279,22 @@ export async function getPublishedSiteSections(
     .eq("is_published", true)
     .order("sort_order", { ascending: true });
 
-  if (error || !data?.length) return fallbackMap;
-
-  for (const row of data as SiteSectionRow[]) {
-    const mapped = mapSiteSection(row, locale);
-    const fallback = fallbackMap[row.section_key];
-    fallbackMap[row.section_key] = fallback
-      ? {
-          ...fallback,
-          ...Object.fromEntries(
-            Object.entries(mapped).filter(([, value]) => typeof value !== "string" || value.trim() !== ""),
-          ),
-        } as SiteSection
-      : mapped;
-  }
-
-  return fallbackMap;
-}
-
-function fallbackIntakeFields(locale: Locale, productId?: string): IntakeField[] {
-  const labels: Record<Locale, Record<string, string>> = {
-    pt: {
-      address: "Endereço",
-      birth_date: "Data de nascimento",
-      email: "E-mail",
-      field_reading_preview: "Faça uma breve prévia da questão para a leitura de campo",
-      full_name: "Nome completo",
-      headphones_confirmed: "Confirmo que usarei fones de ouvido.",
-      private_room_confirmed: "Confirmo que estarei numa sala privada durante a sessão.",
-      service_goal: "O que deseja trabalhar ou resolver?",
-      service_specific_information: "Informações específicas necessárias para o serviço escolhido",
-      water_confirmed: "Confirmo que terei água em copo de vidro por perto.",
-      whatsapp: "WhatsApp com código do país e DDD",
-    },
-    en: {
-      address: "Address",
-      birth_date: "Date of birth",
-      email: "Email",
-      field_reading_preview: "Briefly describe the question for the field reading",
-      full_name: "Full name",
-      headphones_confirmed: "I confirm I will use headphones.",
-      private_room_confirmed: "I confirm I will be in a private room during the session.",
-      service_goal: "What would you like to work on or resolve?",
-      service_specific_information: "Specific information needed for the selected service",
-      water_confirmed: "I confirm I will keep water in a glass nearby.",
-      whatsapp: "WhatsApp with country code and area code",
-    },
-    es: {
-      address: "Dirección",
-      birth_date: "Fecha de nacimiento",
-      email: "Correo electrónico",
-      field_reading_preview: "Describa brevemente la cuestión para la lectura de campo",
-      full_name: "Nombre completo",
-      headphones_confirmed: "Confirmo que usaré auriculares.",
-      private_room_confirmed: "Confirmo que estaré en una sala privada durante la sesión.",
-      service_goal: "¿Qué desea trabajar o resolver?",
-      service_specific_information: "Información específica necesaria para el servicio elegido",
-      water_confirmed: "Confirmo que tendré agua en un vaso cerca.",
-      whatsapp: "WhatsApp con código de país y prefijo regional",
-    },
-    nl: {
-      address: "Adres",
-      birth_date: "Geboortedatum",
-      email: "E-mail",
-      field_reading_preview: "Beschrijf kort de vraag voor de veldlezing",
-      full_name: "Volledige naam",
-      headphones_confirmed: "Ik bevestig dat ik een koptelefoon zal gebruiken.",
-      private_room_confirmed: "Ik bevestig dat ik tijdens de sessie in een privekamer zal zijn.",
-      service_goal: "Waar wilt u aan werken of wat wilt u oplossen?",
-      service_specific_information: "Specifieke informatie die nodig is voor de gekozen dienst",
-      water_confirmed: "Ik bevestig dat ik water in een glas bij me zal hebben.",
-      whatsapp: "WhatsApp met landcode en netnummer",
-    },
-  };
-  const source = labels[locale] || labels.pt;
-  const commonFields: Array<[string, IntakeField["fieldType"]]> = [
-    ["full_name", "text"],
-    ["birth_date", "date"],
-    ["whatsapp", "text"],
-    ["address", "textarea"],
-    ["email", "email"],
-    ["service_goal", "textarea"],
-    ["service_specific_information", "textarea"],
-  ];
-  const guidedHealingFields: Array<[string, IntakeField["fieldType"]]> = [
-    ["private_room_confirmed", "checkbox"],
-    ["headphones_confirmed", "checkbox"],
-    ["water_confirmed", "checkbox"],
-  ];
-  const fieldReadingFields: Array<[string, IntakeField["fieldType"]]> = [
-    ["field_reading_preview", "textarea"],
-  ];
-
-  const fields = productId === "guided-healing-movement"
-    ? [...commonFields, ...guidedHealingFields]
-    : productId?.startsWith("tarot-field-reading")
-      ? [...commonFields, ...fieldReadingFields]
-      : commonFields;
-
-  const helpTexts: Record<Locale, Record<string, string>> = {
-    pt: {
-      whatsapp: "Informe o número completo. Exemplo: +31 6 16 01 84 67.",
-    },
-    en: {
-      whatsapp: "Enter the full number. Example: +31 6 16 01 84 67.",
-    },
-    es: {
-      whatsapp: "Indique el número completo. Ejemplo: +31 6 16 01 84 67.",
-    },
-    nl: {
-      whatsapp: "Vul het volledige nummer in. Voorbeeld: +31 6 16 01 84 67.",
-    },
-  };
-  const helpSource = helpTexts[locale] || helpTexts.pt;
-
-  return adaptCourseIntakeFields(fields.map(([key, fieldType]) => ({
-    fieldType: fieldType as IntakeField["fieldType"],
-    helpText: helpSource[key] || "",
-    key,
-    label: source[key] || labels.pt[key] || key,
-    options: [],
-    required: true,
-  })), locale, productId);
-}
-
-const courseIntakeLabels: Record<Locale, Record<string, string>> = {
-  pt: {
-    service_goal: "O que espera desenvolver ou aprender com este curso?",
-    service_specific_information: "Existe alguma informação que considere importante partilhar antes de iniciar o curso?",
-  },
-  en: {
-    service_goal: "What do you hope to develop or learn from this course?",
-    service_specific_information: "Is there anything you consider important to share before starting the course?",
-  },
-  es: {
-    service_goal: "¿Qué espera desarrollar o aprender con este curso?",
-    service_specific_information: "¿Hay alguna información que considere importante compartir antes de comenzar el curso?",
-  },
-  nl: {
-    service_goal: "Wat hoopt u met deze cursus te ontwikkelen of te leren?",
-    service_specific_information: "Is er informatie die u belangrijk vindt om te delen voordat de cursus begint?",
-  },
-};
-
-function adaptCourseIntakeFields(fields: IntakeField[], locale: Locale, productId?: string) {
-  if (!productId?.startsWith("online-course")) return fields;
-
-  const labels = courseIntakeLabels[locale] || courseIntakeLabels.pt;
-  return fields.map((field) => labels[field.key] ? { ...field, label: labels[field.key] } : field);
+  if (error || !data) return {};
+  return Object.fromEntries(
+    (data as SiteSectionRow[]).map((row) => [row.section_key, mapSiteSection(row, locale)]),
+  );
 }
 
 function mapBlogPost(row: BlogRow, locale: Locale): SiteBlogPost {
-  const fallbackPost = fallbackBlogPosts.find((post) => post.slug === row.slug);
-  const fallbackText = fallbackPost?.excerpt || {
-    pt: localise(row.excerpt, "pt"),
-    en: localise(row.excerpt, "en"),
-    es: localise(row.excerpt, "es"),
-    nl: localise(row.excerpt, "nl"),
-  };
-
   return {
     author: row.author,
-    body: asLocaleRecord(row.body, fallbackText),
+    body: asStoredLocaleRecord(row.body),
     date: row.published_at ? row.published_at.slice(0, 10) : "",
-    excerpt: asLocaleRecord(row.excerpt, fallbackText),
-    image: row.image_url || "/services/original-energy-cleansing.webp",
-    readingTime: localise(row.reading_time, locale, "4 min"),
+    excerpt: asStoredLocaleRecord(row.excerpt),
+    image: row.image_url || "",
+    readingTime: localiseStored(row.reading_time, locale),
     slug: row.slug,
-    title: asLocaleRecord(row.title, fallbackPost?.title || {
-      pt: row.slug,
-      en: row.slug,
-      es: row.slug,
-      nl: row.slug,
-    }),
+    title: asStoredLocaleRecord(row.title),
   };
 }
 
@@ -924,7 +304,7 @@ export function isSupabaseConfigured() {
 
 export async function getPublishedServices(locale: Locale): Promise<SiteService[]> {
   const supabase = getSupabasePublicClient();
-  if (!supabase) return fallbackServices(locale);
+  if (!supabase) return [];
 
   const { data, error } = await supabase
     .from("content_services")
@@ -933,17 +313,13 @@ export async function getPublishedServices(locale: Locale): Promise<SiteService[
     .eq("is_published", true)
     .order("sort_order", { ascending: true });
 
-  if (error || !data?.length) {
-    return fallbackServices(locale);
-  }
-
+  if (error || !data) return [];
   return (data as ServiceRow[]).map((row) => mapService(row, locale));
 }
 
 export async function getPublishedCourses(locale: Locale): Promise<SiteService[]> {
   const supabase = getSupabasePublicClient();
-  const fallbackItems = fallbackCourses(locale);
-  if (!supabase) return fallbackItems;
+  if (!supabase) return [];
 
   const { data, error } = await supabase
     .from("content_services")
@@ -952,48 +328,13 @@ export async function getPublishedCourses(locale: Locale): Promise<SiteService[]
     .eq("is_published", true)
     .order("sort_order", { ascending: true });
 
-  if (error || !data?.length) {
-    return fallbackItems;
-  }
-
-  const mapped = (data as ServiceRow[]).map((row) => {
-    const course = mapService(row, locale);
-    const fallback = fallbackItems.find((item) => item.productId === course.productId);
-    const isLegacyCourse =
-      course.productId === "online-course"
-      && legacyCourseTitles.some((title) => course.title.toLocaleLowerCase(locale).includes(title));
-
-    return isLegacyCourse && fallback
-      ? {
-          ...course,
-          description: fallback.description,
-          duration: fallback.duration,
-          image: course.image || fallback.image,
-          slug: fallback.slug,
-          text: fallback.text,
-          title: fallback.title,
-        }
-      : course;
-  });
-  const existingProductIds = new Set(mapped.map((course) => course.productId));
-  return [
-    ...mapped,
-    ...fallbackItems.filter((course) => !existingProductIds.has(course.productId)),
-  ].sort((left, right) => {
-    const leftOrder = left.productId === "online-course" ? 1 : left.productId === "online-course-en" ? 2 : 99;
-    const rightOrder = right.productId === "online-course" ? 1 : right.productId === "online-course-en" ? 2 : 99;
-    return leftOrder - rightOrder;
-  });
+  if (error || !data) return [];
+  return (data as ServiceRow[]).map((row) => mapService(row, locale));
 }
 
 export async function getPublishedBlogPosts(locale: Locale): Promise<SiteBlogPost[]> {
   const supabase = getSupabasePublicClient();
-  if (!supabase) {
-    return fallbackBlogPosts.map((post) => ({
-      ...post,
-      body: post.excerpt,
-    }));
-  }
+  if (!supabase) return [];
 
   const { data, error } = await supabase
     .from("blog_posts")
@@ -1001,22 +342,13 @@ export async function getPublishedBlogPosts(locale: Locale): Promise<SiteBlogPos
     .eq("is_published", true)
     .order("sort_order", { ascending: true });
 
-  if (error || !data?.length) {
-    return fallbackBlogPosts.map((post) => ({
-      ...post,
-      body: post.excerpt,
-    }));
-  }
-
+  if (error || !data) return [];
   return (data as BlogRow[]).map((row) => mapBlogPost(row, locale));
 }
 
 export async function getPublishedBlogPost(slug: string, locale: Locale): Promise<SiteBlogPost | null> {
   const supabase = getSupabasePublicClient();
-  if (!supabase) {
-    const post = fallbackBlogPosts.find((item) => item.slug === slug);
-    return post ? { ...post, body: post.excerpt } : null;
-  }
+  if (!supabase) return null;
 
   const { data, error } = await supabase
     .from("blog_posts")
@@ -1025,27 +357,24 @@ export async function getPublishedBlogPost(slug: string, locale: Locale): Promis
     .eq("is_published", true)
     .maybeSingle();
 
-  if (error || !data) {
-    const post = fallbackBlogPosts.find((item) => item.slug === slug);
-    return post ? { ...post, body: post.excerpt } : null;
-  }
-
+  if (error || !data) return null;
   return mapBlogPost(data as BlogRow, locale);
 }
 
 export async function getCheckoutProduct(productId: string, locale: Locale, clientTimeZone?: string): Promise<CheckoutProduct | null> {
   const supabase = getSupabaseAdminClient() || getSupabasePublicClient();
+  if (!supabase) return null;
 
-  if (supabase) {
+  {
     const { data } = await supabase
       .from("content_services")
       .select(
-        "id, product_id, title, stripe_price_env, requires_intake, requires_policy_acceptance, capacity_limit, seats_reserved, amount_cents, currency",
+        "id, product_id, title, stripe_price_env, requires_intake, requires_policy_acceptance, capacity_limit, seats_reserved, amount_cents, currency, is_published",
       )
       .eq("product_id", productId)
-      .eq("is_published", true)
       .maybeSingle();
 
+    if (data && !data.is_published) return null;
     if (data) {
       const service = data as Pick<
         ServiceRow,
@@ -1060,7 +389,7 @@ export async function getCheckoutProduct(productId: string, locale: Locale, clie
         | "stripe_price_env"
         | "title"
       >;
-      const fields = adaptCourseIntakeFields(await getIntakeFields(service.id, locale), locale, service.product_id);
+      const fields = await getIntakeFields(service.id, locale);
       const isCourse = service.product_id.startsWith("online-course");
       const availableDates = isCourse ? [] : await getAvailableDates(service.product_id);
       const schedule = isCourse ? createDefaultBookingSchedule() : await getBookingSchedule();
@@ -1077,9 +406,6 @@ export async function getCheckoutProduct(productId: string, locale: Locale, clie
       const dateField = requiresAppointment
         ? appointmentSlotField(appointmentSlots, locale, clientTimeZone)
         : appointmentDateField(availableDates, locale);
-      const supplements = fallbackIntakeFields(locale, service.product_id).filter(
-        (field) => field.key === "field_reading_preview" && !fields.some((current) => current.key === field.key),
-      );
 
       return {
         appointmentSlots,
@@ -1087,8 +413,8 @@ export async function getCheckoutProduct(productId: string, locale: Locale, clie
         capacityLimit: service.capacity_limit ?? null,
         amountCents: service.amount_cents ?? null,
         currency: service.currency || "EUR",
-        intakeFields: [...fields, ...supplements, ...(dateField ? [dateField] : [])],
-        name: localise(service.title, locale, productId),
+        intakeFields: [...fields, ...(dateField ? [dateField] : [])],
+        name: localiseStored(service.title, locale),
         productId: service.product_id,
         requiresIntake: service.requires_intake || availableDates.length > 0 || requiresAppointment,
         requiresPolicyAcceptance: service.requires_policy_acceptance,
@@ -1104,26 +430,7 @@ export async function getCheckoutProduct(productId: string, locale: Locale, clie
     }
   }
 
-  const staticProduct = getProduct(productId);
-  const fallbackProduct = [...fallbackServices(locale), ...fallbackCourses(locale)].find((service) => service.productId === productId);
-  if (!staticProduct && !fallbackProduct) return null;
-
-  return {
-    appointmentSlots: [],
-    availableDates: [],
-    capacityLimit: fallbackProduct?.capacityLimit ?? null,
-    amountCents: fallbackProduct?.amountCents ?? null,
-    currency: fallbackProduct?.currency || "EUR",
-    intakeFields: fallbackProduct?.requiresIntake ? fallbackIntakeFields(locale, productId) : [],
-    name: fallbackProduct?.title || staticProduct?.name || productId,
-    productId,
-    requiresIntake: Boolean(fallbackProduct?.requiresIntake),
-    requiresPolicyAcceptance: fallbackProduct?.requiresPolicyAcceptance ?? true,
-    scheduleEnabled: false,
-    remainingSeats: fallbackProduct?.remainingSeats ?? null,
-    seatsReserved: fallbackProduct?.seatsReserved || 0,
-    stripePriceEnv: fallbackProduct?.stripePriceEnv || staticProduct?.stripePriceEnv || "",
-  };
+  return null;
 }
 
 export async function getIntakeFields(serviceId: string, locale: Locale): Promise<IntakeField[]> {
@@ -1140,9 +447,9 @@ export async function getIntakeFields(serviceId: string, locale: Locale): Promis
 
   return (data as IntakeFieldRow[]).map((field) => ({
     fieldType: field.field_type,
-    helpText: localise(field.help_text, locale),
+    helpText: localiseStored(field.help_text, locale),
     key: field.key,
-    label: localise(field.label, locale, field.key),
+    label: localiseStored(field.label, locale),
     options: Array.isArray(field.options) ? field.options : [],
     required: field.required,
   }));
@@ -1164,9 +471,9 @@ export async function getLegalDocument(key: string, locale: Locale): Promise<Leg
   const row = data as LegalRow;
 
   return {
-    body: localise(row.body, locale),
+    body: localiseStored(row.body, locale),
     key: row.key,
-    title: localise(row.title, locale),
+    title: localiseStored(row.title, locale),
     version: row.version,
   };
 }
@@ -1455,22 +762,25 @@ export async function getCheckoutReceipt(submissionId: string, stripeCheckoutSes
     .select("product_id, title, duration, price_label, amount_cents, currency")
     .eq(submission.service_id ? "id" : "product_id", submission.service_id || submission.product_id)
     .maybeSingle();
-  const translation = getServiceTranslation(submission.product_id, locale);
+  if (!service) return null;
+  const duration = localiseStored(service.duration, locale);
+  const priceLabel = localiseStored(service.price_label, locale);
+  const productName = localiseStored(service.title, locale);
 
   return {
     customerEmail: submission.customer_email || "",
     customerName: submission.customer_name || "",
-    duration: localise(service?.duration, locale, translation?.duration || ""),
+    duration,
     locale,
     payload: (submission.payload || {}) as Record<string, unknown>,
     price: formatPrice(
       service?.amount_cents,
       service?.currency,
       locale,
-      localise(service?.price_label, locale, translation?.price || ""),
+      priceLabel,
     ),
     productId: submission.product_id,
-    productName: localise(service?.title, locale, translation?.title || submission.product_id),
+    productName,
     submissionId: submission.id,
     stripeCheckoutSessionId: submission.stripe_checkout_session_id || stripeCheckoutSessionId,
   };
@@ -1527,42 +837,21 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     ]),
   );
 
-  const fallbackRows = fallbackCourseRows();
-  const courseRows = ((courses.data || []) as ServiceRow[]).map((course) => {
-    const fallback = fallbackRows.find((item) => item.product_id === course.product_id);
-    if (!fallback) return course;
-
-    const hasLegacyTitle = Object.values(course.title || {}).some((title) =>
-      legacyCourseTitles.some((legacyTitle) => title.toLocaleLowerCase().includes(legacyTitle)),
-    );
-    const hasMissingTime = Object.values(course.duration || {}).some((duration) => !/21h30|21:30/.test(duration));
-
-    return {
-      ...course,
-      duration: hasMissingTime ? fallback.duration : course.duration,
-      image_url: course.product_id === "online-course-en" && !course.image_url ? fallback.image_url : course.image_url,
-      slug: course.product_id === "online-course" && course.slug.includes("ativacao-sensorial") ? fallback.slug : course.slug,
-      title: hasLegacyTitle ? fallback.title : course.title,
-    };
-  });
-  const existingCourseIds = new Set(courseRows.map((course) => course.product_id));
-  const mergedCourses = [
-    ...courseRows,
-    ...fallbackRows.filter((course) => !existingCourseIds.has(course.product_id)),
-  ].sort((left, right) => left.sort_order - right.sort_order);
+  const courseRows = (courses.data || []) as ServiceRow[];
 
   const sectionAllowsMedia = (section: SiteSectionRow) =>
     (section.page_key === "home" && section.section_key === "hero")
+    || (section.page_key === "home" && section.section_key === "course")
     || (section.page_key === "home" && /^prompt-\d+$/.test(section.section_key))
     || (section.page_key === "home" && /^partner-\d+$/.test(section.section_key))
     || (section.page_key === "about" && section.section_key === "introduction");
-  const sectionRows = mergeAdminSectionRows((sections.data || []) as SiteSectionRow[]);
+  const sectionRows = (sections.data || []) as SiteSectionRow[];
 
   return {
     blogPosts: ((blog.data || []) as BlogRow[]),
     bookingSchedule: parseBookingSchedule(bookingSchedule.data?.value),
     configured: !(services.error || courses.error || blog.error || availability.error),
-    courses: mergedCourses,
+    courses: courseRows,
     sections: sectionRows.map((section) => sectionAllowsMedia(section)
       ? section
       : { ...section, image_alt: null, image_url: null }),
@@ -1574,6 +863,6 @@ export async function getAdminOverview(): Promise<AdminOverview> {
 }
 
 export function getLocalisedAdminValue(value: LocalisedValue, locale: Locale = "pt") {
-  return localise(value, locale);
+  return localiseStored(value, locale);
 }
 

@@ -8,7 +8,6 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getPublishedServices, getPublishedSiteSections } from "@/lib/cms";
 import { getContent, locales, type Locale } from "@/lib/content";
-import { getListingSectionFallbacks } from "@/lib/site-sections";
 
 const pageCopy = {
   pt: { catalog: "Catálogo", count: (value: number) => `${value} sessões carregadas`, question: "Tirar dúvida" },
@@ -28,10 +27,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale: rawLocale } = await params;
   if (!locales.includes(rawLocale as Locale)) return {};
+  const locale = rawLocale as Locale;
+  const hero = (await getPublishedSiteSections("sessions", locale)).hero;
+  if (!hero) return {};
 
   return {
-    title: "Sessões | Dani Therapies",
-    description: "Sessões energéticas e espirituais da Dani Therapies, com informações sobre duração, valores e formas de atendimento.",
+    title: `${hero.title} | Dani Therapies`,
+    description: hero.body,
   };
 }
 
@@ -47,9 +49,10 @@ export default async function SessionsPage({
   const copy = getContent(locale);
   const [services, sections] = await Promise.all([
     getPublishedServices(locale),
-    getPublishedSiteSections("sessions", locale, getListingSectionFallbacks("sessions", locale)),
+    getPublishedSiteSections("sessions", locale),
   ]);
   const hero = sections.hero;
+  if (!hero) notFound();
   const labels = pageCopy[locale];
 
   return (
