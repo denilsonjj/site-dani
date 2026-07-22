@@ -222,7 +222,7 @@ function ImageUploadField({
       <p className="text-sm font-bold text-[#40564d]">{label}</p>
       {value && !/\.(?:mp4|webm)(?:\?|$)/i.test(value) ? (
         <div className="overflow-hidden rounded-2xl border border-[#123c2d]/10 bg-white p-2">
-          <Image alt="Prévia do arquivo" className="h-36 w-full rounded-xl object-cover" height={288} src={value} width={720} />
+          <Image alt="Prévia do arquivo" className="h-36 w-full rounded-xl object-cover" height={288} src={value} unoptimized width={720} />
         </div>
       ) : null}
       <input

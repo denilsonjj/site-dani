@@ -124,7 +124,10 @@ async function prepareVideo(input: Buffer, originalExtension: string) {
 }
 
 async function uploadFile(supabase: AdminSupabase, path: string, prepared: PreparedFile) {
-  const { error } = await supabase.storage.from("site-media").upload(path, prepared.buffer, {
+  // Blob preserves the raw bytes produced by Sharp/FFmpeg. Passing a Node Buffer
+  // directly can serialize invalid UTF-8 replacement characters in Storage.
+  const file = new Blob([new Uint8Array(prepared.buffer)], { type: prepared.contentType });
+  const { error } = await supabase.storage.from("site-media").upload(path, file, {
     cacheControl: "31536000",
     contentType: prepared.contentType,
     upsert: false,

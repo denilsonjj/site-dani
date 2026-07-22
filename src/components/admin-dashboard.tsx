@@ -269,7 +269,7 @@ function VisibilityButton({
 function Thumb({ icon: Icon, src }: { icon: ComponentType<{ size?: number }>; src?: string | null }) {
   return (
     <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#edf2ed] text-[#547461]">
-      {isImage(src) ? <Image alt="" className="object-cover" fill sizes="64px" src={src as string} /> : isVideo(src) ? <Video size={24} /> : <Icon size={24} />}
+      {isImage(src) ? <Image alt="" className="object-cover" fill sizes="64px" src={src as string} unoptimized /> : isVideo(src) ? <Video size={24} /> : <Icon size={24} />}
     </div>
   );
 }
@@ -386,7 +386,7 @@ function MediaField({
       <p className="text-sm font-bold text-[#40564d]">{label}</p>
       {isImage(value) ? (
         <div className="relative h-40 overflow-hidden rounded-xl border border-[#123c2d]/10 bg-[#edf2ed]">
-          <Image alt="" className="object-cover" fill sizes="420px" src={value as string} />
+          <Image alt="" className="object-cover" fill sizes="420px" src={value as string} unoptimized />
         </div>
       ) : isVideo(value) ? (
         <video className="h-40 w-full rounded-xl border border-[#123c2d]/10 bg-[#123c2d] object-cover" muted playsInline src={value || ""} />
