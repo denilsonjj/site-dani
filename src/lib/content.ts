@@ -10,7 +10,7 @@ export const localeOptions: Record<Locale, { flag: string; short: string; label:
 
 const content = {
   pt: {
-    nav: { about: "Quem Somos", services: "Sessões", courses: "Cursos", blog: "Blog", contact: "Contato", book: "Agendar consulta" },
+    nav: { about: "Quem Somos", services: "Sessões", courses: "Cursos", partners: "Parceiros", blog: "Blog", contact: "Contato", book: "Agendar consulta" },
     services: { action: "Reservar / pagar", detailsLabel: "Ver detalhes" },
     course: { cta: "Quero inscrever-me" },
     coursePreview: { allLabel: "Ver cursos", detailsLabel: "Conhecer o curso" },
@@ -30,7 +30,7 @@ const content = {
     whatsapp: "Falar pelo WhatsApp",
   },
   en: {
-    nav: { about: "About Us", services: "Sessions", courses: "Courses", blog: "Blog", contact: "Contact", book: "Book a consultation" },
+    nav: { about: "About Us", services: "Sessions", courses: "Courses", partners: "Partners", blog: "Blog", contact: "Contact", book: "Book a consultation" },
     services: { action: "Book / pay", detailsLabel: "View details" },
     course: { cta: "I want to enrol" },
     coursePreview: { allLabel: "View courses", detailsLabel: "Explore the course" },
@@ -50,7 +50,7 @@ const content = {
     whatsapp: "Chat on WhatsApp",
   },
   es: {
-    nav: { about: "Quiénes somos", services: "Sesiones", courses: "Cursos", blog: "Blog", contact: "Contacto", book: "Reservar consulta" },
+    nav: { about: "Quiénes somos", services: "Sesiones", courses: "Cursos", partners: "Socios", blog: "Blog", contact: "Contacto", book: "Reservar consulta" },
     services: { action: "Reservar / pagar", detailsLabel: "Ver detalles" },
     course: { cta: "Quiero inscribirme" },
     coursePreview: { allLabel: "Ver cursos", detailsLabel: "Conocer el curso" },
@@ -70,7 +70,7 @@ const content = {
     whatsapp: "Hablar por WhatsApp",
   },
   nl: {
-    nav: { about: "Over ons", services: "Sessies", courses: "Cursussen", blog: "Blog", contact: "Contact", book: "Consult boeken" },
+    nav: { about: "Over ons", services: "Sessies", courses: "Cursussen", partners: "Partners", blog: "Blog", contact: "Contact", book: "Consult boeken" },
     services: { action: "Boeken / betalen", detailsLabel: "Bekijk details" },
     course: { cta: "Ik wil me inschrijven" },
     coursePreview: { allLabel: "Bekijk cursussen", detailsLabel: "Ontdek de cursus" },

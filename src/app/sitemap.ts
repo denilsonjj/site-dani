@@ -8,7 +8,7 @@ const legalRoutes = [
   "termos-e-condicoes",
   "politica-de-privacidade",
 ];
-const sectionRoutes = ["quem-somos", "sessoes", "cursos", "blog"];
+const sectionRoutes = ["quem-somos", "sessoes", "cursos", "parceiros", "blog"];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = getSiteUrl();

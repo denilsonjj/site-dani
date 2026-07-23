@@ -95,15 +95,6 @@ export default async function LocalizedHome({
   const courseSection = sections.course;
   const blogSection = sections.blog;
   const contactSection = sections.contact;
-  const partnersSection = sections.partners;
-  const partnerCards = Object.values(sections)
-    .filter((section) => section.pageKey === "home" && /^partner-\d+$/.test(section.sectionKey))
-    .sort((a, b) => Number(a.sectionKey.replace("partner-", "")) - Number(b.sectionKey.replace("partner-", "")))
-    .slice(0, 9)
-    .filter((section) =>
-      [section.title, section.body, section.description, section.imageUrl, section.primaryCtaHref, section.primaryCtaLabel]
-        .some((value) => value.trim()),
-    );
   if (!hero || !firstVisit || !promptsHeader || !servicesSection || !courseSection || !blogSection || !contactSection) {
     notFound();
   }
@@ -417,73 +408,6 @@ export default async function LocalizedHome({
           </Link>
         </div>
       </section>
-
-      {partnersSection ? (
-        <section className="bg-[#f8f5ec] px-5 py-24 sm:py-32" id="parceiros">
-          <div className="mx-auto max-w-7xl">
-            <div className="mx-auto max-w-4xl text-center" data-reveal>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#547461]">
-                {partnersSection.eyebrow}
-              </p>
-              <h2 className="display mt-4 text-4xl font-semibold leading-tight text-[#123c2d] sm:text-6xl">
-                {partnersSection.title}
-              </h2>
-              <p className="mx-auto mt-7 max-w-3xl text-base leading-8 text-[#52675e] sm:text-lg">
-                {partnersSection.body}
-              </p>
-            </div>
-
-            {partnerCards.length ? <div className="mt-12 grid gap-5 md:grid-cols-3">
-              {partnerCards.map((partner, index) => (
-                <article
-                  className="overflow-hidden rounded-[2rem] border border-[#123c2d]/10 bg-white shadow-[0_18px_55px_rgba(19,35,29,0.08)]"
-                  data-reveal
-                  key={partner.sectionKey}
-                  style={{ "--reveal-delay": `${index * 90}ms` } as RevealStyle}
-                >
-                  {partner.imageUrl ? (
-                    <div className="relative h-56">
-                      <Image
-                        alt={partner.imageAlt || partner.title}
-                        className="object-cover"
-                        fill
-                        sizes="(min-width: 768px) 33vw, 100vw"
-                        src={partner.imageUrl}
-                      />
-                    </div>
-                  ) : null}
-                  <div className="p-6">
-                    {partner.description ? (
-                      <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#799a81]">
-                        {partner.description}
-                      </p>
-                    ) : null}
-                    <h3 className="display mt-3 text-2xl font-semibold leading-tight text-[#123c2d]">
-                      {partner.title}
-                    </h3>
-                    {partner.body ? (
-                      <p className="mt-4 whitespace-pre-line text-sm leading-7 text-[#52675e]">
-                        {partner.body}
-                      </p>
-                    ) : null}
-                    {partner.primaryCtaHref && partner.primaryCtaLabel ? (
-                      <a
-                        className="mt-5 inline-flex items-center gap-2 font-bold text-[#123c2d] transition hover:text-[#C9A227]"
-                        href={partner.primaryCtaHref}
-                        rel="noreferrer"
-                        target={partner.primaryCtaHref.startsWith("http") ? "_blank" : undefined}
-                      >
-                        {partner.primaryCtaLabel}
-                        <ArrowRight aria-hidden="true" size={16} />
-                      </a>
-                    ) : null}
-                  </div>
-                </article>
-              ))}
-            </div> : null}
-          </div>
-        </section>
-      ) : null}
 
       <section className="px-5 pb-24 sm:pb-32" id="contato">
         <div className="mx-auto grid max-w-7xl overflow-hidden rounded-[2rem] bg-[#123c2d] text-white lg:grid-cols-[0.8fr_1.2fr]" data-reveal>

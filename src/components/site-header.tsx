@@ -10,6 +10,7 @@ type HeaderCopy = {
   book: string;
   contact: string;
   courses: string;
+  partners: string;
   services: string;
 };
 
@@ -23,6 +24,7 @@ export function SiteHeader({ copy, locale }: SiteHeaderProps) {
     [copy.about, `/${locale}/quem-somos`],
     [copy.services, `/${locale}/sessoes`],
     [copy.courses, `/${locale}/cursos`],
+    [copy.partners, `/${locale}/parceiros`],
     [copy.blog, `/${locale}/blog`],
     [copy.contact, `/${locale}#contato`],
   ] as const;
