@@ -83,6 +83,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "A página e a seção são obrigatórias." }, { status: 400 });
   }
 
+  if (payload.pageKey === "home" && /^partner-(?:[1-9]|[1-9]\d+)$/.test(payload.sectionKey)) {
+    const partnerNumber = Number(payload.sectionKey.replace("partner-", ""));
+    if (partnerNumber > 9) {
+      return NextResponse.json({ error: "O limite de parceiros e 9." }, { status: 400 });
+    }
+  }
+
   if (payload.isPublished) {
     const missing = missingTranslations(payload);
     if (missing.length) {

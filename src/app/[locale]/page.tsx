@@ -99,6 +99,7 @@ export default async function LocalizedHome({
   const partnerCards = Object.values(sections)
     .filter((section) => section.pageKey === "home" && /^partner-\d+$/.test(section.sectionKey))
     .sort((a, b) => Number(a.sectionKey.replace("partner-", "")) - Number(b.sectionKey.replace("partner-", "")))
+    .slice(0, 9)
     .filter((section) =>
       [section.title, section.body, section.description, section.imageUrl, section.primaryCtaHref, section.primaryCtaLabel]
         .some((value) => value.trim()),

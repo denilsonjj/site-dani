@@ -574,6 +574,10 @@ export function AdminDashboard({ blogPosts, bookingSchedule, courses, sections, 
     const partnerNumbers = sectionItems
       .filter((item) => item.page_key === "home" && /^partner-\d+$/.test(item.section_key))
       .map((item) => Number(item.section_key.replace("partner-", "")));
+    if (partnerNumbers.length >= 9) {
+      showStatus("partners", "O limite de 9 parceiros foi atingido.");
+      return;
+    }
     const nextNumber = Math.max(0, ...partnerNumbers) + 1;
     const sectionKey = `partner-${nextNumber}`;
     const draft: SiteSectionRow = {
@@ -756,7 +760,7 @@ export function AdminDashboard({ blogPosts, bookingSchedule, courses, sections, 
               <div className="rounded-2xl bg-[#f7f4ef] p-4" key={pageKey}>
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <h3 className="text-lg font-bold">{pageLabels[pageKey] || pageKey}</h3>
-                  {pageKey === "home" ? <button className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-[#C9A227] px-4 text-sm font-bold text-[#123c2d]" onClick={createPartnerDraft} type="button">
+                  {pageKey === "home" ? <button className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-[#C9A227] px-4 text-sm font-bold text-[#123c2d]" disabled={sectionItems.filter((item) => item.page_key === "home" && /^partner-\d+$/.test(item.section_key)).length >= 9} onClick={createPartnerDraft} type="button">
                     <Plus size={16} />
                     Novo parceiro
                   </button> : null}
