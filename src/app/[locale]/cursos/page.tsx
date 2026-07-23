@@ -53,6 +53,8 @@ export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({
   params,
 }: {
@@ -159,7 +161,7 @@ export default async function CoursesPage({
                     {course.title}
                   </h3>
                   <p className="mt-5 max-w-3xl text-base leading-8 text-[#52675e]">
-                    {course.description || course.text}
+                    {course.text || course.description}
                   </p>
                   <a
                     className="mt-7 inline-flex min-h-12 items-center justify-center rounded-full border border-[#123c2d]/18 px-5 font-bold text-[#123c2d] transition hover:border-[#123c2d]/35 hover:bg-[#e4eee6]"

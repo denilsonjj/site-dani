@@ -31,6 +31,8 @@ export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({
   params,
 }: {
@@ -415,7 +417,7 @@ export default async function LocalizedHome({
         </div>
       </section>
 
-      {partnerCards.length && partnersSection ? (
+      {partnersSection ? (
         <section className="bg-[#f8f5ec] px-5 py-24 sm:py-32" id="parceiros">
           <div className="mx-auto max-w-7xl">
             <div className="mx-auto max-w-4xl text-center" data-reveal>
@@ -430,7 +432,7 @@ export default async function LocalizedHome({
               </p>
             </div>
 
-            <div className="mt-12 grid gap-5 md:grid-cols-3">
+            {partnerCards.length ? <div className="mt-12 grid gap-5 md:grid-cols-3">
               {partnerCards.map((partner, index) => (
                 <article
                   className="overflow-hidden rounded-[2rem] border border-[#123c2d]/10 bg-white shadow-[0_18px_55px_rgba(19,35,29,0.08)]"
@@ -477,7 +479,7 @@ export default async function LocalizedHome({
                   </div>
                 </article>
               ))}
-            </div>
+            </div> : null}
           </div>
         </section>
       ) : null}

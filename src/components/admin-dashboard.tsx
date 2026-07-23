@@ -570,6 +570,34 @@ export function AdminDashboard({ blogPosts, bookingSchedule, courses, sections, 
     setSectionItems((current) => current.map((item) => (item.id === id ? { ...item, ...patch } : item)));
   }
 
+  function createPartnerDraft() {
+    const partnerNumbers = sectionItems
+      .filter((item) => item.page_key === "home" && /^partner-\d+$/.test(item.section_key))
+      .map((item) => Number(item.section_key.replace("partner-", "")));
+    const nextNumber = Math.max(0, ...partnerNumbers) + 1;
+    const sectionKey = `partner-${nextNumber}`;
+    const draft: SiteSectionRow = {
+      body: {},
+      description: {},
+      eyebrow: {},
+      id: `draft-${sectionKey}-${Date.now()}`,
+      image_alt: {},
+      image_url: null,
+      is_published: false,
+      page_key: "home",
+      primary_cta_href: null,
+      primary_cta_label: {},
+      section_key: sectionKey,
+      secondary_cta_href: null,
+      secondary_cta_label: {},
+      sort_order: Math.max(0, ...sectionItems.filter((item) => item.page_key === "home").map((item) => item.sort_order)) + 1,
+      title: {},
+    };
+
+    setSectionItems((current) => [...current, draft]);
+    showStatus(`section-${draft.id}`, "Novo parceiro criado. Preencha e salve.");
+  }
+
   async function saveService(item: ServiceRow, type: "session" | "course", nextPublished = item.is_published) {
     const key = `${type}-${item.product_id}`;
     setPending(key);
@@ -606,7 +634,11 @@ export function AdminDashboard({ blogPosts, bookingSchedule, courses, sections, 
     showStatus(key, "Salvando...");
     try {
       const saved = await saveItem("/api/admin/sections", sectionPayload(item, nextPublished));
-      updateSection(item.id, saved);
+      setSectionItems((current) => current.map((currentItem) =>
+        currentItem.id === item.id || (currentItem.page_key === saved.page_key && currentItem.section_key === saved.section_key)
+          ? saved
+          : currentItem,
+      ));
       showStatus(key, nextPublished ? "Salvo e ativo no site." : "Salvo como inativo.");
     } catch (error) {
       showStatus(key, error instanceof Error ? error.message : "Erro ao salvar.");
@@ -722,7 +754,13 @@ export function AdminDashboard({ blogPosts, bookingSchedule, courses, sections, 
           <div className="grid gap-5 p-4 sm:p-6">
             {Object.entries(groupedSections).map(([pageKey, items]) => (
               <div className="rounded-2xl bg-[#f7f4ef] p-4" key={pageKey}>
-                <h3 className="text-lg font-bold">{pageLabels[pageKey] || pageKey}</h3>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <h3 className="text-lg font-bold">{pageLabels[pageKey] || pageKey}</h3>
+                  {pageKey === "home" ? <button className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-[#C9A227] px-4 text-sm font-bold text-[#123c2d]" onClick={createPartnerDraft} type="button">
+                    <Plus size={16} />
+                    Novo parceiro
+                  </button> : null}
+                </div>
                 <div className="mt-4 grid gap-3">
                   {items.map((item) => (
                     <SectionEditor
@@ -828,7 +866,7 @@ function SectionEditor({
         <Thumb icon={canUploadVideo ? Video : Home} src={canUploadMedia ? item.image_url : null} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <strong>{sectionLabels[item.section_key] || item.section_key}</strong>
+            <strong>{sectionLabels[item.section_key] || (item.section_key.startsWith("partner-") ? "Parceiro" : item.section_key)}</strong>
             <StatusBadge active={item.is_published} />
           </div>
           <p className="mt-1 truncate text-sm text-[#617268]">{localised(item.title, locale) || "Sem título"}</p>

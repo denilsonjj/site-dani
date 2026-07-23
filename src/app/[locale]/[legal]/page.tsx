@@ -5,6 +5,8 @@ import { getLegalDocument } from "@/lib/cms";
 import { locales, type Locale } from "@/lib/content";
 import { splitParagraphs } from "@/lib/site-sections";
 
+export const dynamic = "force-dynamic";
+
 type LegalDocumentKey = "cookies" | "privacy" | "terms";
 
 const legalPages = {
