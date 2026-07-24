@@ -58,5 +58,5 @@ function splitDescription(value: string) {
 export function getDetailParagraphs(service: SiteService) {
   const paragraphs = splitDescription(service.description || service.text);
   const intro = service.detailIntro?.trim();
-  return intro ? [intro, ...paragraphs.slice(1)] : paragraphs;
+  return intro ? [intro, ...paragraphs] : paragraphs;
 }
