@@ -65,6 +65,7 @@ const sectionLabels: Record<string, string> = {
   "about-stat-2": "Card pessoal 2",
   "about-stat-3": "Card pessoal 3",
   blog: "Prévia do blog",
+  "before-enrollment": "Informações antes da inscrição",
   contact: "Contato",
   course: "Prévia do curso",
   "first-visit": "Primeira consulta",

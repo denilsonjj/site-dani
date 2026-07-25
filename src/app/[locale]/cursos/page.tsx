@@ -88,6 +88,7 @@ export default async function CoursesPage({
     getPublishedSiteSections("courses", locale),
   ]);
   const hero = sections.hero;
+  const beforeEnrollment = sections["before-enrollment"];
   if (!hero) notFound();
   const courseList = courses;
 
@@ -116,10 +117,10 @@ export default async function CoursesPage({
             <div className="rounded-[2rem] border border-white/12 bg-white/[0.06] p-6 shadow-2xl shadow-black/10">
               <Sparkles className="text-[#C9A227]" size={30} strokeWidth={1.5} />
               <p className="mt-5 text-sm font-bold uppercase tracking-[0.16em] text-[#C9A227]">
-                {labels.beforeTitle}
+                {beforeEnrollment?.title || labels.beforeTitle}
               </p>
               <p className="mt-3 leading-7 text-white/68">
-                {labels.beforeText}
+                {beforeEnrollment?.body || labels.beforeText}
               </p>
             </div>
           </div>

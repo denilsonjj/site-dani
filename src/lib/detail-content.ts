@@ -50,7 +50,7 @@ export const detailPageCopy = {
 
 function splitDescription(value: string) {
   return value
-    .split(/\n\s*\n/)
+    .split(/\r?\n+/)
     .map((paragraph) => paragraph.trim())
     .filter(Boolean);
 }
