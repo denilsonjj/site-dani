@@ -828,7 +828,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       .like("key", "availability:%"),
     supabase
       .from("admin_settings")
-      .select("value")
+      .select("value, updated_at")
       .eq("key", bookingScheduleSettingKey)
       .maybeSingle(),
   ]);
@@ -852,7 +852,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
 
   return {
     blogPosts: ((blog.data || []) as BlogRow[]),
-    bookingSchedule: parseBookingSchedule(bookingSchedule.data?.value),
+    bookingSchedule: { ...parseBookingSchedule(bookingSchedule.data?.value), updatedAt: bookingSchedule.data?.updated_at },
     configured: !(services.error || courses.error || blog.error || availability.error),
     courses: courseRows,
     sections: sectionRows.map((section) => sectionAllowsMedia(section)

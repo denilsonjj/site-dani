@@ -29,6 +29,7 @@ export type BookingSchedule = {
   dates: BookingDay[];
   services: Record<string, ServiceSchedule>;
   timeZone: string;
+  updatedAt?: string;
   version: 1;
 };
 

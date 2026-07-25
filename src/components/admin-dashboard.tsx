@@ -1083,7 +1083,7 @@ function ServiceEditor({
             <LocalisedInput label="Título da explicação" locale={locale} onChange={(value) => onUpdate({ subtitle: value })} value={item.subtitle || null} />
             <LocalisedInput label="Frase de introdução" locale={locale} onChange={(value) => onUpdate({ detail_intro: value })} textarea value={item.detail_intro || null} />
           </div>
-          <LocalisedInput label="Descrição completa (página do curso)" locale={locale} onChange={(value) => onUpdate({ description: value })} textarea value={item.description} />
+          <LocalisedInput label={type === "course" ? "Descrição completa (página do curso)" : "Descrição completa (página da sessão)"} locale={locale} onChange={(value) => onUpdate({ description: value })} textarea value={item.description} />
           <div className="grid gap-4 md:grid-cols-2">
             <LocalisedInput label="Duração" locale={locale} onChange={(value) => onUpdate({ duration: value })} value={item.duration} />
             <LocalisedInput label="Selo pequeno" locale={locale} onChange={(value) => onUpdate({ badge: value })} value={item.badge} />
