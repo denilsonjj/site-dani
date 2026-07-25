@@ -77,7 +77,7 @@ export default async function BlogPostPage({
           />
         </div> : null}
         <div className="mt-12 rounded-[2rem] bg-white p-8 leading-8 text-[#40564d] shadow-[0_20px_60px_rgba(19,35,29,0.08)] sm:p-10">
-          {post.body[locale].split("\n\n").map((paragraph) => (
+          {post.body[locale].split(/\r?\n+/).filter(Boolean).map((paragraph) => (
             <p className="mt-6 first:mt-0" key={paragraph}>
               {paragraph}
             </p>
