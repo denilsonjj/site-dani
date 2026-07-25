@@ -14,6 +14,7 @@ type BlogPayload = {
   slug?: string;
   sortOrder?: number;
   title?: Record<string, string>;
+  updatedAt?: string;
 };
 
 export async function GET(request: Request) {
@@ -59,28 +60,52 @@ export async function POST(request: Request) {
     }
   }
 
-  const { data, error: mutationError } = await supabase
-    .from("blog_posts")
-    .upsert(
-      {
-        author: payload.author || "Dani Therapies",
-        body: payload.body || payload.excerpt,
-        excerpt: payload.excerpt,
-        image_url: payload.imageUrl || null,
-        is_published: Boolean(payload.isPublished),
-        published_at: payload.publishedAt || new Date().toISOString(),
-        reading_time: payload.readingTime || { pt: "4 min" },
-        slug: payload.slug,
-        sort_order: payload.sortOrder || 0,
-        title: payload.title,
-      },
-      { onConflict: "slug" },
-    )
-    .select("*")
-    .single();
+  const record = {
+    author: payload.author || "Dani Therapies",
+    body: payload.body || payload.excerpt,
+    excerpt: payload.excerpt,
+    image_url: payload.imageUrl || null,
+    is_published: Boolean(payload.isPublished),
+    published_at: payload.publishedAt || new Date().toISOString(),
+    reading_time: payload.readingTime || { pt: "4 min" },
+    slug: payload.slug,
+    sort_order: payload.sortOrder || 0,
+    title: payload.title,
+  };
+
+  if (!payload.updatedAt) {
+    const { data: existing, error: lookupError } = await supabase
+      .from("blog_posts")
+      .select("id")
+      .eq("slug", payload.slug)
+      .maybeSingle();
+    if (lookupError) return NextResponse.json({ error: lookupError.message }, { status: 500 });
+    if (existing) return NextResponse.json({ error: "Atualize o painel antes de guardar. Esta página está desatualizada." }, { status: 409 });
+  }
+
+  const mutation = payload.updatedAt
+    ? await supabase
+      .from("blog_posts")
+      .update(record)
+      .eq("slug", payload.slug)
+      .eq("updated_at", payload.updatedAt)
+      .select("*")
+      .maybeSingle()
+    : await supabase
+      .from("blog_posts")
+      .upsert(record, { onConflict: "slug" })
+      .select("*")
+      .maybeSingle();
+  const { data, error: mutationError } = mutation;
 
   if (mutationError) {
     return NextResponse.json({ error: mutationError.message }, { status: 500 });
+  }
+  if (!data) {
+    return NextResponse.json(
+      { error: "Este conteúdo foi alterado noutra sessão. Atualize o painel antes de guardar novamente." },
+      { status: 409 },
+    );
   }
 
   for (const locale of ["pt", "en", "es", "nl"]) {

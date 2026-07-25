@@ -32,6 +32,7 @@ type SectionPayload = {
   secondaryCtaLabel?: LocalisedValue;
   sortOrder?: number;
   title?: LocalisedValue;
+  updatedAt?: string;
 };
 
 function missingTranslations(payload: SectionPayload) {
@@ -101,31 +102,52 @@ export async function POST(request: Request) {
   }
 
   const allowsMedia = sectionAllowsMedia(payload.pageKey, payload.sectionKey);
-  const { data, error: mutationError } = await supabase
-    .from("site_sections")
-    .upsert(
-      {
-        body: payload.body || {},
-        description: payload.description || {},
-        eyebrow: payload.eyebrow || {},
-        image_alt: allowsMedia ? payload.imageAlt || {} : {},
-        image_url: allowsMedia ? payload.imageUrl || null : null,
-        is_published: Boolean(payload.isPublished),
-        page_key: payload.pageKey,
-        primary_cta_href: payload.primaryCtaHref || null,
-        primary_cta_label: payload.primaryCtaLabel || {},
-        secondary_cta_href: payload.secondaryCtaHref || null,
-        secondary_cta_label: payload.secondaryCtaLabel || {},
-        section_key: payload.sectionKey,
-        sort_order: payload.sortOrder || 0,
-        title: payload.title || {},
-      },
-      { onConflict: "page_key,section_key" },
-    )
-    .select("*")
-    .single();
+  const record = {
+    body: payload.body || {},
+    description: payload.description || {},
+    eyebrow: payload.eyebrow || {},
+    image_alt: allowsMedia ? payload.imageAlt || {} : {},
+    image_url: allowsMedia ? payload.imageUrl || null : null,
+    is_published: Boolean(payload.isPublished),
+    page_key: payload.pageKey,
+    primary_cta_href: payload.primaryCtaHref || null,
+    primary_cta_label: payload.primaryCtaLabel || {},
+    secondary_cta_href: payload.secondaryCtaHref || null,
+    secondary_cta_label: payload.secondaryCtaLabel || {},
+    section_key: payload.sectionKey,
+    sort_order: payload.sortOrder || 0,
+    title: payload.title || {},
+  };
+
+  if (!payload.updatedAt) {
+    const { data: existing, error: lookupError } = await supabase
+      .from("site_sections")
+      .select("id")
+      .eq("page_key", payload.pageKey)
+      .eq("section_key", payload.sectionKey)
+      .maybeSingle();
+    if (lookupError) return NextResponse.json({ error: lookupError.message }, { status: 500 });
+    if (existing) return NextResponse.json({ error: "Atualize o painel antes de guardar. Esta página está desatualizada." }, { status: 409 });
+  }
+
+  const mutation = payload.updatedAt
+    ? await supabase
+      .from("site_sections")
+      .update(record)
+      .eq("page_key", payload.pageKey)
+      .eq("section_key", payload.sectionKey)
+      .eq("updated_at", payload.updatedAt)
+      .select("*")
+      .maybeSingle()
+    : await supabase
+      .from("site_sections")
+      .upsert(record, { onConflict: "page_key,section_key" })
+      .select("*")
+      .maybeSingle();
+  const { data, error: mutationError } = mutation;
 
   if (mutationError) return NextResponse.json({ error: mutationError.message }, { status: 500 });
+  if (!data) return NextResponse.json({ error: "Este conteúdo foi alterado noutra sessão. Atualize o painel antes de guardar novamente." }, { status: 409 });
   const pagePath = payload.pageKey === "home"
     ? ""
     : payload.pageKey === "about"

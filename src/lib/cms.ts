@@ -34,6 +34,7 @@ export type SiteSectionRow = {
   secondary_cta_label: LocalisedValue;
   sort_order: number;
   title: LocalisedValue;
+  updated_at?: string;
 };
 
 export type SiteSection = {
@@ -90,6 +91,7 @@ export type BlogRow = {
   slug: string;
   sort_order: number;
   title: LocalisedValue;
+  updated_at?: string;
 };
 
 type IntakeFieldRow = {

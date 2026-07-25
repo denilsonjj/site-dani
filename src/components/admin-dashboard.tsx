@@ -159,6 +159,7 @@ function blogPayload(item: BlogRow, isPublished = item.is_published) {
     slug: item.slug,
     sortOrder: item.sort_order || 0,
     title: item.title || {},
+    updatedAt: item.updated_at,
   };
 }
 
@@ -178,6 +179,7 @@ function sectionPayload(item: SiteSectionRow, isPublished = item.is_published) {
     sectionKey: item.section_key,
     sortOrder: item.sort_order || 0,
     title: item.title || {},
+    updatedAt: item.updated_at,
   };
 }
 
