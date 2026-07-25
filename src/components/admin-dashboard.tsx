@@ -544,9 +544,11 @@ export function AdminDashboard({ blogPosts, bookingSchedule, courses, sections, 
   const activeCourses = courseItems.filter((item) => item.is_published).length;
   const activePosts = postItems.filter((item) => item.is_published).length;
   const activeSections = sectionItems.filter((item) => item.is_published).length;
+  const coursePageSections = sectionItems.filter((item) => item.page_key === "courses");
   const groupedSections = useMemo(
     () =>
       sectionItems.reduce<Record<string, SiteSectionRow[]>>((pages, item) => {
+        if (item.page_key === "courses") return pages;
         pages[item.page_key] ||= [];
         pages[item.page_key].push(item);
         return pages;
@@ -808,21 +810,38 @@ export function AdminDashboard({ blogPosts, bookingSchedule, courses, sections, 
       ) : null}
 
       {activeTab === "courses" ? (
-        <ServiceListEditor
-          actionLabel="Novo curso"
-          description="Edite o curso disponível no site: texto, imagem, valor, vagas e publicação."
-          emptyText="Nenhum curso cadastrado."
-          items={courseItems}
-          locale={locale}
-          onCreate={() => createServiceDraft("course")}
-          onLocaleChange={setLocale}
-          onSave={(item, nextPublished) => saveService(item, "course", nextPublished)}
-          onUpdate={(productId, patch) => updateService(productId, patch, "course")}
-          pending={pending}
-          status={status}
-          title="Curso"
-          type="course"
-        />
+        <div className="grid gap-5">
+          {coursePageSections.map((item) => (
+            <Panel key={item.id}>
+              <PanelHeader action={<LocaleSelector locale={locale} onChange={setLocale} />} description="Edite o texto informativo exibido antes da lista de cursos." title="Informações antes da inscrição" />
+              <div className="p-4 sm:p-6">
+                <SectionEditor
+                  item={item}
+                  locale={locale}
+                  onSave={(nextPublished) => saveSection(item, nextPublished)}
+                  onUpdate={(patch) => updateSection(item.id, patch)}
+                  pending={pending === `section-${item.id}`}
+                  status={status[`section-${item.id}`]}
+                />
+              </div>
+            </Panel>
+          ))}
+          <ServiceListEditor
+            actionLabel="Novo curso"
+            description="Edite o curso disponível no site: texto, imagem, valor, vagas e publicação."
+            emptyText="Nenhum curso cadastrado."
+            items={courseItems}
+            locale={locale}
+            onCreate={() => createServiceDraft("course")}
+            onLocaleChange={setLocale}
+            onSave={(item, nextPublished) => saveService(item, "course", nextPublished)}
+            onUpdate={(productId, patch) => updateService(productId, patch, "course")}
+            pending={pending}
+            status={status}
+            title="Curso"
+            type="course"
+          />
+        </div>
       ) : null}
 
       {activeTab === "blog" ? (
