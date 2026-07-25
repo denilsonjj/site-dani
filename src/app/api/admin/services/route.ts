@@ -25,6 +25,7 @@ type ServicePayload = {
   subtitle?: Record<string, string>;
   summary?: Record<string, string>;
   title?: Record<string, string>;
+  updatedAt?: string;
 };
 
 export async function GET(request: Request) {
@@ -79,38 +80,68 @@ export async function POST(request: Request) {
     .filter((date) => /^\d{4}-\d{2}-\d{2}$/.test(date))))
     .sort();
 
-  const { data, error: mutationError } = await supabase
-    .from("content_services")
-    .upsert(
-      {
-        amount_cents: payload.amountCents ?? null,
-        badge: payload.badge || {},
-        capacity_limit: payload.capacityLimit ?? null,
-        category: payload.category || "session",
-        currency: payload.currency || "EUR",
-        description: payload.description || payload.summary || {},
-        detail_intro: payload.detailIntro || {},
-        duration: payload.duration || {},
-        image_url: payload.imageUrl || null,
-        is_published: Boolean(payload.isPublished),
-        price_label: payload.priceLabel || {},
-        product_id: payload.productId,
-        requires_intake: Boolean(payload.requiresIntake),
-        requires_policy_acceptance: payload.requiresPolicyAcceptance ?? true,
-        slug: payload.slug,
-        sort_order: payload.sortOrder || 0,
-        stripe_price_env: payload.stripePriceEnv || null,
-        subtitle: payload.subtitle || {},
-        summary: payload.summary,
-        title: payload.title,
-      },
-      { onConflict: "product_id" },
-    )
-    .select("*")
-    .single();
+  const record = {
+    amount_cents: payload.amountCents ?? null,
+    badge: payload.badge || {},
+    capacity_limit: payload.capacityLimit ?? null,
+    category: payload.category || "session",
+    currency: payload.currency || "EUR",
+    description: payload.description || payload.summary || {},
+    detail_intro: payload.detailIntro || {},
+    duration: payload.duration || {},
+    image_url: payload.imageUrl || null,
+    is_published: Boolean(payload.isPublished),
+    price_label: payload.priceLabel || {},
+    product_id: payload.productId,
+    requires_intake: Boolean(payload.requiresIntake),
+    requires_policy_acceptance: payload.requiresPolicyAcceptance ?? true,
+    slug: payload.slug,
+    sort_order: payload.sortOrder || 0,
+    stripe_price_env: payload.stripePriceEnv || null,
+    subtitle: payload.subtitle || {},
+    summary: payload.summary,
+    title: payload.title,
+  };
+
+  if (!payload.updatedAt) {
+    const { data: existing, error: lookupError } = await supabase
+      .from("content_services")
+      .select("id")
+      .eq("product_id", payload.productId)
+      .maybeSingle();
+    if (lookupError) return NextResponse.json({ error: lookupError.message }, { status: 500 });
+    if (existing) {
+      return NextResponse.json(
+        { error: "Atualize o painel antes de guardar. Esta página está desatualizada." },
+        { status: 409 },
+      );
+    }
+  }
+
+  const mutation = payload.updatedAt
+    ? await supabase
+      .from("content_services")
+      .update(record)
+      .eq("product_id", payload.productId)
+      .eq("updated_at", payload.updatedAt)
+      .select("*")
+      .maybeSingle()
+    : await supabase
+      .from("content_services")
+      .upsert(record, { onConflict: "product_id" })
+      .select("*")
+      .maybeSingle();
+
+  const { data, error: mutationError } = mutation;
 
   if (mutationError) {
     return NextResponse.json({ error: mutationError.message }, { status: 500 });
+  }
+  if (!data) {
+    return NextResponse.json(
+      { error: "Este conteúdo foi alterado noutra sessão. Atualize o painel antes de guardar novamente." },
+      { status: 409 },
+    );
   }
 
   if ((payload.category || "session") === "session") {

@@ -143,6 +143,7 @@ function servicePayload(item: ServiceRow, isPublished = item.is_published) {
     subtitle: item.subtitle || {},
     summary: item.summary || {},
     title: item.title || {},
+    updatedAt: item.updated_at,
   };
 }
 

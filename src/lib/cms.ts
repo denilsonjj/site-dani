@@ -76,6 +76,7 @@ export type ServiceRow = {
   subtitle?: LocalisedValue;
   summary: LocalisedValue;
   title: LocalisedValue;
+  updated_at?: string;
 };
 
 export type BlogRow = {
