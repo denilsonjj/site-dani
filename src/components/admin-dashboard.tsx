@@ -89,6 +89,11 @@ const sectionLabels: Record<string, string> = {
   work: "Continuação Quem Somos",
 };
 
+function sectionLabel(item: SiteSectionRow) {
+  if (item.page_key === "courses" && item.section_key === "hero") return "Introdução da página de cursos";
+  return sectionLabels[item.section_key] || (item.section_key.startsWith("partner-") ? "Parceiro" : item.section_key);
+}
+
 const tabs: Array<{ icon: ComponentType<{ size?: number }>; key: TabKey; label: string }> = [
   { icon: LayoutDashboard, key: "overview", label: "Visão geral" },
   { icon: Home, key: "pages", label: "Páginas" },
@@ -944,7 +949,7 @@ function SectionEditor({
         <Thumb icon={canUploadVideo ? Video : Home} src={canUploadMedia ? item.image_url : null} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <strong>{sectionLabels[item.section_key] || (item.section_key.startsWith("partner-") ? "Parceiro" : item.section_key)}</strong>
+            <strong>{sectionLabel(item)}</strong>
             <StatusBadge active={item.is_published} />
           </div>
           <p className="mt-1 truncate text-sm text-[#617268]">{localised(item.title, locale) || "Sem título"}</p>
