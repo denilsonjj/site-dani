@@ -21,6 +21,7 @@ import {
 
 type Props = {
   initialSchedule: BookingSchedule;
+  onNotify?: (message: string, type?: "error" | "success") => void;
   services: ServiceRow[];
 };
 
@@ -227,7 +228,7 @@ function DateAvailabilityEditor({
   );
 }
 
-export function AdminScheduleEditor({ initialSchedule, services }: Props) {
+export function AdminScheduleEditor({ initialSchedule, onNotify, services }: Props) {
   const [schedule, setSchedule] = useState(initialSchedule);
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState("");
@@ -254,10 +255,14 @@ export function AdminScheduleEditor({ initialSchedule, services }: Props) {
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {
-      setMessage(result.error || "Não foi possível guardar a agenda.");
+      const errorMessage = result.error || "Não foi possível guardar a agenda.";
+      setMessage(errorMessage);
+      onNotify?.(errorMessage, "error");
     } else {
       setSchedule(result.item);
-      setMessage("Agenda guardada. Os clientes já verão os horários atualizados.");
+      const successMessage = "Agenda guardada. Os clientes já verão os horários atualizados.";
+      setMessage(successMessage);
+      onNotify?.(successMessage);
     }
     setPending(false);
   }

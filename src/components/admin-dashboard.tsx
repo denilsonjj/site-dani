@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState, type ComponentType, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ComponentType, type ReactNode } from "react";
 import {
   BookOpenText,
   CalendarDays,
+  CheckCircle2,
   Eye,
   EyeOff,
   FileText,
@@ -18,6 +19,7 @@ import {
   ShieldCheck,
   UploadCloud,
   Video,
+  XCircle,
 } from "lucide-react";
 import { AdminScheduleEditor } from "@/components/admin-schedule-editor";
 import type { BlogRow, ServiceRow, SiteSectionRow } from "@/lib/cms";
@@ -36,6 +38,7 @@ type LocaleKey = "pt" | "en" | "es" | "nl";
 type TabKey = "overview" | "pages" | "sessions" | "schedule" | "courses" | "blog" | "settings";
 type LocalisedValue = Record<string, string> | null;
 type StatusState = Record<string, string>;
+type ToastState = { message: string; type: "error" | "success" } | null;
 
 const localeLabels: Record<LocaleKey, string> = {
   pt: "Português",
@@ -440,7 +443,7 @@ function OverviewCard({
   );
 }
 
-function SecurityPanel() {
+function SecurityPanel({ onNotify }: { onNotify: (message: string, type?: "error" | "success") => void }) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [nextPassword, setNextPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -459,7 +462,9 @@ function SecurityPanel() {
     const result = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      setMessage(result.error || "Não foi possível alterar a senha.");
+      const errorMessage = result.error || "Não foi possível alterar a senha.";
+      setMessage(errorMessage);
+      onNotify(errorMessage, "error");
       setPending(false);
       return;
     }
@@ -468,6 +473,7 @@ function SecurityPanel() {
     setNextPassword("");
     setConfirmPassword("");
     setMessage("Senha alterada com segurança.");
+    onNotify("Senha alterada com segurança.");
     setPending(false);
   }
 
@@ -542,6 +548,13 @@ export function AdminDashboard({ blogPosts, bookingSchedule, courses, sections, 
   const [locale, setLocale] = useState<LocaleKey>("pt");
   const [pending, setPending] = useState("");
   const [status, setStatus] = useState<StatusState>({});
+  const [toast, setToast] = useState<ToastState>(null);
+
+  useEffect(() => {
+    if (!toast) return;
+    const timer = window.setTimeout(() => setToast(null), 4500);
+    return () => window.clearTimeout(timer);
+  }, [toast]);
 
   const activeServices = serviceItems.filter((item) => item.is_published).length;
   const activeCourses = courseItems.filter((item) => item.is_published).length;
@@ -561,6 +574,10 @@ export function AdminDashboard({ blogPosts, bookingSchedule, courses, sections, 
 
   function showStatus(key: string, message: string) {
     setStatus((current) => ({ ...current, [key]: message }));
+  }
+
+  function showToast(message: string, type: "error" | "success" = "success") {
+    setToast({ message, type });
   }
 
   function updateService(productId: string, patch: Partial<ServiceRow>, type: "session" | "course") {
@@ -615,9 +632,13 @@ export function AdminDashboard({ blogPosts, bookingSchedule, courses, sections, 
     try {
       const saved = await saveItem("/api/admin/services", servicePayload(item, nextPublished));
       updateService(item.product_id, saved, type);
-      showStatus(key, nextPublished ? "Salvo e ativo no site." : "Salvo como inativo.");
+      const message = nextPublished ? "Alterações guardadas e já disponíveis no site." : "Alterações guardadas. Este conteúdo está inativo.";
+      showStatus(key, message);
+      showToast(message);
     } catch (error) {
-      showStatus(key, error instanceof Error ? error.message : "Erro ao salvar.");
+      const message = error instanceof Error ? error.message : "Não foi possível guardar as alterações.";
+      showStatus(key, message);
+      showToast(message, "error");
     } finally {
       setPending("");
     }
@@ -630,9 +651,13 @@ export function AdminDashboard({ blogPosts, bookingSchedule, courses, sections, 
     try {
       const saved = await saveItem("/api/admin/blog", blogPayload(item, nextPublished));
       updatePost(item.slug, saved);
-      showStatus(key, nextPublished ? "Salvo e publicado." : "Salvo como rascunho.");
+      const message = nextPublished ? "Post guardado e publicado no site." : "Post guardado como rascunho.";
+      showStatus(key, message);
+      showToast(message);
     } catch (error) {
-      showStatus(key, error instanceof Error ? error.message : "Erro ao salvar.");
+      const message = error instanceof Error ? error.message : "Não foi possível guardar o post.";
+      showStatus(key, message);
+      showToast(message, "error");
     } finally {
       setPending("");
     }
@@ -649,9 +674,13 @@ export function AdminDashboard({ blogPosts, bookingSchedule, courses, sections, 
           ? saved
           : currentItem,
       ));
-      showStatus(key, nextPublished ? "Salvo e ativo no site." : "Salvo como inativo.");
+      const message = nextPublished ? "Seção guardada e já disponível no site." : "Seção guardada como inativa.";
+      showStatus(key, message);
+      showToast(message);
     } catch (error) {
-      showStatus(key, error instanceof Error ? error.message : "Erro ao salvar.");
+      const message = error instanceof Error ? error.message : "Não foi possível guardar a seção.";
+      showStatus(key, message);
+      showToast(message, "error");
     } finally {
       setPending("");
     }
@@ -809,7 +838,7 @@ export function AdminDashboard({ blogPosts, bookingSchedule, courses, sections, 
       ) : null}
 
       {activeTab === "schedule" ? (
-        <AdminScheduleEditor initialSchedule={bookingSchedule} services={serviceItems} />
+        <AdminScheduleEditor initialSchedule={bookingSchedule} onNotify={showToast} services={serviceItems} />
       ) : null}
 
       {activeTab === "courses" ? (
@@ -860,7 +889,29 @@ export function AdminDashboard({ blogPosts, bookingSchedule, courses, sections, 
         />
       ) : null}
 
-      {activeTab === "settings" ? <SecurityPanel /> : null}
+      {activeTab === "settings" ? <SecurityPanel onNotify={showToast} /> : null}
+
+      {toast ? (
+        <div
+          aria-live="polite"
+          className={`fixed bottom-5 left-4 right-4 z-[100] mx-auto flex max-w-md items-start gap-3 rounded-2xl border px-4 py-4 shadow-2xl sm:left-auto sm:right-6 ${
+            toast.type === "error"
+              ? "border-[#9b4b43]/25 bg-[#fff8f6] text-[#7e332d]"
+              : "border-[#123c2d]/20 bg-[#123c2d] text-white"
+          }`}
+          role={toast.type === "error" ? "alert" : "status"}
+        >
+          {toast.type === "error" ? (
+            <XCircle className="mt-0.5 shrink-0" size={20} />
+          ) : (
+            <CheckCircle2 className="mt-0.5 shrink-0 text-[#C9A227]" size={20} />
+          )}
+          <div>
+            <strong className="block text-sm">{toast.type === "error" ? "Não foi possível guardar" : "Alteração guardada"}</strong>
+            <span className="mt-1 block text-sm leading-5 opacity-90">{toast.message}</span>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
