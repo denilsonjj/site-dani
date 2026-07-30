@@ -58,5 +58,8 @@ function splitDescription(value: string) {
 export function getDetailParagraphs(service: SiteService) {
   const paragraphs = splitDescription(service.description || service.text);
   const intro = service.detailIntro?.trim();
-  return intro ? [intro, ...paragraphs] : paragraphs;
+  if (!intro) return paragraphs;
+
+  const normalise = (value: string) => value.replace(/\s+/g, " ").trim();
+  return normalise(paragraphs[0] || "") === normalise(intro) ? paragraphs : [intro, ...paragraphs];
 }

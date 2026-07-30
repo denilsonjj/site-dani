@@ -61,7 +61,6 @@ export async function POST(request: Request) {
     const missing = findMissingTranslations({
       badge: payload.badge,
       description: payload.description,
-      detailIntro: payload.detailIntro,
       duration: payload.duration,
       priceLabel: payload.priceLabel,
       summary: payload.summary,
