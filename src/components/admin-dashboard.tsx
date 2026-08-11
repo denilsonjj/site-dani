@@ -649,6 +649,39 @@ export function AdminDashboard({ blogPosts, bookingSchedule, courses, sections, 
     }
   }
 
+  async function reorderSessions(productId: string, nextPosition: number) {
+    const ordered = [...serviceItems].sort((a, b) => a.sort_order - b.sort_order);
+    const currentPosition = ordered.findIndex((item) => item.product_id === productId);
+    const targetPosition = Math.max(0, Math.min(nextPosition - 1, ordered.length - 1));
+    if (currentPosition < 0 || currentPosition === targetPosition) return;
+    if (ordered.some((item) => !item.updated_at)) {
+      showToast("Guarde primeiro a nova sessão antes de alterar a ordem.", "error");
+      return;
+    }
+
+    const [moved] = ordered.splice(currentPosition, 1);
+    ordered.splice(targetPosition, 0, moved);
+    setPending("session-order");
+
+    try {
+      const response = await fetch("/api/admin/services/order", {
+        body: JSON.stringify({
+          items: ordered.map((item) => ({ productId: item.product_id, updatedAt: item.updated_at })),
+        }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || "Não foi possível guardar a nova ordem.");
+      setServiceItems(result.items || ordered);
+      showToast("Ordem das sessões guardada e atualizada no site.");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Não foi possível guardar a nova ordem.", "error");
+    } finally {
+      setPending("");
+    }
+  }
+
   async function savePost(item: BlogRow, nextPublished = item.is_published) {
     const key = `blog-${item.slug}`;
     setPending(key);
@@ -833,6 +866,7 @@ export function AdminDashboard({ blogPosts, bookingSchedule, courses, sections, 
           locale={locale}
           onCreate={() => createServiceDraft("session")}
           onLocaleChange={setLocale}
+          onReorder={reorderSessions}
           onSave={(item, nextPublished) => saveService(item, "session", nextPublished)}
           onUpdate={(productId, patch) => updateService(productId, patch, "session")}
           pending={pending}
@@ -1003,6 +1037,7 @@ function ServiceListEditor({
   locale,
   onCreate,
   onLocaleChange,
+  onReorder,
   onSave,
   onUpdate,
   pending,
@@ -1017,6 +1052,7 @@ function ServiceListEditor({
   locale: LocaleKey;
   onCreate: () => void;
   onLocaleChange: (locale: LocaleKey) => void;
+  onReorder?: (productId: string, nextPosition: number) => void;
   onSave: (item: ServiceRow, nextPublished?: boolean) => void;
   onUpdate: (productId: string, patch: Partial<ServiceRow>) => void;
   pending: string;
@@ -1041,7 +1077,7 @@ function ServiceListEditor({
       />
       {items.length === 0 ? <p className="p-6 text-[#617268]">{emptyText}</p> : (
         <div className="grid gap-3 p-4 sm:p-6">
-          {items.map((item) => {
+          {items.map((item, index) => {
             const key = `${type}-${item.product_id}`;
             return (
               <ServiceEditor
@@ -1049,10 +1085,13 @@ function ServiceListEditor({
                 key={item.product_id}
                 locale={locale}
                 onSave={(nextPublished) => onSave(item, nextPublished)}
+                onPositionChange={onReorder ? (nextPosition) => onReorder(item.product_id, nextPosition) : undefined}
                 onUpdate={(patch) => onUpdate(item.product_id, patch)}
-                pending={pending === key}
+                pending={pending === key || pending === "session-order"}
+                position={index + 1}
                 status={status[key]}
                 type={type}
+                totalPositions={items.length}
               />
             );
           })}
@@ -1066,18 +1105,24 @@ function ServiceEditor({
   item,
   locale,
   onSave,
+  onPositionChange,
   onUpdate,
   pending,
+  position,
   status,
   type,
+  totalPositions,
 }: {
   item: ServiceRow;
   locale: LocaleKey;
   onSave: (nextPublished?: boolean) => void;
+  onPositionChange?: (nextPosition: number) => void;
   onUpdate: (patch: Partial<ServiceRow>) => void;
   pending: boolean;
+  position: number;
   status?: string;
   type: "session" | "course";
+  totalPositions: number;
 }) {
   const title = localised(item.title, locale);
   const formattedPrice = formatPrice(item.amount_cents, item.currency, locale, localised(item.price_label, locale));
@@ -1101,8 +1146,16 @@ function ServiceEditor({
         <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-bold text-[#52675e]"><Pencil size={15} /> Editar conteúdo</summary>
         <div className="mt-4 grid gap-4 pb-2">
           <div className="grid gap-4 md:grid-cols-3">
-            <Field label="Ordem">
-              <input className={inputClass()} onChange={(event) => onUpdate({ sort_order: Number(event.target.value) || 0 })} type="number" value={item.sort_order || 0} />
+            <Field label={type === "session" ? "Posição na página" : "Ordem"}>
+              {type === "session" ? (
+                <select className={inputClass()} disabled={pending} onChange={(event) => onPositionChange?.(Number(event.target.value))} value={position}>
+                  {Array.from({ length: totalPositions }, (_, index) => index + 1).map((value) => (
+                    <option key={value} value={value}>{value}</option>
+                  ))}
+                </select>
+              ) : (
+                <input className={inputClass()} onChange={(event) => onUpdate({ sort_order: Number(event.target.value) || 0 })} type="number" value={item.sort_order || 0} />
+              )}
             </Field>
             <Field label="Valor em euros">
               <input
