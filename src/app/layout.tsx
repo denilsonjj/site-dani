@@ -30,7 +30,7 @@ const satoshi = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.danitherapies.com"),
+  metadataBase: new URL("https://danitherapies.com"),
   title: {
     default: "Dani Therapies | Cuidado energético e espiritual",
     template: "%s | Dani Therapies",

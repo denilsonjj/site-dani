@@ -1,7 +1,7 @@
 import type { Locale } from "./content";
 
 export const siteConfig = {
-  domain: "https://www.danitherapies.com",
+  domain: "https://danitherapies.com",
   name: "Dani Therapies",
   whatsapp: "31616018467",
   social: {
