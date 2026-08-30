@@ -3,6 +3,9 @@ import { getPublishedBlogPosts, getPublishedCourses, getPublishedServices } from
 import { locales } from "@/lib/content";
 import { getSiteUrl } from "@/lib/site";
 
+export const dynamic = "force-static";
+export const revalidate = 3600;
+
 const legalRoutes = [
   "politica-de-cookies",
   "termos-e-condicoes",
