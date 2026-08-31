@@ -36,12 +36,20 @@ export async function POST(request: Request) {
       const receipt = await getCheckoutReceipt(submissionId, session.id);
 
       if (receipt) {
-        try {
-          const result = await sendCheckoutReceiptEmail(receipt);
-          if (result.error) console.error("Resend checkout receipt error", result.error);
-        } catch (error) {
-          console.error("Checkout receipt email failed", error);
+        const result = await sendCheckoutReceiptEmail(receipt);
+
+        if (!result.sent) {
+          console.error("Resend checkout receipt error", result.error || "Email configuration unavailable");
+          return NextResponse.json(
+            { received: false, error: "Nao foi possivel enviar a confirmacao da compra." },
+            { status: 500 },
+          );
         }
+      } else {
+        return NextResponse.json(
+          { received: false, error: "Nao foi possivel preparar a confirmacao da compra." },
+          { status: 500 },
+        );
       }
     }
   }
