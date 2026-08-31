@@ -8,7 +8,7 @@ export const siteConfig = {
     instagram: "https://www.instagram.com/dani_therapies",
     youtube: "https://www.youtube.com/@VoceandI",
   },
-  email: "hello@danitherapies.com",
+  email: "info@danitherapies.com",
   kvk: "94756279",
   defaultLocale: "pt" satisfies Locale,
 };
