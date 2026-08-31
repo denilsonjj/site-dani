@@ -19,7 +19,13 @@ export async function POST(request: Request) {
   let event: Stripe.Event;
 
   try {
-    event = getStripe().webhooks.constructEvent(body, signature, webhookSecret);
+    event = await getStripe().webhooks.constructEventAsync(
+      body,
+      signature,
+      webhookSecret,
+      undefined,
+      Stripe.createSubtleCryptoProvider(),
+    );
   } catch {
     return NextResponse.json(
       { received: false, error: "Assinatura Stripe invalida." },

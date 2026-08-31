@@ -107,7 +107,7 @@ export async function POST(request: Request) {
         policyRequired: product.requiresPolicyAcceptance,
         requiredFields: missingRequiredFields.map(requiredField),
       },
-      { status: 422 },
+      { status: payload.intake ? 422 : 200 },
     );
   }
 

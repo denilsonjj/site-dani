@@ -12,6 +12,9 @@ export function getStripe() {
   if (!stripeClient) {
     stripeClient = new Stripe(secretKey, {
       apiVersion: "2026-05-27.dahlia",
+      httpClient: Stripe.createFetchHttpClient(),
+      maxNetworkRetries: 1,
+      timeout: 20_000,
       typescript: true,
     });
   }
