@@ -191,9 +191,9 @@ export function CheckoutButton({ children, disabled = false, locale, productId }
   }
 
   return (
-    <div>
+    <div className="w-full min-w-0">
       <button
-        className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#123c2d] px-5 text-sm font-bold text-white transition hover:bg-[#1f5742] disabled:cursor-wait disabled:opacity-70"
+        className="mx-auto flex min-h-12 w-full max-w-sm items-center justify-center gap-2 rounded-full bg-[#123c2d] px-5 text-sm font-bold text-white transition hover:bg-[#1f5742] disabled:cursor-wait disabled:opacity-70 sm:mx-0 sm:w-auto"
         disabled={disabled || isLoading}
         onClick={handleCheckout}
         type="button"
@@ -203,28 +203,28 @@ export function CheckoutButton({ children, disabled = false, locale, productId }
       </button>
 
       {requiredFields.length ? (
-        <form className="mt-5 grid gap-3 rounded-[1.4rem] bg-white p-4" onSubmit={handleRequiredForm}>
+        <form className="mx-auto mt-5 grid w-full min-w-0 max-w-xl gap-3 overflow-hidden rounded-[1.4rem] bg-white p-4 sm:p-5" onSubmit={handleRequiredForm}>
           <p className="text-sm font-bold text-[#123c2d]">{copy.formTitle}</p>
           {requiredFields.map((field) => (
-            <label className="grid gap-2 text-sm font-bold text-[#40564d]" key={field.key}>
+            <label className="grid min-w-0 gap-2 text-sm font-bold text-[#40564d]" key={field.key}>
               {field.label}
               {field.helpText ? (
-                <span className="-mt-1 text-xs font-medium leading-5 text-[#617268]">{field.helpText}</span>
+                <span className="-mt-1 min-w-0 break-words text-xs font-medium leading-5 text-[#617268]">{field.helpText}</span>
               ) : null}
               {field.type === "textarea" ? (
                 <textarea
-                  className="min-h-28 rounded-2xl border border-[#123c2d]/15 bg-[#f8f5ec] px-4 py-3 font-normal outline-none focus:border-[#1f5742]"
+                  className="block min-h-28 w-full min-w-0 max-w-full rounded-2xl border border-[#123c2d]/15 bg-[#f8f5ec] px-4 py-3 font-normal outline-none focus:border-[#1f5742]"
                   name={field.key}
                   required
                 />
               ) : field.type === "checkbox" ? (
-                <span className="flex items-start gap-3 rounded-2xl border border-[#123c2d]/15 bg-[#f8f5ec] p-4 font-normal">
+                <span className="flex w-full min-w-0 items-start gap-3 rounded-2xl border border-[#123c2d]/15 bg-[#f8f5ec] p-4 font-normal">
                   <input className="mt-1" name={field.key} required type="checkbox" />
-                  <span>{copy.fieldFallback}</span>
+                  <span className="min-w-0 break-words">{copy.fieldFallback}</span>
                 </span>
               ) : field.type === "select" ? (
                 <select
-                  className="min-h-12 rounded-2xl border border-[#123c2d]/15 bg-[#f8f5ec] px-4 font-normal outline-none focus:border-[#1f5742]"
+                  className="block min-h-12 w-full min-w-0 max-w-full rounded-2xl border border-[#123c2d]/15 bg-[#f8f5ec] px-4 font-normal outline-none focus:border-[#1f5742]"
                   name={field.key}
                   required
                 >
@@ -237,7 +237,7 @@ export function CheckoutButton({ children, disabled = false, locale, productId }
                 </select>
               ) : (
                 <input
-                  className="min-h-12 rounded-2xl border border-[#123c2d]/15 bg-[#f8f5ec] px-4 font-normal outline-none focus:border-[#1f5742]"
+                  className="block min-h-12 w-full min-w-0 max-w-full rounded-2xl border border-[#123c2d]/15 bg-[#f8f5ec] px-4 font-normal outline-none focus:border-[#1f5742]"
                   name={field.key}
                   required
                   type={field.type}
@@ -246,9 +246,9 @@ export function CheckoutButton({ children, disabled = false, locale, productId }
             </label>
           ))}
           {policyRequired ? (
-            <label className="flex items-start gap-3 rounded-2xl border border-[#123c2d]/15 bg-[#f8f5ec] p-4 text-sm leading-6 text-[#40564d]">
+            <label className="flex w-full min-w-0 items-start gap-3 rounded-2xl border border-[#123c2d]/15 bg-[#f8f5ec] p-4 text-sm leading-6 text-[#40564d]">
               <input className="mt-1" name="policyAccepted" required type="checkbox" />
-              <span>
+              <span className="min-w-0 break-words">
                 {copy.termsTextBefore}
                 <a
                   className="font-bold text-[#123c2d] underline underline-offset-4"
@@ -263,7 +263,7 @@ export function CheckoutButton({ children, disabled = false, locale, productId }
             </label>
           ) : null}
           <button
-            className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#123c2d] px-5 text-sm font-bold text-white transition hover:bg-[#1f5742] disabled:cursor-wait disabled:opacity-70"
+            className="flex min-h-12 w-full items-center justify-center rounded-full bg-[#123c2d] px-5 text-sm font-bold text-white transition hover:bg-[#1f5742] disabled:cursor-wait disabled:opacity-70"
             disabled={isLoading}
             type="submit"
           >
@@ -272,7 +272,7 @@ export function CheckoutButton({ children, disabled = false, locale, productId }
         </form>
       ) : null}
 
-      {message ? <p className="mt-3 text-xs leading-5 text-[#61746b]">{message}</p> : null}
+      {message ? <p className="mx-auto mt-3 w-full max-w-xl break-words text-xs leading-5 text-[#61746b]">{message}</p> : null}
     </div>
   );
 }

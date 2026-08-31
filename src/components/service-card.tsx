@@ -48,8 +48,8 @@ export function ServiceCard({ actionLabel, anchor = true, detailsLabel, index, l
   return (
     <article
       className={layout === "row"
-        ? "grid overflow-hidden rounded-[2rem] border border-[#123c2d]/10 bg-[#f8f5ec] shadow-[0_18px_55px_rgba(19,35,29,0.08)] md:grid-cols-[20rem_1fr]"
-        : "flex h-full min-h-[31rem] flex-col overflow-hidden rounded-[2rem] border border-[#123c2d]/10 bg-[#f8f5ec] shadow-[0_18px_55px_rgba(19,35,29,0.08)]"}
+        ? "grid min-w-0 overflow-hidden rounded-[2rem] border border-[#123c2d]/10 bg-[#f8f5ec] shadow-[0_18px_55px_rgba(19,35,29,0.08)] md:grid-cols-[20rem_1fr]"
+        : "flex h-full min-h-[31rem] min-w-0 flex-col overflow-hidden rounded-[2rem] border border-[#123c2d]/10 bg-[#f8f5ec] shadow-[0_18px_55px_rgba(19,35,29,0.08)]"}
       data-reveal
       id={anchor ? service.slug : undefined}
       style={{ "--reveal-delay": `${index * 70}ms` } as RevealStyle}
@@ -79,12 +79,12 @@ export function ServiceCard({ actionLabel, anchor = true, detailsLabel, index, l
           {service.title}
         </h3>
       </div>
-      <div className="flex flex-1 flex-col p-7 sm:p-8">
+      <div className="flex min-w-0 flex-1 flex-col p-5 sm:p-8">
         <div className="text-[#547461]">
           <Icon aria-hidden="true" size={30} strokeWidth={1.5} />
         </div>
         <p className="mt-7 leading-7 text-[#52675e]">{service.text}</p>
-        <div className="mt-auto pt-7">
+        <div className="mt-auto min-w-0 pt-7">
           <div className="mb-5 flex items-center justify-between gap-4 border-t border-[#123c2d]/10 pt-5">
             <p className="min-w-0 flex-1 text-sm font-bold leading-5 text-[#547461]">
               {service.duration}
@@ -93,7 +93,7 @@ export function ServiceCard({ actionLabel, anchor = true, detailsLabel, index, l
               {service.price}
             </p>
           </div>
-          <div className="grid gap-3">
+          <div className="grid min-w-0 gap-3">
             <a
               className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#123c2d]/18 px-5 text-center font-bold text-[#123c2d] transition hover:border-[#123c2d]/35 hover:bg-[#e4eee6]"
               href={`/${locale}/sessoes/${service.slug || service.productId}`}
