@@ -4,6 +4,31 @@ import { getCheckoutReceipt, markCheckoutSubmissionPaid, releaseCheckoutSeat } f
 import { sendCheckoutReceiptEmail } from "@/lib/email";
 import { getStripe } from "@/lib/stripe";
 
+async function fulfillCheckoutSession(session: Stripe.Checkout.Session) {
+  const submissionId = session.metadata?.submissionId;
+
+  if (!submissionId) return null;
+
+  await markCheckoutSubmissionPaid(submissionId, session.id);
+  const receipt = await getCheckoutReceipt(submissionId, session.id);
+
+  if (!receipt) {
+    return "Nao foi possivel preparar a confirmacao da compra.";
+  }
+
+  const result = await sendCheckoutReceiptEmail(receipt);
+
+  if (!result.sent) {
+    console.error(
+      "Resend checkout receipt error",
+      result.error || "Email configuration unavailable",
+    );
+    return "Nao foi possivel enviar a confirmacao da compra.";
+  }
+
+  return null;
+}
+
 export async function POST(request: Request) {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   const signature = request.headers.get("stripe-signature");
@@ -33,39 +58,37 @@ export async function POST(request: Request) {
     );
   }
 
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object as Stripe.Checkout.Session;
-    const submissionId = session.metadata?.submissionId;
+  switch (event.type) {
+    case "checkout.session.completed": {
+      const session = event.data.object as Stripe.Checkout.Session;
 
-    if (submissionId) {
-      await markCheckoutSubmissionPaid(submissionId, session.id);
-      const receipt = await getCheckoutReceipt(submissionId, session.id);
+      if (session.payment_status === "paid" || session.payment_status === "no_payment_required") {
+        const error = await fulfillCheckoutSession(session);
 
-      if (receipt) {
-        const result = await sendCheckoutReceiptEmail(receipt);
-
-        if (!result.sent) {
-          console.error("Resend checkout receipt error", result.error || "Email configuration unavailable");
-          return NextResponse.json(
-            { received: false, error: "Nao foi possivel enviar a confirmacao da compra." },
-            { status: 500 },
-          );
+        if (error) {
+          return NextResponse.json({ received: false, error }, { status: 500 });
         }
-      } else {
-        return NextResponse.json(
-          { received: false, error: "Nao foi possivel preparar a confirmacao da compra." },
-          { status: 500 },
-        );
       }
+      break;
     }
-  }
+    case "checkout.session.async_payment_succeeded": {
+      const session = event.data.object as Stripe.Checkout.Session;
+      const error = await fulfillCheckoutSession(session);
 
-  if (event.type === "checkout.session.expired") {
-    const session = event.data.object as Stripe.Checkout.Session;
-    const submissionId = session.metadata?.submissionId;
+      if (error) {
+        return NextResponse.json({ received: false, error }, { status: 500 });
+      }
+      break;
+    }
+    case "checkout.session.async_payment_failed":
+    case "checkout.session.expired": {
+      const session = event.data.object as Stripe.Checkout.Session;
+      const submissionId = session.metadata?.submissionId;
 
-    if (submissionId) {
-      await releaseCheckoutSeat(submissionId);
+      if (submissionId) {
+        await releaseCheckoutSeat(submissionId);
+      }
+      break;
     }
   }
 
