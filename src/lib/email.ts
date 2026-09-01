@@ -181,9 +181,9 @@ function buildReceiptHtml(receipt: CheckoutReceipt) {
   const siteUrl = siteConfig.domain.replace(/\/$/, "");
   const localeUrl = `${siteUrl}/${receipt.locale}`;
   const legalUrls = {
-    cookies: `${localeUrl}/politica-de-cookies`,
-    privacy: `${localeUrl}/politica-de-privacidade`,
-    terms: `${localeUrl}/termos-e-condicoes`,
+    cookies: `${localeUrl}/politica-de-cookies?source=receipt-v3`,
+    privacy: `${localeUrl}/politica-de-privacidade?source=receipt-v3`,
+    terms: `${localeUrl}/termos-e-condicoes?source=receipt-v3`,
   };
   const whatsappUrl = `https://wa.me/${siteConfig.whatsapp}`;
   const manageBookingUrl = `${whatsappUrl}?text=${encodeURIComponent(copy.manageBookingMessage(receipt.submissionId))}`;
@@ -296,9 +296,9 @@ function buildReceiptText(receipt: CheckoutReceipt) {
   const siteUrl = siteConfig.domain.replace(/\/$/, "");
   const localeUrl = `${siteUrl}/${receipt.locale}`;
   const legalUrls = {
-    cookies: `${localeUrl}/politica-de-cookies`,
-    privacy: `${localeUrl}/politica-de-privacidade`,
-    terms: `${localeUrl}/termos-e-condicoes`,
+    cookies: `${localeUrl}/politica-de-cookies?source=receipt-v3`,
+    privacy: `${localeUrl}/politica-de-privacidade?source=receipt-v3`,
+    terms: `${localeUrl}/termos-e-condicoes?source=receipt-v3`,
   };
   const appointmentDate = String(receipt.payload.appointment_date || "");
   const appointmentStart = String(receipt.payload.appointment_start || "");
@@ -371,7 +371,7 @@ export async function sendCheckoutReceiptEmail(receipt: CheckoutReceipt) {
     },
     {
       headers: {
-        "Idempotency-Key": `checkout-receipt-v2-${receipt.submissionId}-${receipt.stripeCheckoutSessionId}`,
+        "Idempotency-Key": `checkout-receipt-v3-${receipt.submissionId}-${receipt.stripeCheckoutSessionId}`,
       },
     },
   );
