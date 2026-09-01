@@ -371,7 +371,7 @@ export async function sendCheckoutReceiptEmail(receipt: CheckoutReceipt) {
     },
     {
       headers: {
-        "Idempotency-Key": `checkout-receipt-${receipt.submissionId}-${receipt.stripeCheckoutSessionId}`,
+        "Idempotency-Key": `checkout-receipt-v2-${receipt.submissionId}-${receipt.stripeCheckoutSessionId}`,
       },
     },
   );
