@@ -180,6 +180,11 @@ function buildReceiptHtml(receipt: CheckoutReceipt) {
     : "";
   const siteUrl = siteConfig.domain.replace(/\/$/, "");
   const localeUrl = `${siteUrl}/${receipt.locale}`;
+  const legalUrls = {
+    cookies: `${localeUrl}/politica-de-cookies`,
+    privacy: `${localeUrl}/politica-de-privacidade`,
+    terms: `${localeUrl}/termos-e-condicoes`,
+  };
   const whatsappUrl = `https://wa.me/${siteConfig.whatsapp}`;
   const manageBookingUrl = `${whatsappUrl}?text=${encodeURIComponent(copy.manageBookingMessage(receipt.submissionId))}`;
   const emailUrl = `mailto:${siteConfig.email}?subject=${encodeURIComponent(`${copy.manageBooking} — ${receipt.submissionId}`)}`;
@@ -190,75 +195,95 @@ function buildReceiptHtml(receipt: CheckoutReceipt) {
 
   return `<!doctype html>
 <html lang="${receipt.locale}">
-  <body style="margin:0;background:#f8f5ec;color:#123c2d;font-family:Arial,sans-serif;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f8f5ec;padding:32px 16px;">
+  <head>
+    <meta name="color-scheme" content="light" />
+    <meta name="supported-color-schemes" content="light" />
+    <style>
+      :root { color-scheme: light; supported-color-schemes: light; }
+      @media (prefers-color-scheme: dark) {
+        .email-page { background-color:#f8f5ec !important; color:#123c2d !important; }
+        .email-card, .email-content { background-color:#ffffff !important; color:#123c2d !important; }
+        .email-header { background-color:#123c2d !important; color:#ffffff !important; }
+        .email-header-title { color:#ffffff !important; }
+        .email-gold { color:#C9A227 !important; }
+        .email-heading { color:#123c2d !important; }
+        .email-muted { color:#40564d !important; }
+        .email-label, .email-footer, .email-legal-link { color:#617268 !important; }
+        .email-value, .email-link { color:#123c2d !important; }
+        .email-panel { background-color:#f8f5ec !important; color:#123c2d !important; }
+        .email-divider { border-color:#eee6d8 !important; }
+      }
+    </style>
+  </head>
+  <body class="email-page" bgcolor="#f8f5ec" style="margin:0;background:#f8f5ec;color:#123c2d;font-family:Arial,sans-serif;">
+    <table class="email-page" role="presentation" width="100%" cellspacing="0" cellpadding="0" bgcolor="#f8f5ec" style="background:#f8f5ec;padding:32px 16px;color:#123c2d;">
       <tr>
         <td align="center">
-          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:620px;background:#ffffff;border-radius:24px;overflow:hidden;border:1px solid #e7dfcf;">
+          <table class="email-card" role="presentation" width="100%" cellspacing="0" cellpadding="0" bgcolor="#ffffff" style="max-width:620px;background:#ffffff;color:#123c2d;border-radius:24px;overflow:hidden;border:1px solid #e7dfcf;">
             <tr>
-              <td align="center" style="background:#123c2d;padding:28px 32px;color:#ffffff;">
+              <td class="email-header" align="center" bgcolor="#123c2d" style="background:#123c2d;padding:28px 32px;color:#ffffff;">
                 <img src="${siteUrl}/dani-therapies-logo-cropped.webp" width="190" alt="Dani Therapies" style="display:block;width:190px;max-width:100%;height:auto;border:0;margin:0 auto;" />
-                <p style="margin:12px 0 0;color:#C9A227;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;">Spiritual Noetic Curator</p>
-                <h1 style="margin:16px 0 0;font-size:30px;line-height:1.15;">${copy.confirmed}</h1>
+                <p class="email-gold" style="margin:12px 0 0;color:#C9A227;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;">Spiritual Noetic Curator</p>
+                <h1 class="email-header-title" style="margin:16px 0 0;color:#ffffff;font-size:30px;line-height:1.15;">${copy.confirmed}</h1>
               </td>
             </tr>
             <tr>
-              <td style="padding:32px;">
-                <p style="margin:0 0 16px;font-size:16px;line-height:1.7;">${copy.greeting(customerName)}</p>
-                <p style="margin:0 0 28px;font-size:16px;line-height:1.7;color:#40564d;">${copy.intro}</p>
-                <h2 style="margin:0 0 16px;font-size:20px;">${copy.details}</h2>
+              <td class="email-content" bgcolor="#ffffff" style="padding:32px;background:#ffffff;color:#123c2d;">
+                <p class="email-heading" style="margin:0 0 16px;color:#123c2d;font-size:16px;line-height:1.7;">${copy.greeting(customerName)}</p>
+                <p class="email-muted" style="margin:0 0 28px;font-size:16px;line-height:1.7;color:#40564d;">${copy.intro}</p>
+                <h2 class="email-heading" style="margin:0 0 16px;color:#123c2d;font-size:20px;">${copy.details}</h2>
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
                   <tr>
-                    <td style="padding:14px 0;border-top:1px solid #eee6d8;color:#617268;">${copy.product}</td>
-                    <td style="padding:14px 0;border-top:1px solid #eee6d8;text-align:right;font-weight:700;">${product}</td>
+                    <td class="email-label email-divider" style="padding:14px 0;border-top:1px solid #eee6d8;color:#617268;">${copy.product}</td>
+                    <td class="email-value email-divider" style="padding:14px 0;border-top:1px solid #eee6d8;color:#123c2d;text-align:right;font-weight:700;">${product}</td>
                   </tr>
                   <tr>
-                    <td style="padding:14px 0;border-top:1px solid #eee6d8;color:#617268;">${copy.duration}</td>
-                    <td style="padding:14px 0;border-top:1px solid #eee6d8;text-align:right;font-weight:700;">${escapeHtml(receipt.duration || "-")}</td>
+                    <td class="email-label email-divider" style="padding:14px 0;border-top:1px solid #eee6d8;color:#617268;">${copy.duration}</td>
+                    <td class="email-value email-divider" style="padding:14px 0;border-top:1px solid #eee6d8;color:#123c2d;text-align:right;font-weight:700;">${escapeHtml(receipt.duration || "-")}</td>
                   </tr>
                   ${formattedAppointmentDate ? `<tr>
-                    <td style="padding:14px 0;border-top:1px solid #eee6d8;color:#617268;">${copy.appointment}</td>
-                    <td style="padding:14px 0;border-top:1px solid #eee6d8;text-align:right;font-weight:700;">${escapeHtml(formattedAppointmentDate)}</td>
+                    <td class="email-label email-divider" style="padding:14px 0;border-top:1px solid #eee6d8;color:#617268;">${copy.appointment}</td>
+                    <td class="email-value email-divider" style="padding:14px 0;border-top:1px solid #eee6d8;color:#123c2d;text-align:right;font-weight:700;">${escapeHtml(formattedAppointmentDate)}</td>
                   </tr>` : ""}
                   ${formattedAmsterdamDate ? `<tr>
-                    <td style="padding:14px 0;border-top:1px solid #eee6d8;color:#617268;">${copy.appointmentAmsterdam}</td>
-                    <td style="padding:14px 0;border-top:1px solid #eee6d8;text-align:right;font-weight:700;">${escapeHtml(formattedAmsterdamDate)}</td>
+                    <td class="email-label email-divider" style="padding:14px 0;border-top:1px solid #eee6d8;color:#617268;">${copy.appointmentAmsterdam}</td>
+                    <td class="email-value email-divider" style="padding:14px 0;border-top:1px solid #eee6d8;color:#123c2d;text-align:right;font-weight:700;">${escapeHtml(formattedAmsterdamDate)}</td>
                   </tr>` : ""}
                   <tr>
-                    <td style="padding:14px 0;border-top:1px solid #eee6d8;color:#617268;">${copy.price}</td>
-                    <td style="padding:14px 0;border-top:1px solid #eee6d8;text-align:right;font-weight:700;color:#C9A227;">${escapeHtml(receipt.price || "-")}</td>
+                    <td class="email-label email-divider" style="padding:14px 0;border-top:1px solid #eee6d8;color:#617268;">${copy.price}</td>
+                    <td class="email-gold email-divider" style="padding:14px 0;border-top:1px solid #eee6d8;text-align:right;font-weight:700;color:#C9A227;">${escapeHtml(receipt.price || "-")}</td>
                   </tr>
                   <tr>
-                    <td style="padding:14px 0;border-top:1px solid #eee6d8;color:#617268;">${copy.reference}</td>
-                    <td style="padding:14px 0;border-top:1px solid #eee6d8;text-align:right;font-size:12px;color:#617268;">${escapeHtml(receipt.submissionId)}</td>
+                    <td class="email-label email-divider" style="padding:14px 0;border-top:1px solid #eee6d8;color:#617268;">${copy.reference}</td>
+                    <td class="email-label email-divider" style="padding:14px 0;border-top:1px solid #eee6d8;text-align:right;font-size:12px;color:#617268;">${escapeHtml(receipt.submissionId)}</td>
                   </tr>
                 </table>
-                <div style="margin-top:28px;padding:20px;border-radius:18px;background:#f8f5ec;">
-                  <h3 style="margin:0 0 8px;font-size:17px;">${copy.next}</h3>
-                  <p style="margin:0;font-size:15px;line-height:1.7;color:#40564d;">${copy.nextText}</p>
+                <div class="email-panel" style="margin-top:28px;padding:20px;border-radius:18px;background:#f8f5ec;color:#123c2d;">
+                  <h3 class="email-heading" style="margin:0 0 8px;color:#123c2d;font-size:17px;">${copy.next}</h3>
+                  <p class="email-muted" style="margin:0;font-size:15px;line-height:1.7;color:#40564d;">${copy.nextText}</p>
                 </div>
-                <h3 style="margin:28px 0 12px;font-size:17px;">${copy.contact}</h3>
+                <h3 class="email-heading" style="margin:28px 0 12px;color:#123c2d;font-size:17px;">${copy.contact}</h3>
                 <p style="margin:0 0 18px;font-size:14px;line-height:1.8;">
-                  <a href="${whatsappUrl}" style="color:#123c2d;font-weight:700;text-decoration:underline;">${copy.contactWhatsapp}</a>
+                  <a class="email-link" href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" style="color:#123c2d;font-weight:700;text-decoration:underline;">${copy.contactWhatsapp}</a>
                   <span style="color:#b8ad99;"> &nbsp;•&nbsp; </span>
-                  <a href="${emailUrl}" style="color:#123c2d;font-weight:700;text-decoration:underline;">${copy.contactEmail}</a>
+                  <a class="email-link" href="${emailUrl}" style="color:#123c2d;font-weight:700;text-decoration:underline;">${copy.contactEmail}</a>
                   <span style="color:#b8ad99;"> &nbsp;•&nbsp; </span>
-                  <a href="${manageBookingUrl}" style="color:#123c2d;font-weight:700;text-decoration:underline;">${copy.manageBooking}</a>
+                  <a class="email-link" href="${manageBookingUrl}" target="_blank" rel="noopener noreferrer" style="color:#123c2d;font-weight:700;text-decoration:underline;">${copy.manageBooking}</a>
                 </p>
-                <h3 style="margin:24px 0 12px;font-size:17px;">${copy.legal}</h3>
+                <h3 class="email-heading" style="margin:24px 0 12px;color:#123c2d;font-size:17px;">${copy.legal}</h3>
                 <p style="margin:0;font-size:13px;line-height:1.9;color:#617268;">
-                  <a href="${localeUrl}/termos-e-condicoes" style="color:#617268;text-decoration:underline;">${copy.terms}</a>
+                  <a class="email-legal-link" href="${legalUrls.terms}" target="_blank" rel="noopener noreferrer" style="color:#617268;text-decoration:underline;">${copy.terms}</a>
                   <span> &nbsp;•&nbsp; </span>
-                  <a href="${localeUrl}/politica-de-privacidade" style="color:#617268;text-decoration:underline;">${copy.privacy}</a>
+                  <a class="email-legal-link" href="${legalUrls.privacy}" target="_blank" rel="noopener noreferrer" style="color:#617268;text-decoration:underline;">${copy.privacy}</a>
                   <span> &nbsp;•&nbsp; </span>
-                  <a href="${localeUrl}/politica-de-cookies" style="color:#617268;text-decoration:underline;">${copy.cookies}</a>
-                  ${isCourse ? `<span> &nbsp;•&nbsp; </span><a href="${courseTermsUrl}" style="color:#617268;text-decoration:underline;">${copy.courseTerms}</a>` : ""}
+                  <a class="email-legal-link" href="${legalUrls.cookies}" target="_blank" rel="noopener noreferrer" style="color:#617268;text-decoration:underline;">${copy.cookies}</a>
+                  ${isCourse ? `<span> &nbsp;•&nbsp; </span><a class="email-legal-link" href="${courseTermsUrl}" target="_blank" rel="noopener noreferrer" style="color:#617268;text-decoration:underline;">${copy.courseTerms}</a>` : ""}
                 </p>
-                <p style="margin:28px 0 0;font-size:15px;line-height:1.7;color:#40564d;">${copy.thanks}</p>
+                <p class="email-muted" style="margin:28px 0 0;font-size:15px;line-height:1.7;color:#40564d;">${copy.thanks}</p>
               </td>
             </tr>
           </table>
-          <p style="margin:18px 0 0;color:#617268;font-size:12px;">${siteConfig.name} · ${siteConfig.email}</p>
+          <p class="email-footer" style="margin:18px 0 0;color:#617268;font-size:12px;">${siteConfig.name} · ${siteConfig.email}</p>
         </td>
       </tr>
     </table>
@@ -270,6 +295,11 @@ function buildReceiptText(receipt: CheckoutReceipt) {
   const copy = receiptCopy[receipt.locale];
   const siteUrl = siteConfig.domain.replace(/\/$/, "");
   const localeUrl = `${siteUrl}/${receipt.locale}`;
+  const legalUrls = {
+    cookies: `${localeUrl}/politica-de-cookies`,
+    privacy: `${localeUrl}/politica-de-privacidade`,
+    terms: `${localeUrl}/termos-e-condicoes`,
+  };
   const appointmentDate = String(receipt.payload.appointment_date || "");
   const appointmentStart = String(receipt.payload.appointment_start || "");
   const customerTimeZone = safeTimeZone(String(receipt.payload.appointment_time_zone || ""));
@@ -306,9 +336,9 @@ function buildReceiptText(receipt: CheckoutReceipt) {
     `${copy.manageBooking}: ${manageBookingUrl}`,
     "",
     copy.legal,
-    `${copy.terms}: ${localeUrl}/termos-e-condicoes`,
-    `${copy.privacy}: ${localeUrl}/politica-de-privacidade`,
-    `${copy.cookies}: ${localeUrl}/politica-de-cookies`,
+    `${copy.terms}: ${legalUrls.terms}`,
+    `${copy.privacy}: ${legalUrls.privacy}`,
+    `${copy.cookies}: ${legalUrls.cookies}`,
     ...(receipt.productId.startsWith("online-course")
       ? [`${copy.courseTerms}: ${siteUrl}/legal/${receipt.locale === "en" ? "terms-conduct-sensory-perception.pdf" : "termos-conduta-curso-percepcao-sensorial.pdf"}`]
       : []),
