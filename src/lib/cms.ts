@@ -459,7 +459,9 @@ export async function getIntakeFields(serviceId: string, locale: Locale): Promis
 }
 
 export async function getLegalDocument(key: string, locale: Locale): Promise<LegalDocument | null> {
-  const supabase = getSupabasePublicClient();
+  // Legal pages are rendered on the server. Prefer the server client because
+  // the public/anonymous role may not have SELECT access to legal_documents.
+  const supabase = getSupabaseAdminClient() || getSupabasePublicClient();
   if (!supabase) return null;
 
   const { data, error } = await supabase
