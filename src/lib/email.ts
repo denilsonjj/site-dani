@@ -72,7 +72,7 @@ const receiptCopy: Record<Locale, {
     reference: "Referência",
     subject: (product) => `Confirmação da sua compra: ${product}`,
     terms: "Termos e Condições",
-    thanks: "Obrigada pela confiança.",
+    thanks: "Agradeço pela confiança.",
   },
   en: {
     appointment: "Session date and time",
@@ -223,7 +223,7 @@ function buildReceiptHtml(receipt: CheckoutReceipt) {
             <tr>
               <td class="email-header" align="center" bgcolor="#123c2d" style="background:#123c2d;padding:28px 32px;color:#ffffff;">
                 <img src="${siteUrl}/dani-therapies-logo-cropped.webp" width="190" alt="Dani Therapies" style="display:block;width:190px;max-width:100%;height:auto;border:0;margin:0 auto;" />
-                <p class="email-gold" style="margin:12px 0 0;color:#C9A227;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;">Spiritual Noetic Curator</p>
+                <p class="email-gold" style="margin:12px 0 0;color:#C9A227;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;">Spiritual Noetic Healer</p>
                 <h1 class="email-header-title" style="margin:16px 0 0;color:#ffffff;font-size:30px;line-height:1.15;">${copy.confirmed}</h1>
               </td>
             </tr>
@@ -316,7 +316,7 @@ function buildReceiptText(receipt: CheckoutReceipt) {
   const manageBookingUrl = `https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent(copy.manageBookingMessage(receipt.submissionId))}`;
   const lines = [
     "Dani Therapies",
-    "Spiritual Noetic Curator",
+    "Spiritual Noetic Healer",
     "",
     copy.confirmed,
     copy.greeting(receipt.customerName),
@@ -371,7 +371,7 @@ export async function sendCheckoutReceiptEmail(receipt: CheckoutReceipt) {
     },
     {
       headers: {
-        "Idempotency-Key": `checkout-receipt-v3-${receipt.submissionId}-${receipt.stripeCheckoutSessionId}`,
+        "Idempotency-Key": `checkout-receipt-v4-${receipt.submissionId}-${receipt.stripeCheckoutSessionId}`,
       },
     },
   );
