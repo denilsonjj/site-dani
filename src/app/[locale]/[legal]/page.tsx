@@ -8,6 +8,7 @@ import {
   type LegalDocumentKey,
 } from "@/lib/legal-content";
 import { splitParagraphs } from "@/lib/site-sections";
+import { getLocalizedAlternates, getSeoTitle } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -49,18 +50,10 @@ export async function generateMetadata({
   const key = legalPages[legal as keyof typeof legalPages] as LegalDocumentKey;
   const document = await loadLegalDocument(key, locale);
   const description = document.introduction[0] || document.sections[0]?.paragraphs?.[0] || "";
-  const canonical = `/${locale}/${legal}`;
-
   return {
-    title: document.title,
+    title: getSeoTitle(document.title),
     description,
-    alternates: {
-      canonical,
-      languages: Object.fromEntries([
-        ...locales.map((language) => [language, `/${language}/${legal}`]),
-        ["x-default", `/pt/${legal}`],
-      ]),
-    },
+    alternates: getLocalizedAlternates(locale, `/${legal}`),
     robots: {
       index: true,
       follow: true,

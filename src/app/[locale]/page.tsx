@@ -19,6 +19,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getPublishedBlogPosts, getPublishedCourses, getPublishedServices, getPublishedSiteSections } from "@/lib/cms";
 import { getContent, locales, type Locale } from "@/lib/content";
+import { getLocalizedAlternates, getSeoTitle } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 const whatsappUrl = `https://wa.me/${siteConfig.whatsapp}`;
@@ -47,18 +48,9 @@ export async function generateMetadata({
   if (!hero) return {};
 
   return {
-    title: `${hero.title} | Dani Therapies`,
+    title: getSeoTitle(hero.title),
     description: hero.description,
-    alternates: {
-      canonical: `/${locale}`,
-      languages: {
-        "pt-PT": "/pt",
-        "en-US": "/en",
-        "es-ES": "/es",
-        "nl-NL": "/nl",
-        "x-default": "/pt",
-      },
-    },
+    alternates: getLocalizedAlternates(locale),
     openGraph: {
       title: hero.title,
       description: hero.description,

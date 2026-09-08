@@ -4,6 +4,7 @@ import { CatalogDetail } from "@/components/catalog-detail";
 import { getPublishedServices } from "@/lib/cms";
 import { getContent, locales, type Locale } from "@/lib/content";
 import { detailPageCopy, getDetailParagraphs } from "@/lib/detail-content";
+import { getLocalizedAlternates, getSeoTitle } from "@/lib/seo";
 
 export async function generateStaticParams() {
   const items = await Promise.all(
@@ -31,9 +32,9 @@ export async function generateMetadata({
   if (!service) return {};
 
   return {
-    title: `${service.title} | Dani Therapies`,
+    title: getSeoTitle(service.title),
     description: service.text,
-    alternates: { canonical: `/${locale}/sessoes/${slug}` },
+    alternates: getLocalizedAlternates(locale, `/sessoes/${slug}`),
     openGraph: {
       title: service.title,
       description: service.text,

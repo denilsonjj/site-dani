@@ -9,6 +9,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getPublishedCourses, getPublishedSiteSections } from "@/lib/cms";
 import { getContent, locales, type Locale } from "@/lib/content";
+import { getLocalizedAlternates, getSeoTitle } from "@/lib/seo";
 
 const pageCopy = {
   pt: {
@@ -67,8 +68,9 @@ export async function generateMetadata({
   if (!hero) return {};
 
   return {
-    title: `${hero.title} | Dani Therapies`,
+    title: getSeoTitle(hero.title),
     description: hero.body,
+    alternates: getLocalizedAlternates(locale, "/cursos"),
   };
 }
 

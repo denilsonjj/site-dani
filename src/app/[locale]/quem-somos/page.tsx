@@ -8,6 +8,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getPublishedSiteSections } from "@/lib/cms";
 import { getContent, locales, type Locale } from "@/lib/content";
+import { getLocalizedAlternates, getSeoTitle } from "@/lib/seo";
 import { splitParagraphs } from "@/lib/site-sections";
 
 const backLabels: Record<Locale, string> = {
@@ -36,17 +37,9 @@ export async function generateMetadata({
   const introduction = sections.introduction;
   if (!introduction) return {};
   return {
-    title: `${introduction.eyebrow || introduction.title} | Dani Therapies`,
+    title: getSeoTitle(introduction.eyebrow || introduction.title),
     description: splitParagraphs(introduction.body)[0] || introduction.description,
-    alternates: {
-      canonical: `/${locale}/quem-somos`,
-      languages: {
-        "pt-PT": "/pt/quem-somos",
-        "en-US": "/en/quem-somos",
-        "es-ES": "/es/quem-somos",
-        "nl-NL": "/nl/quem-somos",
-      },
-    },
+    alternates: getLocalizedAlternates(locale, "/quem-somos"),
   };
 }
 

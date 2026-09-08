@@ -7,6 +7,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getPublishedSiteSections } from "@/lib/cms";
 import { getContent, locales, type Locale } from "@/lib/content";
+import { getLocalizedAlternates, getSeoTitle } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -17,8 +18,13 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale: rawLocale } = await params;
   if (!locales.includes(rawLocale as Locale)) return {};
-  const partners = (await getPublishedSiteSections("home", rawLocale as Locale)).partners;
-  return partners ? { title: `${partners.title} | Dani Therapies`, description: partners.body } : {};
+  const locale = rawLocale as Locale;
+  const partners = (await getPublishedSiteSections("home", locale)).partners;
+  return partners ? {
+    title: getSeoTitle(partners.title),
+    description: partners.body,
+    alternates: getLocalizedAlternates(locale, "/parceiros"),
+  } : {};
 }
 
 export default async function PartnersPage({ params }: { params: Promise<{ locale: string }> }) {

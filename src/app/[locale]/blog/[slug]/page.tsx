@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPublishedBlogPost, getPublishedBlogPosts } from "@/lib/cms";
 import { locales, type Locale } from "@/lib/content";
+import { getLocalizedAlternates, getSeoTitle } from "@/lib/seo";
 
 export async function generateStaticParams() {
   const items = await Promise.all(
@@ -30,14 +31,15 @@ export async function generateMetadata({
   if (!post) return {};
 
   return {
+    title: getSeoTitle(post.title[locale]),
     description: post.excerpt[locale],
+    alternates: getLocalizedAlternates(locale, `/blog/${slug}`),
     openGraph: {
       description: post.excerpt[locale],
       images: post.image ? [post.image] : undefined,
       title: post.title[locale],
       type: "article",
     },
-    title: post.title[locale],
   };
 }
 

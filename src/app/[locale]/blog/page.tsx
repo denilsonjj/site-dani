@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { getPublishedBlogPosts, getPublishedSiteSections } from "@/lib/cms";
 import { locales, type Locale } from "@/lib/content";
+import { getLocalizedAlternates, getSeoTitle } from "@/lib/seo";
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -24,8 +25,9 @@ export async function generateMetadata({
   if (!hero) return {};
 
   return {
-    title: `${hero.title} | Dani Therapies`,
+    title: getSeoTitle(hero.title),
     description: hero.body,
+    alternates: getLocalizedAlternates(locale, "/blog"),
   };
 }
 
