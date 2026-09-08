@@ -49,7 +49,23 @@ export async function generateMetadata({
   const key = legalPages[legal as keyof typeof legalPages] as LegalDocumentKey;
   const document = await loadLegalDocument(key, locale);
   const description = document.introduction[0] || document.sections[0]?.paragraphs?.[0] || "";
-  return { title: document.title, description };
+  const canonical = `/${locale}/${legal}`;
+
+  return {
+    title: document.title,
+    description,
+    alternates: {
+      canonical,
+      languages: Object.fromEntries([
+        ...locales.map((language) => [language, `/${language}/${legal}`]),
+        ["x-default", `/pt/${legal}`],
+      ]),
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  };
 }
 
 export default async function LegalPage({

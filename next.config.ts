@@ -30,6 +30,9 @@ const legacyServiceRedirects = [
   ["apoio-fase-terminal-e-transição-cons", "apoio-fase-terminal-transicao"],
   ["cons-tarot-leitura-de-campo-1h", "tarot-leitura-de-campo-1h"],
   ["cons-tarot-leitura-de-campo-2h", "tarot-leitura-de-campo-2h"],
+  ["leitura-de-tarô-leitura-de-campo-1h", "tarot-leitura-de-campo-1h"],
+  ["leitura-de-taro-leitura-de-campo-1h", "tarot-leitura-de-campo-1h"],
+  ["leitura-tarot-leitura-de-campo-2h", "tarot-leitura-de-campo-2h"],
   ["harmonização-de-ambiente", "harmonizacao-de-ambiente"],
   ["harmonização-de-ambientes-3-residencias", "harmonizacao-de-ambientes-3-residencias"],
   ["limpeza-de-ambientes", "harmonizacao-de-ambiente"],
@@ -63,6 +66,11 @@ function buildLegacyRedirects() {
       destination: `/${locale}/sessoes/${destinationSlug}`,
       permanent: true,
     })),
+    ...legacyServiceRedirects.map(([sourceSlug, destinationSlug]) => ({
+      source: encodeURI(`${prefix}/booking-calendar/${sourceSlug}`),
+      destination: `/${locale}/sessoes/${destinationSlug}`,
+      permanent: true,
+    })),
     {
       source: `${prefix}/service-page/:path+`,
       destination: `/${locale}/sessoes`,
@@ -73,9 +81,24 @@ function buildLegacyRedirects() {
       destination: `/${locale}/sessoes`,
       permanent: true,
     },
+    {
+      source: `${prefix}/booking-calendar/:path+`,
+      destination: `/${locale}/sessoes`,
+      permanent: true,
+    },
   ]);
 
   return [
+    {
+      source: "/",
+      destination: "/pt",
+      permanent: true,
+    },
+    {
+      source: "/home",
+      destination: "/pt",
+      permanent: true,
+    },
     {
       source: "/blog",
       destination: "/pt/blog",
