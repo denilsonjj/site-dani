@@ -91,18 +91,12 @@ function buildLegacyRedirects() {
   return [
     {
       source: "/",
-      destination: "https://danitherapies.com/pt",
+      destination: "/pt",
       permanent: true,
     },
     {
       source: "/home",
-      destination: "https://danitherapies.com/pt",
-      permanent: true,
-    },
-    {
-      source: "/:path*",
-      has: [{ type: "header" as const, key: "x-forwarded-proto", value: "http" }],
-      destination: "https://danitherapies.com/:path*",
+      destination: "/pt",
       permanent: true,
     },
     {
