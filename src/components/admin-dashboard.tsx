@@ -371,26 +371,30 @@ function MediaField({
 }) {
   const [status, setStatus] = useState("");
   const accept = acceptVideo
-    ? "image/avif,image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime"
+    ? "image/avif,image/jpeg,image/png,image/webp,video/mp4,video/webm"
     : "image/avif,image/jpeg,image/png,image/webp";
 
   async function upload(file?: File) {
     if (!file) return;
-    setStatus(acceptVideo && file.type.startsWith("video/") ? "Otimizando vídeo..." : "Otimizando imagem...");
+    setStatus("Enviando arquivo...");
 
-    const formData = new FormData();
-    formData.set("file", file);
-    formData.set("section", section);
+    try {
+      const formData = new FormData();
+      formData.set("file", file);
+      formData.set("section", section);
 
-    const response = await fetch("/api/admin/media", { body: formData, method: "POST" });
-    const result = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      setStatus(result.error || "Não foi possível enviar o arquivo.");
-      return;
+      const response = await fetch("/api/admin/media", { body: formData, method: "POST" });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setStatus(result.error || "Não foi possível enviar o arquivo.");
+        return;
+      }
+
+      onChange(result.url);
+      setStatus("Arquivo enviado. Clique em Salvar para aplicar.");
+    } catch {
+      setStatus("Não foi possível enviar o arquivo. Tente novamente.");
     }
-
-    onChange(result.url);
-    setStatus(result.kind === "video" ? "Vídeo convertido e enviado. Salve para aplicar." : "Imagem convertida para WebP. Salve para aplicar.");
   }
 
   return (
@@ -406,7 +410,10 @@ function MediaField({
       <label className="flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-[#123c2d]/25 bg-white px-4 text-sm font-bold text-[#123c2d] transition hover:bg-[#edf2ed]">
         <UploadCloud size={17} />
         Enviar arquivo
-        <input accept={accept} className="sr-only" onChange={(event) => upload(event.target.files?.[0])} type="file" />
+        <input accept={accept} className="sr-only" onChange={(event) => {
+          void upload(event.target.files?.[0]);
+          event.target.value = "";
+        }} type="file" />
       </label>
       <input
         className={inputClass()}
@@ -769,7 +776,7 @@ export function AdminDashboard({ blogPosts, bookingSchedule, courses, sections, 
         image_url: null,
         is_published: false,
         published_at: new Date().toISOString(),
-        reading_time: { pt: "4 min" },
+        reading_time: {},
         slug,
         sort_order: current.length + 1,
         title: { pt: "Novo post" },
@@ -1277,20 +1284,16 @@ function BlogEditor({
               <details className="border-t border-[#123c2d]/10 px-4 py-3">
                 <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-bold text-[#52675e]"><Pencil size={15} /> Editar conteúdo</summary>
                 <div className="mt-4 grid gap-4 pb-2">
-                  <div className="grid gap-4 md:grid-cols-3">
+                  <div className="grid gap-4 md:grid-cols-2">
                     <Field label="Ordem">
                       <input className={inputClass()} onChange={(event) => onUpdate(item.slug, { sort_order: Number(event.target.value) || 0 })} type="number" value={item.sort_order || 0} />
                     </Field>
                     <Field label="Autor">
                       <input className={inputClass()} onChange={(event) => onUpdate(item.slug, { author: event.target.value })} value={item.author || ""} />
                     </Field>
-                    <LocalisedInput label="Tempo de leitura" locale={locale} onChange={(value) => onUpdate(item.slug, { reading_time: value })} value={item.reading_time} />
                   </div>
                   <MediaField label="Foto do post" onChange={(value) => onUpdate(item.slug, { image_url: value })} section={`blog-${item.slug}`} value={item.image_url} />
-                  <LocalisedInput label="Título" locale={locale} onChange={(value) => {
-                    const nextSlug = item.slug.startsWith("post-") ? slugify(localised(value, "pt")) || item.slug : item.slug;
-                    onUpdate(item.slug, { slug: nextSlug, title: value });
-                  }} value={item.title} />
+                  <LocalisedInput label="Título" locale={locale} onChange={(value) => onUpdate(item.slug, { title: value })} value={item.title} />
                   <LocalisedInput label="Resumo" locale={locale} onChange={(value) => onUpdate(item.slug, { excerpt: value })} textarea value={item.excerpt} />
                   <LocalisedInput label="Texto completo" locale={locale} onChange={(value) => onUpdate(item.slug, { body: value })} textarea value={item.body} />
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center">

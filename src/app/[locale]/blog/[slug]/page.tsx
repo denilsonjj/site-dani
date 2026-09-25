@@ -62,7 +62,7 @@ export default async function BlogPostPage({
           ← Blog
         </Link>
         <p className="mt-12 text-xs font-bold uppercase tracking-[0.18em] text-[#799a81]">
-          {post.author} · {post.readingTime}
+          {post.author}
         </p>
         <h1 className="display mt-5 text-5xl font-semibold leading-tight sm:text-7xl">
           {post.title[locale]}

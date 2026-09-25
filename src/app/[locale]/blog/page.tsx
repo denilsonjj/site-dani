@@ -84,10 +84,7 @@ export default async function BlogPage({
                   /> : null}
                 </div>
                 <div className="p-7">
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#799a81]">
-                    {post.readingTime}
-                  </p>
-                  <h2 className="display mt-4 text-3xl font-semibold leading-tight">
+                  <h2 className="display text-3xl font-semibold leading-tight">
                     {post.title[locale]}
                   </h2>
                   <p className="mt-4 leading-7 text-[#52675e]">{post.excerpt[locale]}</p>

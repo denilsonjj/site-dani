@@ -49,7 +49,6 @@ export async function POST(request: Request) {
     const missing = findMissingTranslations({
       body: payload.body,
       excerpt: payload.excerpt,
-      readingTime: payload.readingTime,
       title: payload.title,
     });
     if (missing.length) {
@@ -67,7 +66,7 @@ export async function POST(request: Request) {
     image_url: payload.imageUrl || null,
     is_published: Boolean(payload.isPublished),
     published_at: payload.publishedAt || new Date().toISOString(),
-    reading_time: payload.readingTime || { pt: "4 min" },
+    reading_time: payload.readingTime || {},
     slug: payload.slug,
     sort_order: payload.sortOrder || 0,
     title: payload.title,

@@ -378,10 +378,7 @@ export default async function LocalizedHome({
                   />
                 </div>
                 <div className="p-6">
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#799a81]">
-                    {post.readingTime}
-                  </p>
-                  <h3 className="display mt-4 text-2xl font-semibold leading-tight text-[#123c2d]">
+                  <h3 className="display text-2xl font-semibold leading-tight text-[#123c2d]">
                     {post.title[locale]}
                   </h3>
                   <p className="mt-3 text-sm leading-6 text-[#52675e]">
