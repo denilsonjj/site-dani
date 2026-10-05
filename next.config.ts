@@ -104,6 +104,18 @@ function buildLegacyRedirects() {
       destination: "/pt/blog",
       permanent: true,
     },
+    ...(["pt", "en", "es", "nl"] as const).flatMap((locale) => [
+      {
+        source: `/${locale}/blog/post-1790425409913`,
+        destination: `/${locale}/blog/taro-futuro-ou-possibilidades`,
+        permanent: true,
+      },
+      {
+        source: `/${locale}/blog/sinais-de-restauracao-energetica`,
+        destination: `/${locale}/blog/taro-futuro-ou-possibilidades`,
+        permanent: true,
+      },
+    ]),
     ...sectionRedirects,
     ...serviceRedirects,
   ];

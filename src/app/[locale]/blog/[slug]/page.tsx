@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPublishedBlogPost, getPublishedBlogPosts } from "@/lib/cms";
@@ -68,16 +67,17 @@ export default async function BlogPostPage({
           {post.title[locale]}
         </h1>
         <p className="mt-7 text-xl leading-9 text-[#52675e]">{post.excerpt[locale]}</p>
-        {post.image ? <div className="relative mt-12 h-[28rem] overflow-hidden rounded-[2rem]">
-          <Image
+        {post.image ? (
+          // Blog posters can have different dimensions; preserve each image's intrinsic ratio.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
             alt=""
-            className="object-cover"
-            fill
-            priority
-            sizes="(min-width: 768px) 896px, 100vw"
+            className="mt-12 block h-auto w-full rounded-[2rem]"
+            decoding="async"
+            fetchPriority="high"
             src={post.image}
           />
-        </div> : null}
+        ) : null}
         <div className="mt-12 rounded-[2rem] bg-white p-8 leading-8 text-[#40564d] shadow-[0_20px_60px_rgba(19,35,29,0.08)] sm:p-10">
           {post.body[locale].split(/\r?\n+/).filter(Boolean).map((paragraph) => (
             <p className="mt-6 first:mt-0" key={paragraph}>
